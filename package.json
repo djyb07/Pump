@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "PUMP - Fitness tracking application",
     "scripts": {
-        "install": "cd server && npm install",
+        "install": "cd server && npm install --include=dev && npx prisma generate",
         "build": "cd server && npm run build",
         "start": "cd server && npm start"
     },

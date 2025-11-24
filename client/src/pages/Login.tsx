@@ -46,9 +46,8 @@ const Login: React.FC = () => {
             localStorage.setItem('token', response.token);
             localStorage.setItem('user', JSON.stringify(response.user));
 
-            // Redirect to dashboard (or home page)
-            alert('Login successful!');
-            navigate('/');
+            // Redirect to dashboard
+            navigate('/dashboard');
         } catch (err: any) {
             setError(err.message);
         } finally {

@@ -1,0 +1,17 @@
+{
+    "name": "pump",
+    "version": "1.0.0",
+    "description": "PUMP - Fitness tracking application",
+    "scripts": {
+        "install": "cd server && npm install",
+        "build": "cd server && npm run build",
+        "start": "cd server && npm start"
+    },
+    "keywords": [
+        "fitness",
+        "tracking",
+        "workout"
+    ],
+    "author": "",
+    "license": "ISC"
+}

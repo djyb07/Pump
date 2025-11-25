@@ -13,6 +13,7 @@ export interface Exercise {
     equipment: string[];
     imageUrl?: string;
     videoUrl?: string;
+    muscleDiagramUrl?: string;
 }
 
 export const exerciseService = {

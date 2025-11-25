@@ -29,9 +29,8 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     {/* Title */}
                     <div className="mb-6">
                         <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                            {exercise.nameHe}
+                            {exercise.nameEn}
                         </h2>
-                        <p className="text-xl text-gray-400">{exercise.nameEn}</p>
                     </div>
 
                     {/* Badges */}
@@ -51,13 +50,30 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
 
                     {/* Description */}
                     <div className="mb-6">
-                        <h3 className="text-lg font-semibold text-white mb-3">תיאור התרגיל</h3>
-                        <p className="text-gray-300 leading-relaxed text-right">{exercise.descriptionHe}</p>
+                        <h3 className="text-lg font-semibold text-white mb-3">Exercise Description</h3>
+                        <p className="text-gray-300 leading-relaxed">{exercise.descriptionHe}</p>
                     </div>
+
+                    {/* Muscle Diagram */}
+                    {exercise.muscleDiagramUrl && (
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-white mb-3">💪 Target Muscles</h3>
+                            <div className="rounded-xl overflow-hidden border-2 border-purple-500/30 bg-gray-800/50">
+                                <img
+                                    src={exercise.muscleDiagramUrl}
+                                    alt={`${exercise.nameEn} muscle diagram`}
+                                    className="w-full h-auto"
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2 text-center">
+                                Visual representation of muscles worked during this exercise
+                            </p>
+                        </div>
+                    )}
 
                     {/* Workout Types */}
                     <div className="mb-6">
-                        <h3 className="text-lg font-semibold text-white mb-3">מתאים לתוכניות אימון</h3>
+                        <h3 className="text-lg font-semibold text-white mb-3">Workout Programs</h3>
                         <div className="flex flex-wrap gap-2">
                             {exercise.workoutTypes.map((type, idx) => (
                                 <span
@@ -71,7 +87,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
 
                     {/* Equipment */}
                     <div className="mb-6">
-                        <h3 className="text-lg font-semibold text-white mb-3">ציוד נדרש</h3>
+                        <h3 className="text-lg font-semibold text-white mb-3">Equipment Required</h3>
                         <div className="flex flex-wrap gap-2">
                             {exercise.equipment.map((item, idx) => (
                                 <span
@@ -87,13 +103,13 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     {/* Action buttons */}
                     <div className="flex gap-3 mt-8">
                         <button className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-purple-500/50">
-                            ➕ הוסף לתוכנית
+                            ➕ Add to Workout
                         </button>
                         <button
                             onClick={onClose}
                             className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-semibold rounded-xl transition-all duration-200 border border-gray-700"
                         >
-                            סגור
+                            Close
                         </button>
                     </div>
                 </div>

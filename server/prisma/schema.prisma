@@ -27,11 +27,12 @@ model Exercise {
   muscleGroups  String[] // ["Chest", "Triceps", "Shoulders"]
   workoutTypes  String[] // ["Push", "Upper", "Full Body"]
   difficulty    String   // "Beginner", "Intermediate", "Advanced"
-  equipment     String[] // ["Barbell", "Bench"]
-  imageUrl      String?  // Optional image URL
-  videoUrl      String?  // Optional video URL
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  equipment         String[] // ["Barbell", "Bench"]
+  imageUrl          String?  // Optional image URL
+  videoUrl          String?  // Optional video URL
+  muscleDiagramUrl  String?  // Optional muscle diagram URL
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([nameEn])
   @@index([nameHe])

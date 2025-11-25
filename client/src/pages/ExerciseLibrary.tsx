@@ -85,13 +85,14 @@ const ExerciseLibrary: React.FC = () => {
                                     onClick={() => navigate('/dashboard')}
                                     className="text-gray-400 hover:text-white transition-colors"
                                 >
-                                    ← חזרה
+                                    ← Back
                                 </button>
+                                <img src="/logo.png" alt="PUMP" className="h-10 w-10" />
                                 <div>
                                     <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                        ספריית תרגילים
+                                        Exercise Library
                                     </h1>
-                                    <p className="text-gray-500 text-sm">100 תרגילים זמינים</p>
+                                    <p className="text-gray-500 text-sm">100 exercises available</p>
                                 </div>
                             </div>
                         </div>
@@ -119,64 +120,64 @@ const ExerciseLibrary: React.FC = () => {
                             <select
                                 value={selectedWorkoutType}
                                 onChange={(e) => setSelectedWorkoutType(e.target.value)}
-                                className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-5 py-3 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-purple-500/30 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-purple-500/50 transition-all cursor-pointer shadow-lg"
                             >
-                                <option value="">כל סוגי האימון</option>
-                                <option value="Push">Push Day</option>
-                                <option value="Pull">Pull Day</option>
-                                <option value="Leg">Leg Day</option>
-                                <option value="Upper">Upper Day</option>
-                                <option value="Lower">Lower Day</option>
-                                <option value="Full Body">Full Body</option>
-                                <option value="Core">Core</option>
+                                <option value="" className="bg-gray-900">All Workout Types</option>
+                                <option value="Push" className="bg-gray-900">💪 Push Day</option>
+                                <option value="Pull" className="bg-gray-900">🔙 Pull Day</option>
+                                <option value="Leg" className="bg-gray-900">🦵 Leg Day</option>
+                                <option value="Upper" className="bg-gray-900">⬆️ Upper Day</option>
+                                <option value="Lower" className="bg-gray-900">⬇️ Lower Day</option>
+                                <option value="Full Body" className="bg-gray-900">🏋️ Full Body</option>
+                                <option value="Core" className="bg-gray-900">💥 Core</option>
                             </select>
 
                             {/* Muscle Group */}
                             <select
                                 value={selectedMuscle}
                                 onChange={(e) => setSelectedMuscle(e.target.value)}
-                                className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-5 py-3 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-pink-500/30 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 hover:border-pink-500/50 transition-all cursor-pointer shadow-lg"
                             >
-                                <option value="">כל קבוצות השרירים</option>
-                                <option value="Chest">חזה</option>
-                                <option value="Back">גב</option>
-                                <option value="Shoulders">כתפיים</option>
-                                <option value="Biceps">ביצפס</option>
-                                <option value="Triceps">טריצפס</option>
-                                <option value="Quads">קוודס</option>
-                                <option value="Hamstrings">המסטרינג</option>
-                                <option value="Glutes">גלוטס</option>
-                                <option value="Calves">שוקיים</option>
-                                <option value="Abs">בטן</option>
-                                <option value="Core">ליבה</option>
+                                <option value="" className="bg-gray-900">All Muscle Groups</option>
+                                <option value="Chest" className="bg-gray-900">Chest</option>
+                                <option value="Back" className="bg-gray-900">Back</option>
+                                <option value="Shoulders" className="bg-gray-900">Shoulders</option>
+                                <option value="Biceps" className="bg-gray-900">Biceps</option>
+                                <option value="Triceps" className="bg-gray-900">Triceps</option>
+                                <option value="Quads" className="bg-gray-900">Quads</option>
+                                <option value="Hamstrings" className="bg-gray-900">Hamstrings</option>
+                                <option value="Glutes" className="bg-gray-900">Glutes</option>
+                                <option value="Calves" className="bg-gray-900">Calves</option>
+                                <option value="Abs" className="bg-gray-900">Abs</option>
+                                <option value="Core" className="bg-gray-900">Core</option>
                             </select>
 
                             {/* Difficulty */}
                             <select
                                 value={selectedDifficulty}
                                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                                className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-5 py-3 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-blue-500/30 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-500/50 transition-all cursor-pointer shadow-lg"
                             >
-                                <option value="">כל הרמות</option>
-                                <option value="Beginner">מתחיל</option>
-                                <option value="Intermediate">בינוני</option>
-                                <option value="Advanced">מתקדם</option>
+                                <option value="" className="bg-gray-900">All Levels</option>
+                                <option value="Beginner" className="bg-gray-900">🟢 Beginner</option>
+                                <option value="Intermediate" className="bg-gray-900">🟡 Intermediate</option>
+                                <option value="Advanced" className="bg-gray-900">🔴 Advanced</option>
                             </select>
 
                             {/* Clear Filters */}
                             {(searchQuery || selectedMuscle || selectedWorkoutType || selectedDifficulty) && (
                                 <button
                                     onClick={clearFilters}
-                                    className="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-all"
+                                    className="px-5 py-3 bg-red-500/20 text-red-400 border-2 border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all font-medium shadow-lg"
                                 >
-                                    ✕ נקה סינון
+                                    ✕ Clear Filters
                                 </button>
                             )}
                         </div>
 
                         {/* Results count */}
-                        <p className="text-gray-400 text-sm">
-                            מציג {filteredExercises.length} מתוך {exercises.length} תרגילים
+                        <p className="text-gray-400 text-sm font-medium">
+                            Showing {filteredExercises.length} of {exercises.length} exercises
                         </p>
                     </div>
 

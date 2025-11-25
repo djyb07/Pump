@@ -85,8 +85,9 @@ export default function Dashboard() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
+                                <img src="/logo.png" alt="PUMP" className="h-10 w-10" />
                                 <div className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                    💪 PUMP
+                                    PUMP
                                 </div>
                                 <span className="text-gray-500 text-sm hidden sm:inline">Fitness Tracker</span>
                             </div>

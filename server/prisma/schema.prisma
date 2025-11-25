@@ -18,3 +18,21 @@ model User {
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 }
+
+model Exercise {
+  id            String   @id @default(uuid())
+  nameEn        String   // English name: "Bench Press"
+  nameHe        String   // Hebrew name: "לחיצת חזה"
+  descriptionHe String   @db.Text // Full description in Hebrew
+  muscleGroups  String[] // ["Chest", "Triceps", "Shoulders"]
+  workoutTypes  String[] // ["Push", "Upper", "Full Body"]
+  difficulty    String   // "Beginner", "Intermediate", "Advanced"
+  equipment     String[] // ["Barbell", "Bench"]
+  imageUrl      String?  // Optional image URL
+  videoUrl      String?  // Optional video URL
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([nameEn])
+  @@index([nameHe])
+}

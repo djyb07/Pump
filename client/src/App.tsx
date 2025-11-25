@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import ExerciseLibrary from './pages/ExerciseLibrary';
 
 // Simple protected route check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +29,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/exercises"
+          element={
+            <ProtectedRoute>
+              <ExerciseLibrary />
             </ProtectedRoute>
           }
         />

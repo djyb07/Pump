@@ -178,7 +178,12 @@ export default function Dashboard() {
                                 Quick Actions
                             </h3>
                             <div className="space-y-3">
-                                <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                <button
+                                    onClick={() => navigate('/exercises')}
+                                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                    📚 Browse Exercises
+                                </button>
+                                <button className="w-full bg-gray-800 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 border border-gray-700">
                                     ➕ Log New Workout
                                 </button>
                                 <button className="w-full bg-gray-800 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 border border-gray-700">

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import authRoutes from './routes/authRoutes';
+import exerciseRoutes from './routes/exerciseRoutes';
 import prisma from './prisma';
 import './config/passport';
 import passport from 'passport';
@@ -51,16 +52,10 @@ app.use(express.json());
 app.use(passport.initialize());
 
 console.log('Mounting auth routes at /api/auth');
-// Debug: Check if authRoutes is a function
 console.log('authRoutes type:', typeof authRoutes);
 
-// Debug: Add direct route at the very top
-app.get('/api/test-direct', (req, res) => {
-    console.log('Hit /api/test-direct');
-    res.send('Direct route working');
-});
-
 app.use('/api/auth', authRoutes);
+app.use('/api/exercises', exerciseRoutes);
 
 app.get('/', (req, res) => {
     res.send('PUMP API is running');

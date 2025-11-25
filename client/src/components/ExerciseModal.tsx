@@ -54,6 +54,35 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                         <p className="text-gray-300 leading-relaxed">{exercise.descriptionHe}</p>
                     </div>
 
+                    {/* Video/GIF Tutorial */}
+                    {exercise.videoUrl && (
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-white mb-3">🎬 How to Perform</h3>
+                            <div className="rounded-xl overflow-hidden border-2 border-pink-500/30 bg-gray-800/50">
+                                {exercise.videoUrl.toLowerCase().includes('.gif') ? (
+                                    <img
+                                        src={exercise.videoUrl}
+                                        alt={`${exercise.nameEn} demonstration`}
+                                        className="w-full h-auto"
+                                    />
+                                ) : (
+                                    <video
+                                        controls
+                                        loop
+                                        className="w-full h-auto"
+                                        poster={exercise.imageUrl}
+                                    >
+                                        <source src={exercise.videoUrl} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2 text-center">
+                                Step-by-step demonstration of proper form
+                            </p>
+                        </div>
+                    )}
+
                     {/* Muscle Diagram */}
                     {exercise.muscleDiagramUrl && (
                         <div className="mb-6">

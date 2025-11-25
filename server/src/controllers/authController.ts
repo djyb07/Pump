@@ -191,8 +191,14 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
             return;
         }
 
+        // Generate JWT token with user details
         const token = jwt.sign(
-            { userId: user.id },
+            {
+                userId: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
+            },
             process.env.JWT_SECRET || 'default-secret-key',
             { expiresIn: '24h' }
         );

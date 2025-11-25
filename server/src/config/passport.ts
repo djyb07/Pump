@@ -2,12 +2,21 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import prisma from '../prisma';
 
+// DEBUG: Log environment variables
+console.log('=== GOOGLE OAUTH CONFIGURATION ===');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? `${process.env.GOOGLE_CLIENT_ID.substring(0, 20)}...` : 'MISSING!');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 'MISSING!');
+console.log('SERVER_URL:', process.env.SERVER_URL);
+const callbackURL = `${process.env.SERVER_URL || 'http://localhost:5000'}/api/auth/google/callback`;
+console.log('Callback URL:', callbackURL);
+console.log('===================================');
+
 passport.use(
     new GoogleStrategy(
         {
             clientID: process.env.GOOGLE_CLIENT_ID || '',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-            callbackURL: `${process.env.SERVER_URL || 'http://localhost:5000'}/api/auth/google/callback`,
+            callbackURL: callbackURL,
         },
         async (accessToken, refreshToken, profile, done) => {
             try {

@@ -7,7 +7,23 @@ import prisma from './prisma';
 import './config/passport';
 import passport from 'passport';
 
-dotenv.config();
+// Load .env only in development (Azure uses Configuration settings)
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+    console.log('📁 Loaded .env file (development mode)');
+} else {
+    console.log('☁️ Using Azure App Service Configuration (production mode)');
+}
+
+// DEBUG: Verify environment variables
+console.log('=== ENVIRONMENT VARIABLES ===');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('SERVER_URL:', process.env.SERVER_URL || 'NOT SET');
+console.log('CLIENT_URL:', process.env.CLIENT_URL || 'NOT SET');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'SET ✅' : 'MISSING ❌');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET ✅' : 'MISSING ❌');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET ✅' : 'MISSING ❌');
+console.log('=============================');
 
 const app = express();
 

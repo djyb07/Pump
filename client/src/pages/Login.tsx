@@ -20,8 +20,23 @@ const Login: React.FC = () => {
         if (token) {
             // Store token from Google OAuth
             localStorage.setItem('token', token);
-            alert('Login successful via Google!');
-            navigate('/');
+
+            // Decode token to get user info
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                // Create user object from token payload
+                const user = {
+                    id: payload.userId,
+                    email: payload.email || '',
+                    firstName: payload.firstName || '',
+                    lastName: payload.lastName || ''
+                };
+                localStorage.setItem('user', JSON.stringify(user));
+            } catch (err) {
+                console.error('Failed to decode token:', err);
+            }
+
+            navigate('/dashboard');
         } else if (authError) {
             setError('Google authentication failed. Please try again.');
         }

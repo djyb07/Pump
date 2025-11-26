@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { programService, type WorkoutProgram, type DayExercise } from '../services/programService';
 import { exerciseService, type Exercise } from '../services/exerciseService';
 import EditExerciseModal from '../components/EditExerciseModal';
+import AddDayModal from '../components/AddDayModal';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -14,6 +15,7 @@ export default function ProgramDetailsPage() {
     const [selectedDayId, setSelectedDayId] = useState<string>('');
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [editingExercise, setEditingExercise] = useState<DayExercise | null>(null);
+    const [showAddDayModal, setShowAddDayModal] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -78,11 +80,9 @@ export default function ProgramDetailsPage() {
         }
     };
 
-    const handleAddDay = async () => {
-        const dayName = prompt('Day name (e.g., "Push Day", "Monday")');
-        if (!dayName || !dayName.trim()) return;
+    const handleAddDay = async (dayName: string) => {
         try {
-            await programService.addDay(id!, { name: dayName.trim() });
+            await programService.addDay(id!, { name: dayName });
             await loadProgram();
         } catch (err: any) {
             setError(err.response?.data?.error || 'Failed to add day');
@@ -157,7 +157,7 @@ export default function ProgramDetailsPage() {
                             </div>
                             <div className="flex space-x-3">
                                 <button
-                                    onClick={handleAddDay}
+                                    onClick={() => setShowAddDayModal(true)}
                                     className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
                                 >
                                     + Add Day
@@ -298,6 +298,14 @@ export default function ProgramDetailsPage() {
                     dayExercise={editingExercise}
                     onSave={handleSaveExercise}
                     onClose={() => setEditingExercise(null)}
+                />
+            )}
+
+            {/* Add Day Modal */}
+            {showAddDayModal && (
+                <AddDayModal
+                    onAdd={handleAddDay}
+                    onClose={() => setShowAddDayModal(false)}
                 />
             )}
         </div>

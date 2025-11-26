@@ -31,19 +31,19 @@ export const exerciseService = {
         if (filters?.difficulty) params.append('difficulty', filters.difficulty);
         if (filters?.search) params.append('search', filters.search);
 
-        const response = await axios.get(`${API_URL}/api/exercises?${params}`);
+        const response = await axios.get(`${API_URL}/exercises?${params}`);
         return response.data;
     },
 
     // Search exercises
     async search(query: string): Promise<Exercise[]> {
-        const response = await axios.get(`${API_URL}/api/exercises/search?q=${query}`);
+        const response = await axios.get(`${API_URL}/exercises/search?q=${query}`);
         return response.data;
     },
 
     // Get single exercise
     async getById(id: string): Promise<Exercise> {
-        const response = await axios.get(`${API_URL}/api/exercises/${id}`);
+        const response = await axios.get(`${API_URL}/exercises/${id}`);
         return response.data;
     },
 };

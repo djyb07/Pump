@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { programService, type WorkoutProgram, type DayExercise } from '../services/programService';
 import { exerciseService, type Exercise } from '../services/exerciseService';
+import EditExerciseModal from '../components/EditExerciseModal';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -12,6 +13,7 @@ export default function ProgramDetailsPage() {
     const [showExerciseModal, setShowExerciseModal] = useState(false);
     const [selectedDayId, setSelectedDayId] = useState<string>('');
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [editingExercise, setEditingExercise] = useState<DayExercise | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -76,6 +78,42 @@ export default function ProgramDetailsPage() {
         }
     };
 
+    const handleAddDay = async () => {
+        const dayName = prompt('Day name (e.g., "Push Day", "Monday")');
+        if (!dayName || !dayName.trim()) return;
+        try {
+            await programService.addDay(id!, { name: dayName.trim() });
+            await loadProgram();
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to add day');
+        }
+    };
+
+    const handleDeleteDay = async (dayId: string) => {
+        if (!confirm('Delete this day? All exercises will be removed.')) return;
+        try {
+            await programService.deleteDay(dayId);
+            await loadProgram();
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to delete day');
+        }
+    };
+
+    const handleEditExercise = (dayEx: DayExercise) => {
+        setEditingExercise(dayEx);
+    };
+
+    const handleSaveExercise = async (data: { targetSets: number; targetReps: number; targetWeight?: number }) => {
+        if (!editingExercise) return;
+        try {
+            await programService.updateDayExercise(editingExercise.id, data);
+            setEditingExercise(null);
+            await loadProgram();
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to update exercise');
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
@@ -117,12 +155,20 @@ export default function ProgramDetailsPage() {
                                     </span>
                                 )}
                             </div>
-                            <button
-                                onClick={handleDeleteProgram}
-                                className="px-4 py-2 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-lg font-semibold transition-all duration-200 border border-red-700"
-                            >
-                                Delete Program
-                            </button>
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={handleAddDay}
+                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
+                                >
+                                    + Add Day
+                                </button>
+                                <button
+                                    onClick={handleDeleteProgram}
+                                    className="px-4 py-2 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-lg font-semibold transition-all duration-200 border border-red-700"
+                                >
+                                    Delete Program
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -148,12 +194,20 @@ export default function ProgramDetailsPage() {
                                         <h2 className="text-xl font-bold text-white">{day.name}</h2>
                                         <p className="text-gray-400 text-sm">{day.exercises?.length || 0} exercises</p>
                                     </div>
-                                    <button
-                                        onClick={() => handleAddExercise(day.id)}
-                                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
-                                    >
-                                        + Add Exercise
-                                    </button>
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={() => handleAddExercise(day.id)}
+                                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
+                                        >
+                                            + Add Exercise
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteDay(day.id)}
+                                            className="px-3 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg font-semibold transition-all duration-200"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* Exercises */}
@@ -171,12 +225,20 @@ export default function ProgramDetailsPage() {
                                                         {dayEx.targetWeight && ` @ ${dayEx.targetWeight}kg`}
                                                     </p>
                                                 </div>
-                                                <button
-                                                    onClick={() => handleRemoveExercise(dayEx.id)}
-                                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                                >
-                                                    🗑️
-                                                </button>
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        onClick={() => handleEditExercise(dayEx)}
+                                                        className="text-purple-400 hover:text-purple-300 transition-colors px-2 py-1 rounded hover:bg-purple-500/10"
+                                                    >
+                                                        ✏️ Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRemoveExercise(dayEx.id)}
+                                                        className="text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -228,6 +290,15 @@ export default function ProgramDetailsPage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Edit Exercise Modal */}
+            {editingExercise && (
+                <EditExerciseModal
+                    dayExercise={editingExercise}
+                    onSave={handleSaveExercise}
+                    onClose={() => setEditingExercise(null)}
+                />
             )}
         </div>
     );

@@ -4,6 +4,10 @@ import dotenv from 'dotenv';
 
 import authRoutes from './routes/authRoutes';
 import exerciseRoutes from './routes/exerciseRoutes';
+import programRoutes from './routes/programRoutes';
+import dayRoutes from './routes/dayRoutes';
+import dayExerciseRoutes from './routes/dayExerciseRoutes';
+import workoutRoutes from './routes/workoutRoutes';
 import prisma from './prisma';
 import './config/passport';
 import passport from 'passport';
@@ -56,6 +60,10 @@ console.log('authRoutes type:', typeof authRoutes);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
+app.use('/api/programs', programRoutes);
+app.use('/api', dayRoutes);
+app.use('/api', dayExerciseRoutes);
+app.use('/api', workoutRoutes);
 
 app.get('/', (req, res) => {
     res.send('PUMP API is running');

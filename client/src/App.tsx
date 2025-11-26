@@ -5,6 +5,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import ExerciseLibrary from './pages/ExerciseLibrary';
+import ProgramsPage from './pages/ProgramsPage';
+import CreateProgramPage from './pages/CreateProgramPage';
+import ProgramDetailsPage from './pages/ProgramDetailsPage';
 
 // Simple protected route check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -37,6 +40,30 @@ function App() {
           element={
             <ProtectedRoute>
               <ExerciseLibrary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/programs"
+          element={
+            <ProtectedRoute>
+              <ProgramsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/programs/new"
+          element={
+            <ProtectedRoute>
+              <CreateProgramPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/programs/:id"
+          element={
+            <ProtectedRoute>
+              <ProgramDetailsPage />
             </ProtectedRoute>
           }
         />

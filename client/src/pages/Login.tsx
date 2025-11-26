@@ -21,9 +21,18 @@ const Login: React.FC = () => {
             // Store token from Google OAuth
             localStorage.setItem('token', token);
 
-            // Decode token to get user info
+            // Decode token to get user info (with UTF-8 support for Hebrew)
             try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                );
+                const payload = JSON.parse(jsonPayload);
+
                 // Create user object from token payload
                 const user = {
                     id: payload.userId,

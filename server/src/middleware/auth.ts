@@ -29,7 +29,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
         const decoded = jwt.verify(token, secret) as any;
         req.user = {
-            id: decoded.id,
+            id: decoded.userId,  // Fix: JWT has userId, not id
             email: decoded.email,
             firstName: decoded.firstName || '',
             lastName: decoded.lastName || ''

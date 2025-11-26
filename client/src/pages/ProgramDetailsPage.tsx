@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { programService, type WorkoutProgram, type DayExercise } from '../services/programService';
-import { getAllExercises, type Exercise } from '../services/exerciseService';
+import { exerciseService, type Exercise } from '../services/exerciseService';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -34,7 +34,7 @@ export default function ProgramDetailsPage() {
     const handleAddExercise = async (dayId: string) => {
         setSelectedDayId(dayId);
         try {
-            const allExercises = await getAllExercises();
+            const allExercises = await exerciseService.getAll();
             setExercises(allExercises);
             setShowExerciseModal(true);
         } catch (err) {

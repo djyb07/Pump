@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../prisma';
 
 // Add exercise to a day
 export const addExerciseToDay = async (req: Request, res: Response) => {

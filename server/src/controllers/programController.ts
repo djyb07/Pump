@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../prisma';
 
 // Get all programs for authenticated user
 export const getPrograms = async (req: Request, res: Response) => {

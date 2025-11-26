@@ -80,7 +80,8 @@ const Login: React.FC = () => {
     };
 
     // Get API URL for Google OAuth
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const API_URL = `${BASE_URL}/api`;
 
     return (
         <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
@@ -88,14 +89,14 @@ const Login: React.FC = () => {
                 <h2 className="text-3xl font-bold text-center text-white mb-8">Welcome Back</h2>
 
                 {error && (
-                    <div className="bg-red-500 text-white p-3 rounded mb-4 text-center">
+                    <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
                         <input
                             type="email"
                             name="email"
@@ -121,11 +122,13 @@ const Login: React.FC = () => {
                     </div>
 
                     <div className="flex items-center justify-between">
-                        <div className="text-sm">
-                            <Link to="/forgot-password" className="font-medium text-blue-500 hover:text-blue-400">
-                                Forgot your password?
-                            </Link>
-                        </div>
+                        <label className="flex items-center">
+                            <input type="checkbox" className="mr-2" />
+                            <span className="text-sm text-gray-400">Remember me</span>
+                        </label>
+                        <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
+                            Forgot password?
+                        </Link>
                     </div>
 
                     <button
@@ -146,7 +149,7 @@ const Login: React.FC = () => {
                     </div>
 
                     <a
-                        href={`${apiUrl}/api/auth/google`}
+                        href={`${API_URL}/auth/google`}
                         className="w-full flex items-center justify-center px-4 py-2 border border-gray-600 rounded shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 transition duration-200"
                     >
                         <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">

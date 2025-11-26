@@ -55,12 +55,6 @@ app.use(cors({
 app.use(express.json());
 app.use(passport.initialize());
 
-// Fix Hebrew encoding - set UTF-8 for all responses
-app.use((req, res, next) => {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    next();
-});
-
 console.log('Mounting auth routes at /api/auth');
 console.log('authRoutes type:', typeof authRoutes);
 

@@ -52,19 +52,34 @@ export default function Dashboard() {
                 };
             }
 
-            // Fallback to decoding token
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            // Fallback to decoding token with UTF-8 support
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const binaryString = atob(base64);
+            const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+            const jsonString = new TextDecoder('utf-8').decode(bytes);
+            const payload = JSON.parse(jsonString);
+
             const email = payload.email || '';
-            const displayName = email.split('@')[0]
+            const firstName = payload.firstName || '';
+            const lastName = payload.lastName || '';
+            const fullName = `${firstName} ${lastName}`.trim();
+
+            let displayName = fullName || email.split('@')[0]
                 .replace(/[._-]/g, ' ')
                 .split(' ')
                 .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
 
+            const nameParts = displayName.split(' ');
+            const initials = nameParts.length >= 2
+                ? nameParts[0][0] + nameParts[nameParts.length - 1][0]
+                : displayName.slice(0, 2);
+
             return {
                 name: displayName || 'User',
                 email: email,
-                initials: displayName.slice(0, 2).toUpperCase() || 'U'
+                initials: initials.toUpperCase() || 'U'
             };
         } catch {
             return { name: 'User', email: '', initials: 'U' };

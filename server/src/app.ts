@@ -65,11 +65,22 @@ console.log('Mounting auth routes at /api/auth');
 console.log('authRoutes type:', typeof authRoutes);
 
 app.use('/api/auth', authRoutes);
+console.log('✅ Auth routes mounted');
+
 app.use('/api/exercises', exerciseRoutes);
+console.log('✅ Exercise routes mounted');
+
 app.use('/api/programs', programRoutes);
+console.log('✅ Program routes mounted');
+
 app.use('/api', dayRoutes);
+console.log('✅ Day routes mounted');
+
 app.use('/api', dayExerciseRoutes);
+console.log('✅ Day Exercise routes mounted');
+
 app.use('/api', workoutRoutes);
+console.log('✅ Workout routes mounted');
 
 app.get('/', (req, res) => {
     res.send('PUMP API is running');

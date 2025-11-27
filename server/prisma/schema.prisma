@@ -138,6 +138,7 @@ model ExerciseLog {
   id            String  @id @default(uuid())
   workoutLogId  String
   dayExerciseId String?
+  exerciseId    String  @default("") // Preserve exercise ID for history and stats
   exerciseName  String  @default("Unknown Exercise") // Store exercise name for history preservation
   sets          Json // [{ setNumber: 1, weight: 100, reps: 10, completed: true, timestamp: ... }, ...]
 

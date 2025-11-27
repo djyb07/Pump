@@ -136,6 +136,7 @@ export const workoutService = {
                 data: {
                     workoutLogId,
                     dayExerciseId: setData.dayExerciseId,
+                    exerciseId: dayExercise?.exerciseId || '',
                     exerciseName: dayExercise?.exercise?.nameEn || 'Unknown Exercise',
                     sets: [
                         {

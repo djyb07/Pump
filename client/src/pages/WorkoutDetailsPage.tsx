@@ -211,8 +211,7 @@ export default function WorkoutDetailsPage() {
                                     <div className="flex-1">
                                         <button
                                             onClick={() => {
-                                                const dayExercise = (exerciseLog as any).dayExercise;
-                                                const exerciseId = dayExercise?.exerciseId;
+                                                const exerciseId = (exerciseLog as any).exerciseId;
                                                 if (exerciseId) {
                                                     navigate(`/exercise/${exerciseId}/progress`);
                                                 }

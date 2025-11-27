@@ -197,15 +197,15 @@ export const getPersonalRecords = async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        // Get all completed workouts with exercise logs
+        // Get all completed workouts with exercise logs that have PRs
         const exerciseLogs = await prisma.exerciseLog.findMany({
             where: {
                 workoutLog: {
                     userId,
                     status: 'completed'
                 },
-                isWeightPR: true,
                 OR: [
+                    { isWeightPR: true },
                     { isVolumePR: true },
                     { isRepsPR: true }
                 ]

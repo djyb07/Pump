@@ -173,4 +173,17 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
                 maxWeight,
                 totalReps,
                 totalVolume,
+                sets: sets.length,
+                e1RM: Math.round(bestE1RM * 10) / 10 // Round to 1 decimal
             };
+        });
+
+        res.json({
+            exercise: logs[0]?.dayExercise?.exercise,
+            progress: progressData
+        });
+    } catch (error) {
+        console.error('Error fetching exercise progress:', error);
+        res.status(500).json({ error: 'Failed to fetch progress' });
+    }
+};

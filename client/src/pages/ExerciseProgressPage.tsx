@@ -161,7 +161,7 @@ export default function ExerciseProgressPage() {
                                     />
                                     <Legend />
                                     <Line type="monotone" dataKey="maxWeight" stroke="#8B5CF6" strokeWidth={3} name="Max Weight (kg)">
-                                        <LabelList dataKey="maxWeight" position="top" fill="#8B5CF6" fontSize={12} />
+                                        <LabelList dataKey="maxWeight" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={10} />
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>
@@ -181,7 +181,7 @@ export default function ExerciseProgressPage() {
                                     />
                                     <Legend />
                                     <Line type="monotone" dataKey="totalVolume" stroke="#EC4899" strokeWidth={3} name="Volume (kg)">
-                                        <LabelList dataKey="totalVolume" position="top" fill="#EC4899" fontSize={12} />
+                                        <LabelList dataKey="totalVolume" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={10} />
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>
@@ -201,7 +201,7 @@ export default function ExerciseProgressPage() {
                                     />
                                     <Legend />
                                     <Line type="monotone" dataKey="e1RM" stroke="#10B981" strokeWidth={3} name="e1RM (kg)">
-                                        <LabelList dataKey="e1RM" position="top" fill="#10B981" fontSize={12} />
+                                        <LabelList dataKey="e1RM" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={10} />
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>

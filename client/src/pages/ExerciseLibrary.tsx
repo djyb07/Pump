@@ -201,6 +201,7 @@ const ExerciseLibrary: React.FC = () => {
                                     key={exercise.id}
                                     exercise={exercise}
                                     onClick={() => setSelectedExercise(exercise)}
+                                    onViewProgress={() => navigate(`/exercise/${exercise.id}/progress`)}
                                 />
                             ))}
                         </div>

@@ -4,9 +4,10 @@ import type { Exercise } from '../services/exerciseService';
 interface ExerciseCardProps {
     exercise: Exercise;
     onClick: () => void;
+    onViewProgress?: () => void;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewProgress }) => {
     const difficultyColors = {
         Beginner: 'bg-green-500/20 text-green-400 border-green-500/30',
         Intermediate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -14,10 +15,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
     };
 
     return (
-        <div
-            onClick={onClick}
-            className="group relative bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-purple-500/50 hover:bg-gray-800/70 transition-all duration-300 cursor-pointer overflow-hidden"
-        >
+        <div className="group relative bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-purple-500/50 hover:bg-gray-800/70 transition-all duration-300 overflow-hidden">
             {/* Gradient overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -80,10 +78,34 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
                 </div>
 
                 {/* Equipment */}
-                <div className="pt-3 border-t border-gray-700/50">
+                <div className="pt-3 border-t border-gray-700/50 mb-3">
                     <p className="text-xs text-gray-500">
                         🔧 {exercise.equipment.join(', ')}
                     </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClick();
+                        }}
+                        className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all text-sm"
+                    >
+                        ℹ️ Info
+                    </button>
+                    {onViewProgress && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onViewProgress();
+                            }}
+                            className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all text-sm"
+                        >
+                            📊 Progress
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

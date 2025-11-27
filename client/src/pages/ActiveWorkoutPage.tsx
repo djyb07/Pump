@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { workoutService, type WorkoutLog, type SetLog } from '../services/workoutService';
+import { exerciseService, type Exercise } from '../services/exerciseService';
 import RestTimer from '../components/RestTimer';
 import WorkoutSummaryModal from '../components/WorkoutSummaryModal';
+import ExerciseModal from '../components/ExerciseModal';
 
 export default function ActiveWorkoutPage() {
     const navigate = useNavigate();
@@ -18,6 +20,7 @@ export default function ActiveWorkoutPage() {
     const [startTime] = useState(new Date());
     const [elapsedMinutes, setElapsedMinutes] = useState(0);
     const [showSummary, setShowSummary] = useState(false);
+    const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
     const [finishedWorkout, setFinishedWorkout] = useState<WorkoutLog | null>(null);
 
     useEffect(() => {
@@ -191,9 +194,18 @@ export default function ActiveWorkoutPage() {
                             {/* Current Exercise */}
                             {currentExercise && (
                                 <div className="text-center">
-                                    <h2 className="text-3xl font-bold text-white mb-2">
-                                        {currentExercise.exercise.nameEn}
-                                    </h2>
+                                    <button
+                                        onClick={async () => {
+                                            const exerciseId = currentExercise.exercise?.id;
+                                            if (exerciseId) {
+                                                const exerciseData = await exerciseService.getById(exerciseId);
+                                                setSelectedExercise(exerciseData);
+                                            }
+                                        }}
+                                        className="text-3xl font-bold text-white mb-2 hover:text-purple-400 transition-colors"
+                                    >
+                                        {currentExercise.exercise.nameEn} ℹ️
+                                    </button>
                                     <p className="text-gray-400">
                                         Target: {currentExercise.targetSets} sets × {currentExercise.targetReps} reps
                                         {currentExercise.targetWeight && ` @ ${currentExercise.targetWeight}kg`}
@@ -279,6 +291,13 @@ export default function ActiveWorkoutPage() {
                     onClose={handleCloseSummary}
                 />
             )}
+
+            {/* Exercise Info Modal */}
+            <ExerciseModal
+                exercise={selectedExercise}
+                isOpen={!!selectedExercise}
+                onClose={() => setSelectedExercise(null)}
+            />
         </div>
     );
 }

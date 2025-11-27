@@ -226,46 +226,6 @@ export default function ExerciseProgressPage() {
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="maxWeight" stroke="#8B5CF6" strokeWidth={3} name="Max Weight (kg)">
-                                        <LabelList dataKey="maxWeight" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={10} />
-                                    </Line>
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-
-                        {/* Total Volume Chart */}
-                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
-                            <h2 className="text-2xl font-bold text-white mb-6">📊 Total Volume Progression</h2>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                                    <XAxis dataKey="date" stroke="#9CA3AF" />
-                                    <YAxis stroke="#9CA3AF" />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
-                                        labelStyle={{ color: '#F3F4F6' }}
-                                    />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="totalVolume" stroke="#EC4899" strokeWidth={3} name="Volume (kg)">
-                                        <LabelList dataKey="totalVolume" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={10} />
-                                    </Line>
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-
-                        {/* e1RM Chart */}
-                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
-                            <h2 className="text-2xl font-bold text-white mb-6">🎯 Estimated 1RM Progression</h2>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                                    <XAxis dataKey="date" stroke="#9CA3AF" />
-                                    <YAxis stroke="#9CA3AF" />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
-                                        labelStyle={{ color: '#F3F4F6' }}
-                                    />
-                                    <Legend />
                                     <Line type="monotone" dataKey="e1RM" stroke="#10B981" strokeWidth={3} name="e1RM (kg)">
                                         <LabelList dataKey="e1RM" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={5} />
                                     </Line>

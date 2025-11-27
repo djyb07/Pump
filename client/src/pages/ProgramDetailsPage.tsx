@@ -217,6 +217,12 @@ export default function ProgramDetailsPage() {
                                     </div>
                                     <div className="flex space-x-2">
                                         <button
+                                            onClick={() => navigate(`/workout/active?dayId=${day.id}`)}
+                                            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all duration-200 transform hover:scale-105"
+                                        >
+                                            ▶️ Start Workout
+                                        </button>
+                                        <button
                                             onClick={() => handleAddExercise(day.id)}
                                             className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
                                         >

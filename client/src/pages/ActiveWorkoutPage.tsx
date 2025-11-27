@@ -182,7 +182,7 @@ export default function ActiveWorkoutPage() {
                             {currentExercise && (
                                 <div className="text-center">
                                     <h2 className="text-3xl font-bold text-white mb-2">
-                                        {currentExercise.exercise.nameHe}
+                                        {currentExercise.exercise.nameEn}
                                     </h2>
                                     <p className="text-gray-400">
                                         Target: {currentExercise.targetSets} sets × {currentExercise.targetReps} reps

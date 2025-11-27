@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { workoutService, type WorkoutLog, type SetLog } from '../services/workoutService';
 import RestTimer from '../components/RestTimer';
+import WorkoutSummaryModal from '../components/WorkoutSummaryModal';
 
 export default function ActiveWorkoutPage() {
     const navigate = useNavigate();
@@ -15,6 +16,8 @@ export default function ActiveWorkoutPage() {
     const [reps, setReps] = useState('');
     const [weight, setWeight] = useState('');
     const [startTime] = useState(new Date());
+    const [showSummary, setShowSummary] = useState(false);
+    const [finishedWorkout, setFinishedWorkout] = useState<WorkoutLog | null>(null);
 
     useEffect(() => {
         initWorkout();
@@ -73,11 +76,17 @@ export default function ActiveWorkoutPage() {
         if (!workout) return;
 
         try {
-            await workoutService.finishWorkout(workout.id);
-            navigate('/workout/history');
+            const completed = await workoutService.finishWorkout(workout.id);
+            setFinishedWorkout(completed);
+            setShowSummary(true);
         } catch (err: any) {
             setError(err.response?.data?.error || 'Failed to finish workout');
         }
+    };
+
+    const handleCloseSummary = () => {
+        setShowSummary(false);
+        navigate('/workout/history');
     };
 
     const getCurrentExerciseSets = (): SetLog[] => {
@@ -252,6 +261,14 @@ export default function ActiveWorkoutPage() {
                     </div>
                 </div>
             </main>
+
+            {/* Workout Summary Modal */}
+            {showSummary && finishedWorkout && (
+                <WorkoutSummaryModal
+                    workout={finishedWorkout}
+                    onClose={handleCloseSummary}
+                />
+            )}
         </div>
     );
 }

@@ -21,6 +21,7 @@ model User {
   // Workout program relations
   workoutPrograms WorkoutProgram[]
   workoutLogs     WorkoutLog[]
+  exerciseStats   ExerciseStats[]
 }
 
 model Exercise {
@@ -40,6 +41,7 @@ model Exercise {
 
   // Workout program relations
   dayExercises DayExercise[]
+  stats        ExerciseStats[]
 
   @@index([nameEn])
   @@index([nameHe])
@@ -152,4 +154,38 @@ model ExerciseLog {
   @@index([createdAt])
 }
 
-
+// Exercise Stats - Cached statistics per user per exercise
+model ExerciseStats {
+  id           String   @id @default(uuid())
+  userId       String
+  exerciseId   String
+  
+  // Personal Records
+  bestWeight   Float    @default(0)      // Best weight ever lifted
+  bestWeightDate DateTime?               // When PR was achieved
+  bestReps     Int      @default(0)      // Most reps at any weight
+  bestRepsDate DateTime?
+  bestVolume   Float    @default(0)      // Best single-workout volume
+  bestVolumeDate DateTime?
+  
+  // Current Stats
+  currentE1RM  Float    @default(0)      // Latest estimated 1RM
+  
+  // All-Time Stats
+  totalVolume  Float    @default(0)      // Total volume all time
+  totalSets    Int      @default(0)      // Total sets all time
+  totalReps    Int      @default(0)      // Total reps all time
+  workoutCount Int      @default(0)      // Times performed
+  
+  // Tracking
+  lastPerformed DateTime?                // Last workout with this exercise
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise     Exercise @relation(fields: [exerciseId], references: [id])
+  
+  @@unique([userId, exerciseId])
+  @@index([userId])
+  @@index([exerciseId])
+}

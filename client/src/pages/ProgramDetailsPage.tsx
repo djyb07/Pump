@@ -4,6 +4,7 @@ import { programService, type WorkoutProgram, type DayExercise } from '../servic
 import { exerciseService, type Exercise } from '../services/exerciseService';
 import EditExerciseModal from '../components/EditExerciseModal';
 import AddDayModal from '../components/AddDayModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -16,6 +17,11 @@ export default function ProgramDetailsPage() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [editingExercise, setEditingExercise] = useState<DayExercise | null>(null);
     const [showAddDayModal, setShowAddDayModal] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<{
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    } | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -61,23 +67,33 @@ export default function ProgramDetailsPage() {
     };
 
     const handleRemoveExercise = async (exerciseId: string) => {
-        if (!confirm('Remove this exercise?')) return;
-        try {
-            await programService.removeDayExercise(exerciseId);
-            await loadProgram();
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to remove exercise');
-        }
+        setConfirmAction({
+            title: 'Remove Exercise',
+            message: 'Are you sure you want to remove this exercise from the day?',
+            onConfirm: async () => {
+                try {
+                    await programService.removeDayExercise(exerciseId);
+                    await loadProgram();
+                } catch (err: any) {
+                    setError(err.response?.data?.error || 'Failed to remove exercise');
+                }
+            }
+        });
     };
 
     const handleDeleteProgram = async () => {
-        if (!confirm('Delete this program? This cannot be undone.')) return;
-        try {
-            await programService.deleteProgram(id!);
-            navigate('/programs');
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to delete program');
-        }
+        setConfirmAction({
+            title: 'Delete Program',
+            message: 'Are you sure you want to delete this program? This action cannot be undone and all associated data will be permanently removed.',
+            onConfirm: async () => {
+                try {
+                    await programService.deleteProgram(id!);
+                    navigate('/programs');
+                } catch (err: any) {
+                    setError(err.response?.data?.error || 'Failed to delete program');
+                }
+            }
+        });
     };
 
     const handleAddDay = async (dayName: string) => {
@@ -90,13 +106,18 @@ export default function ProgramDetailsPage() {
     };
 
     const handleDeleteDay = async (dayId: string) => {
-        if (!confirm('Delete this day? All exercises will be removed.')) return;
-        try {
-            await programService.deleteDay(dayId);
-            await loadProgram();
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to delete day');
-        }
+        setConfirmAction({
+            title: 'Delete Day',
+            message: 'Are you sure you want to delete this day? All exercises in this day will be removed.',
+            onConfirm: async () => {
+                try {
+                    await programService.deleteDay(dayId);
+                    await loadProgram();
+                } catch (err: any) {
+                    setError(err.response?.data?.error || 'Failed to delete day');
+                }
+            }
+        });
     };
 
     const handleEditExercise = (dayEx: DayExercise) => {
@@ -306,6 +327,19 @@ export default function ProgramDetailsPage() {
                 <AddDayModal
                     onAdd={handleAddDay}
                     onClose={() => setShowAddDayModal(false)}
+                />
+            )}
+
+            {/* Confirm Modal */}
+            {confirmAction && (
+                <ConfirmModal
+                    title={confirmAction.title}
+                    message={confirmAction.message}
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                    onConfirm={confirmAction.onConfirm}
+                    onCancel={() => setConfirmAction(null)}
+                    danger={true}
                 />
             )}
         </div>

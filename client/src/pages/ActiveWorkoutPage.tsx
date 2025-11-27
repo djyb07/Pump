@@ -16,12 +16,24 @@ export default function ActiveWorkoutPage() {
     const [reps, setReps] = useState('');
     const [weight, setWeight] = useState('');
     const [startTime] = useState(new Date());
+    const [elapsedMinutes, setElapsedMinutes] = useState(0);
     const [showSummary, setShowSummary] = useState(false);
     const [finishedWorkout, setFinishedWorkout] = useState<WorkoutLog | null>(null);
 
     useEffect(() => {
         initWorkout();
     }, [dayId]);
+
+    // Update elapsed time every minute
+    useEffect(() => {
+        const interval = window.setInterval(() => {
+            const now = new Date();
+            const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 60000);
+            setElapsedMinutes(elapsed);
+        }, 1000); // Update every second
+
+        return () => clearInterval(interval);
+    }, [startTime]);
 
     const initWorkout = async () => {
         try {
@@ -103,9 +115,7 @@ export default function ActiveWorkoutPage() {
     };
 
     const getElapsedTime = () => {
-        const now = new Date();
-        const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 60000);
-        return `${elapsed} min`;
+        return `${elapsedMinutes} min`;
     };
 
     if (loading) {

@@ -25,6 +25,8 @@ export default function ExerciseProgressPage() {
     const [error, setError] = useState('');
     const [timeFilter, setTimeFilter] = useState<'7' | '30' | '90' | 'all'>('30');
 
+    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     useEffect(() => {
         loadProgress();
     }, [exerciseId]);
@@ -33,7 +35,7 @@ export default function ExerciseProgressPage() {
         if (!exerciseId) return;
 
         try {
-            const response = await fetch(`/api/analytics/progress/${exerciseId}`, {
+            const response = await fetch(`${BASE_URL}/api/analytics/progress/${exerciseId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

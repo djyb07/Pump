@@ -104,20 +104,29 @@ model DayExercise {
 model WorkoutLog {
   id          String   @id @default(uuid())
   userId      String
-  dayId       String
-  date        DateTime @default(now())
-  duration    Int?     // Duration in minutes
+  dayId       String?  // Nullable for ad-hoc workouts
+  programId   String?  // For quick reference
+  workoutType String   @default("program") // "program" | "custom" | "temporary"
+  customName  String?  // For custom/temporary workouts
+  
+  startTime   DateTime @default(now())
+  endTime     DateTime?
+  duration    Int?     // Duration in minutes (calculated)
+  
+  status      String   @default("in_progress") // "in_progress" | "completed" | "cancelled"
   notes       String?
-  completed   Boolean  @default(true)
+  
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  day         WorkoutDay @relation(fields: [dayId], references: [id])
+  day         WorkoutDay? @relation(fields: [dayId], references: [id])
   exerciseLogs ExerciseLog[]
   
   @@index([userId])
   @@index([dayId])
-  @@index([date])
+  @@index([startTime])
+  @@index([status])
 }
 
 // Exercise Log - Records sets/reps/weight for an exercise in a workout

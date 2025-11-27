@@ -50,6 +50,8 @@ export const workoutService = {
                 userId,
                 dayId: data.dayId,
                 programId: day.programId,
+                dayName: day.name,
+                programName: day.program?.name || 'Unknown Program',
                 workoutType: 'program',
                 status: 'in_progress',
                 startTime: new Date()

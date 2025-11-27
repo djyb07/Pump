@@ -110,6 +110,8 @@ model WorkoutLog {
   programId   String? // For quick reference
   workoutType String  @default("program") // "program" | "custom" | "temporary"
   customName  String? // For custom/temporary workouts
+  dayName     String  @default("Custom Workout") // Preserve day name
+  programName String  @default("Ad-hoc workout") // Preserve program name
 
   startTime DateTime  @default(now())
   endTime   DateTime?
@@ -136,7 +138,7 @@ model ExerciseLog {
   id            String  @id @default(uuid())
   workoutLogId  String
   dayExerciseId String?
-  exerciseName  String @default("Unknown Exercise") // Store exercise name for history preservation
+  exerciseName  String  @default("Unknown Exercise") // Store exercise name for history preservation
   sets          Json // [{ setNumber: 1, weight: 100, reps: 10, completed: true, timestamp: ... }, ...]
 
   // Personal Records tracking

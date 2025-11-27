@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 
 interface ProgressData {
     date: string;
@@ -160,7 +160,9 @@ export default function ExerciseProgressPage() {
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="maxWeight" stroke="#8B5CF6" strokeWidth={3} name="Max Weight (kg)" />
+                                    <Line type="monotone" dataKey="maxWeight" stroke="#8B5CF6" strokeWidth={3} name="Max Weight (kg)">
+                                        <LabelList dataKey="maxWeight" position="top" fill="#8B5CF6" fontSize={12} />
+                                    </Line>
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -178,7 +180,9 @@ export default function ExerciseProgressPage() {
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="totalVolume" stroke="#EC4899" strokeWidth={3} name="Volume (kg)" />
+                                    <Line type="monotone" dataKey="totalVolume" stroke="#EC4899" strokeWidth={3} name="Volume (kg)">
+                                        <LabelList dataKey="totalVolume" position="top" fill="#EC4899" fontSize={12} />
+                                    </Line>
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -196,7 +200,9 @@ export default function ExerciseProgressPage() {
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="e1RM" stroke="#10B981" strokeWidth={3} name="e1RM (kg)" />
+                                    <Line type="monotone" dataKey="e1RM" stroke="#10B981" strokeWidth={3} name="e1RM (kg)">
+                                        <LabelList dataKey="e1RM" position="top" fill="#10B981" fontSize={12} />
+                                    </Line>
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>

@@ -145,10 +145,10 @@ export default function WorkoutHistoryPage() {
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <h3 className="text-xl font-bold text-white">
-                                                {workout.day?.name || workout.customName || 'Custom Workout'}
+                                                {(workout as any).dayName || 'Custom Workout'}
                                             </h3>
                                             <p className="text-gray-400 text-sm">
-                                                {workout.day?.program?.name || 'Ad-hoc workout'}
+                                                {(workout as any).programName || 'Ad-hoc workout'}
                                             </p>
                                         </div>
                                         <div className="text-right">

@@ -123,7 +123,7 @@ export default function WorkoutDetailsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-white">
-                                {workout.day?.name || workout.customName || 'Workout Details'}
+                                {(workout as any).dayName || 'Workout Details'}
                             </h1>
                             <p className="text-gray-400 mt-1">
                                 {formatDate(workout.startTime)} • {formatTime(workout.startTime)}
@@ -182,10 +182,10 @@ export default function WorkoutDetailsPage() {
                 )}
 
                 {/* Program Info */}
-                {workout.day?.program && (
+                {(workout as any).programName && (
                     <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 mb-8">
                         <h3 className="text-lg font-semibold text-white mb-2">Program</h3>
-                        <p className="text-gray-300">{workout.day.program.name}</p>
+                        <p className="text-gray-300">{(workout as any).programName}</p>
                     </div>
                 )}
 

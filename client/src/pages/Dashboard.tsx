@@ -186,47 +186,86 @@ export default function Dashboard() {
                     </div>
 
                     {/* Quick Actions & Info */}
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-gray-800">
-                <span className="text-gray-400 text-sm">Email/Password Login</span>
-                <span className="flex items-center text-green-400 text-sm">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    Active
-                </span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-gray-800">
-                <span className="text-gray-400 text-sm">Google OAuth</span>
-                <span className="flex items-center text-green-400 text-sm">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    Active
-                </span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-gray-800">
-                <span className="text-gray-400 text-sm">Password Reset</span>
-                <span className="flex items-center text-green-400 text-sm">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    Active
-                </span>
-            </div>
-            <div className="flex items-center justify-between py-2">
-                <span className="text-gray-400 text-sm">JWT Authentication</span>
-                <span className="flex items-center text-green-400 text-sm">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    Active
-                </span>
+                    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        {/* Quick Actions */}
+                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 shadow-lg">
+                            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                <span className="mr-2">⚡</span>
+                                Quick Actions
+                            </h3>
+                            <div className="space-y-3">
+                                <button
+                                    onClick={() => navigate('/programs')}
+                                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                    🏋️ My Programs
+                                </button>
+                                <button
+                                    onClick={() => navigate('/workout/history')}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                    📊 Workout History
+                                </button>
+                                <button
+                                    onClick={() => navigate('/exercises')}
+                                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                    📚 Browse Exercises
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* System Status */}
+                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 shadow-lg">
+                            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                <span className="mr-2">✅</span>
+                                System Status
+                            </h3>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between py-2 border-b border-gray-800">
+                                    <span className="text-gray-400 text-sm">User Registration</span>
+                                    <span className="flex items-center text-green-400 text-sm">
+                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                        Active
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between py-2 border-b border-gray-800">
+                                    <span className="text-gray-400 text-sm">Email/Password Login</span>
+                                    <span className="flex items-center text-green-400 text-sm">
+                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                        Active
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between py-2 border-b border-gray-800">
+                                    <span className="text-gray-400 text-sm">Google OAuth</span>
+                                    <span className="flex items-center text-green-400 text-sm">
+                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                        Active
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between py-2 border-b border-gray-800">
+                                    <span className="text-gray-400 text-sm">Password Reset</span>
+                                    <span className="flex items-center text-green-400 text-sm">
+                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                        Active
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between py-2">
+                                    <span className="text-gray-400 text-sm">JWT Authentication</span>
+                                    <span className="flex items-center text-green-400 text-sm">
+                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-8 text-center">
+                        <p className="text-gray-600 text-sm">
+                            🚀 Powered by Azure & Vercel | Built with ❤️
+                        </p>
+                    </div>
+                </main>
             </div>
         </div>
-                        </div >
-                    </div >
-
-        {/* Footer */ }
-        < div className = "mt-8 text-center" >
-            <p className="text-gray-600 text-sm">
-                🚀 Powered by Azure & Vercel | Built with ❤️
-            </p>
-                    </div >
-                </main >
-            </div >
-        </div >
     );
 }

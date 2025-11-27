@@ -7,17 +7,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  password             String
+  firstName            String
+  lastName             String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
   googleId             String?   @unique
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  
+
   // Workout program relations
   workoutPrograms WorkoutProgram[]
   workoutLogs     WorkoutLog[]
@@ -25,19 +25,19 @@ model User {
 }
 
 model Exercise {
-  id            String   @id @default(uuid())
-  nameEn        String   // English name: "Bench Press"
-  nameHe        String   // Hebrew name: "לחיצת חזה"
-  descriptionHe String   @db.Text // Full description in Hebrew
-  muscleGroups  String[] // ["Chest", "Triceps", "Shoulders"]
-  workoutTypes  String[] // ["Push", "Upper", "Full Body"]
-  difficulty    String   // "Beginner", "Intermediate", "Advanced"
-  equipment         String[] // ["Barbell", "Bench"]
-  imageUrl          String?  // Optional image URL
-  videoUrl          String?  // Optional video URL
-  muscleDiagramUrl  String?  // Optional muscle diagram URL
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String   @id @default(uuid())
+  nameEn           String // English name: "Bench Press"
+  nameHe           String // Hebrew name: "לחיצת חזה"
+  descriptionHe    String   @db.Text // Full description in Hebrew
+  muscleGroups     String[] // ["Chest", "Triceps", "Shoulders"]
+  workoutTypes     String[] // ["Push", "Upper", "Full Body"]
+  difficulty       String // "Beginner", "Intermediate", "Advanced"
+  equipment        String[] // ["Barbell", "Bench"]
+  imageUrl         String? // Optional image URL
+  videoUrl         String? // Optional video URL
+  muscleDiagramUrl String? // Optional muscle diagram URL
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Workout program relations
   dayExercises DayExercise[]
@@ -49,35 +49,35 @@ model Exercise {
 
 // Workout Program - User's training program (e.g., "Summer PPL")
 model WorkoutProgram {
-  id          String   @id @default(uuid())
-  userId      String
-  name        String   // "My PPL Program"
-  splitType   String   // "PPL", "UPPER_LOWER", "FULL_BODY", "CUSTOM", etc.
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  days        WorkoutDay[]
-  
+  id        String   @id @default(uuid())
+  userId    String
+  name      String // "My PPL Program"
+  splitType String // "PPL", "UPPER_LOWER", "FULL_BODY", "CUSTOM", etc.
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days WorkoutDay[]
+
   @@index([userId])
   @@index([isActive])
 }
 
 // Workout Day - A specific day in a program (e.g., "Push Day")
 model WorkoutDay {
-  id          String   @id @default(uuid())
-  programId   String
-  name        String   // "Push Day", "Leg Day", "Monday", etc.
-  dayType     String?  // "PUSH", "PULL", "LEGS", "UPPER", "LOWER", etc.
-  orderIndex  Int      // 0, 1, 2... for sorting
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  program     WorkoutProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
-  exercises   DayExercise[]
-  logs        WorkoutLog[]
-  
+  id         String   @id @default(uuid())
+  programId  String
+  name       String // "Push Day", "Leg Day", "Monday", etc.
+  dayType    String? // "PUSH", "PULL", "LEGS", "UPPER", "LOWER", etc.
+  orderIndex Int // 0, 1, 2... for sorting
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  program   WorkoutProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercises DayExercise[]
+  logs      WorkoutLog[]
+
   @@index([programId])
 }
 
@@ -86,45 +86,45 @@ model DayExercise {
   id           String   @id @default(uuid())
   dayId        String
   exerciseId   String
-  orderIndex   Int      // Order in the day
+  orderIndex   Int // Order in the day
   targetSets   Int      @default(3)
   targetReps   Int      @default(10)
-  targetWeight Float?   // Target weight in kg (optional)
-  notes        String?  // Optional notes
+  targetWeight Float? // Target weight in kg (optional)
+  notes        String? // Optional notes
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
-  day          WorkoutDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
-  exercise     Exercise   @relation(fields: [exerciseId], references: [id])
-  logs         ExerciseLog[]
-  
+
+  day      WorkoutDay    @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  exercise Exercise      @relation(fields: [exerciseId], references: [id])
+  logs     ExerciseLog[]
+
   @@index([dayId])
   @@index([exerciseId])
 }
 
 // Workout Log - Records a completed workout session
 model WorkoutLog {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   userId      String
-  dayId       String?  // Nullable for ad-hoc workouts
-  programId   String?  // For quick reference
-  workoutType String   @default("program") // "program" | "custom" | "temporary"
-  customName  String?  // For custom/temporary workouts
-  
-  startTime   DateTime @default(now())
-  endTime     DateTime?
-  duration    Int?     // Duration in minutes (calculated)
-  
-  status      String   @default("in_progress") // "in_progress" | "completed" | "cancelled"
-  notes       String?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  day         WorkoutDay? @relation(fields: [dayId], references: [id])
+  dayId       String? // Nullable for ad-hoc workouts
+  programId   String? // For quick reference
+  workoutType String  @default("program") // "program" | "custom" | "temporary"
+  customName  String? // For custom/temporary workouts
+
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+  duration  Int? // Duration in minutes (calculated)
+
+  status String  @default("in_progress") // "in_progress" | "completed" | "cancelled"
+  notes  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day          WorkoutDay?   @relation(fields: [dayId], references: [id], onDelete: SetNull)
   exerciseLogs ExerciseLog[]
-  
+
   @@index([userId])
   @@index([dayId])
   @@index([startTime])
@@ -133,22 +133,22 @@ model WorkoutLog {
 
 // Exercise Log - Records sets/reps/weight for an exercise in a workout
 model ExerciseLog {
-  id            String   @id @default(uuid())
+  id            String  @id @default(uuid())
   workoutLogId  String
-  dayExerciseId String
-  sets          Json     // [{ setNumber: 1, weight: 100, reps: 10, completed: true, timestamp: ... }, ...]
-  
+  dayExerciseId String?
+  sets          Json // [{ setNumber: 1, weight: 100, reps: 10, completed: true, timestamp: ... }, ...]
+
   // Personal Records tracking
-  isWeightPR    Boolean  @default(false) // Best weight for this exercise
-  isVolumePR    Boolean  @default(false) // Best total volume (sets × reps × weight)
-  isRepsPR      Boolean  @default(false) // Most reps at same/higher weight
-  
-  notes         String?
-  createdAt     DateTime @default(now())
-  
-  workoutLog    WorkoutLog  @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
-  dayExercise   DayExercise @relation(fields: [dayExerciseId], references: [id])
-  
+  isWeightPR Boolean @default(false) // Best weight for this exercise
+  isVolumePR Boolean @default(false) // Best total volume (sets × reps × weight)
+  isRepsPR   Boolean @default(false) // Most reps at same/higher weight
+
+  notes     String?
+  createdAt DateTime @default(now())
+
+  workoutLog  WorkoutLog   @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+  dayExercise DayExercise? @relation(fields: [dayExerciseId], references: [id], onDelete: SetNull)
+
   @@index([workoutLogId])
   @@index([dayExerciseId])
   @@index([createdAt])
@@ -156,35 +156,35 @@ model ExerciseLog {
 
 // Exercise Stats - Cached statistics per user per exercise
 model ExerciseStats {
-  id           String   @id @default(uuid())
-  userId       String
-  exerciseId   String
-  
+  id         String @id @default(uuid())
+  userId     String
+  exerciseId String
+
   // Personal Records
-  bestWeight   Float    @default(0)      // Best weight ever lifted
-  bestWeightDate DateTime?               // When PR was achieved
-  bestReps     Int      @default(0)      // Most reps at any weight
-  bestRepsDate DateTime?
-  bestVolume   Float    @default(0)      // Best single-workout volume
+  bestWeight     Float     @default(0) // Best weight ever lifted
+  bestWeightDate DateTime? // When PR was achieved
+  bestReps       Int       @default(0) // Most reps at any weight
+  bestRepsDate   DateTime?
+  bestVolume     Float     @default(0) // Best single-workout volume
   bestVolumeDate DateTime?
-  
+
   // Current Stats
-  currentE1RM  Float    @default(0)      // Latest estimated 1RM
-  
+  currentE1RM Float @default(0) // Latest estimated 1RM
+
   // All-Time Stats
-  totalVolume  Float    @default(0)      // Total volume all time
-  totalSets    Int      @default(0)      // Total sets all time
-  totalReps    Int      @default(0)      // Total reps all time
-  workoutCount Int      @default(0)      // Times performed
-  
+  totalVolume  Float @default(0) // Total volume all time
+  totalSets    Int   @default(0) // Total sets all time
+  totalReps    Int   @default(0) // Total reps all time
+  workoutCount Int   @default(0) // Times performed
+
   // Tracking
-  lastPerformed DateTime?                // Last workout with this exercise
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise     Exercise @relation(fields: [exerciseId], references: [id])
-  
+  lastPerformed DateTime? // Last workout with this exercise
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+
   @@unique([userId, exerciseId])
   @@index([userId])
   @@index([exerciseId])

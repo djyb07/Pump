@@ -10,6 +10,7 @@ import CreateProgramPage from './pages/CreateProgramPage';
 import ProgramDetailsPage from './pages/ProgramDetailsPage';
 import ActiveWorkoutPage from './pages/ActiveWorkoutPage';
 import WorkoutHistoryPage from './pages/WorkoutHistoryPage';
+import WorkoutDetailsPage from './pages/WorkoutDetailsPage';
 
 // Simple protected route check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -82,6 +83,14 @@ function App() {
           element={
             <ProtectedRoute>
               <WorkoutHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workout/:id"
+          element={
+            <ProtectedRoute>
+              <WorkoutDetailsPage />
             </ProtectedRoute>
           }
         />

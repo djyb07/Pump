@@ -123,12 +123,10 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        // Get all logs for this exercise
+        // Get all logs for this exercise using exerciseId field
         const logs = await prisma.exerciseLog.findMany({
             where: {
-                dayExercise: {
-                    exerciseId
-                },
+                exerciseId,
                 workoutLog: {
                     userId,
                     status: 'completed'
@@ -139,11 +137,6 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
                     select: {
                         startTime: true,
                         duration: true
-                    }
-                },
-                dayExercise: {
-                    include: {
-                        exercise: true
                     }
                 }
             },
@@ -178,8 +171,30 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
             };
         });
 
+        // Get exercise info from first log's exerciseName, or fetch from DB
+        let exerciseInfo = null;
+        if (logs.length > 0) {
+            exerciseInfo = {
+                id: exerciseId,
+                nameEn: logs[0].exerciseName,
+                nameHe: logs[0].exerciseName
+            };
+        } else {
+            // If no logs, fetch exercise from DB
+            const exercise = await prisma.exercise.findUnique({
+                where: { id: exerciseId }
+            });
+            if (exercise) {
+                exerciseInfo = {
+                    id: exercise.id,
+                    nameEn: exercise.nameEn,
+                    nameHe: exercise.nameHe
+                };
+            }
+        }
+
         res.json({
-            exercise: logs.find(l => l.dayExercise)?.dayExercise?.exercise,
+            exercise: exerciseInfo,
             progress: progressData
         });
     } catch (error) {

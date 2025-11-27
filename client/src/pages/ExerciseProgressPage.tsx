@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { workoutService } from '../services/workoutService';
 
 interface ProgressData {
     date: string;
@@ -127,8 +126,8 @@ export default function ExerciseProgressPage() {
                                 key={filter.value}
                                 onClick={() => setTimeFilter(filter.value)}
                                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${timeFilter === filter.value
-                                        ? 'bg-purple-600 text-white'
-                                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                                     }`}
                             >
                                 {filter.label}

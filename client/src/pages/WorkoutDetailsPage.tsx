@@ -208,10 +208,19 @@ export default function WorkoutDetailsPage() {
                                     } rounded-xl p-6`}
                             >
                                 <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white mb-1">
-                                            {index + 1}. {(exerciseLog as any).exerciseName || 'Unknown Exercise'}
-                                        </h3>
+                                    <div className="flex-1">
+                                        <button
+                                            onClick={() => {
+                                                const dayExercise = (exerciseLog as any).dayExercise;
+                                                const exerciseId = dayExercise?.exerciseId;
+                                                if (exerciseId) {
+                                                    navigate(`/exercise/${exerciseId}/progress`);
+                                                }
+                                            }}
+                                            className="text-xl font-bold text-white mb-1 hover:text-purple-400 transition-colors text-left"
+                                        >
+                                            {index + 1}. {(exerciseLog as any).exerciseName || 'Unknown Exercise'} 📊
+                                        </button>
                                         {hasPR && (
                                             <div className="flex items-center space-x-2 mt-2">
                                                 <span className="text-yellow-500 text-lg">🏆</span>

@@ -179,11 +179,99 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
         });
 
         res.json({
-            exercise: logs[0]?.dayExercise?.exercise,
+            exercise: logs.find(l => l.dayExercise)?.dayExercise?.exercise,
             progress: progressData
         });
     } catch (error) {
         console.error('Error fetching exercise progress:', error);
         res.status(500).json({ error: 'Failed to fetch progress' });
+    }
+};
+
+// Get all personal records for user
+export const getPersonalRecords = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        // Get all completed workouts with exercise logs
+        const exerciseLogs = await prisma.exerciseLog.findMany({
+            where: {
+                workoutLog: {
+                    userId,
+                    status: 'completed'
+                },
+                isWeightPR: true,
+                OR: [
+                    { isVolumePR: true },
+                    { isRepsPR: true }
+                ]
+            },
+            include: {
+                dayExercise: {
+                    include: {
+                        exercise: true
+                    }
+                },
+                workoutLog: {
+                    select: {
+                        startTime: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        // Group by exercise and find best records
+        const recordsMap = new Map<string, any>();
+
+        exerciseLogs.forEach(log => {
+            const exercise = log.dayExercise?.exercise;
+            if (!exercise) return;
+
+            const sets = log.sets as any[];
+            const maxWeight = Math.max(...sets.map((s: any) => s.weight || 0));
+            const totalVolume = sets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
+            const maxReps = Math.max(...sets.map((s: any) => s.reps || 0));
+
+            const existing = recordsMap.get(exercise.id);
+
+            if (!existing) {
+                recordsMap.set(exercise.id, {
+                    exerciseId: exercise.id,
+                    exerciseName: exercise.nameEn,
+                    bestWeight: log.isWeightPR ? maxWeight : 0,
+                    bestWeightDate: log.isWeightPR ? log.workoutLog.startTime : null,
+                    bestVolume: log.isVolumePR ? totalVolume : 0,
+                    bestVolumeDate: log.isVolumePR ? log.workoutLog.startTime : null,
+                    bestReps: log.isRepsPR ? maxReps : 0,
+                    bestRepsDate: log.isRepsPR ? log.workoutLog.startTime : null
+                });
+            } else {
+                if (log.isWeightPR && maxWeight > existing.bestWeight) {
+                    existing.bestWeight = maxWeight;
+                    existing.bestWeightDate = log.workoutLog.startTime;
+                }
+                if (log.isVolumePR && totalVolume > existing.bestVolume) {
+                    existing.bestVolume = totalVolume;
+                    existing.bestVolumeDate = log.workoutLog.startTime;
+                }
+                if (log.isRepsPR && maxReps > existing.bestReps) {
+                    existing.bestReps = maxReps;
+                    existing.bestRepsDate = log.workoutLog.startTime;
+                }
+            }
+        });
+
+        const records = Array.from(recordsMap.values());
+        res.json(records);
+    } catch (error) {
+        console.error('Error fetching personal records:', error);
+        res.status(500).json({ error: 'Failed to fetch personal records' });
     }
 };

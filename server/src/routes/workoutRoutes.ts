@@ -7,7 +7,8 @@ import {
     getActiveWorkout,
     getWorkoutHistory,
     getWorkoutById,
-    getExerciseProgress
+    getExerciseProgress,
+    getPersonalRecords
 } from '../controllers/workoutController';
 
 const router = Router();
@@ -27,5 +28,6 @@ router.get('/workouts/:id', getWorkoutById);          // Get specific workout
 
 // Analytics
 router.get('/analytics/progress/:exerciseId', getExerciseProgress);
+router.get('/analytics/personal-records', getPersonalRecords);
 
 export default router;

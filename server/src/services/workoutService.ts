@@ -123,11 +123,18 @@ export const workoutService = {
                 }
             });
         } else {
+            // Get exercise name for history preservation
+            const dayExercise = await prisma.dayExercise.findUnique({
+                where: { id: setData.dayExerciseId },
+                include: { exercise: true }
+            });
+
             // Create new exercise log
             exerciseLog = await prisma.exerciseLog.create({
                 data: {
                     workoutLogId,
                     dayExerciseId: setData.dayExerciseId,
+                    exerciseName: dayExercise?.exercise?.nameEn || 'Unknown Exercise',
                     sets: [
                         {
                             setNumber: 1,

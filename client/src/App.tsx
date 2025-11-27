@@ -11,6 +11,7 @@ import ProgramDetailsPage from './pages/ProgramDetailsPage';
 import ActiveWorkoutPage from './pages/ActiveWorkoutPage';
 import WorkoutHistoryPage from './pages/WorkoutHistoryPage';
 import WorkoutDetailsPage from './pages/WorkoutDetailsPage';
+import ExerciseProgressPage from './pages/ExerciseProgressPage';
 
 // Simple protected route check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -91,6 +92,14 @@ function App() {
           element={
             <ProtectedRoute>
               <WorkoutDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/exercise/:exerciseId/progress"
+          element={
+            <ProtectedRoute>
+              <ExerciseProgressPage />
             </ProtectedRoute>
           }
         />

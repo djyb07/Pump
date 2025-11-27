@@ -11,10 +11,10 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
     const [isPaused, setIsPaused] = useState(false);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: number;
 
         if (isRunning && !isPaused && seconds > 0) {
-            interval = setInterval(() => {
+            interval = window.setInterval(() => {
                 setSeconds(prev => {
                     if (prev <= 1) {
                         setIsRunning(false);

@@ -63,6 +63,29 @@ export default function ExerciseProgressPage() {
         return progressData.filter(p => new Date(p.date) >= cutoffDate);
     };
 
+    // Calculate best PRs from all-time data
+    const getBestPRs = () => {
+        if (progressData.length === 0) return null;
+
+        let bestWeight = { value: 0, date: '' };
+        let bestVolume = { value: 0, date: '' };
+        let beste1RM = { value: 0, date: '' };
+
+        progressData.forEach(record => {
+            if (record.maxWeight > bestWeight.value) {
+                bestWeight = { value: record.maxWeight, date: record.date };
+            }
+            if (record.totalVolume > bestVolume.value) {
+                bestVolume = { value: record.totalVolume, date: record.date };
+            }
+            if (record.e1RM > beste1RM.value) {
+                beste1RM = { value: record.e1RM, date: record.date };
+            }
+        });
+
+        return { bestWeight, bestVolume, beste1RM };
+    };
+
     // Group data by date and take max values for multiple workouts on same day
     const groupDataByDate = (data: ProgressData[]) => {
         const grouped = new Map<string, ProgressData>();
@@ -166,6 +189,55 @@ export default function ExerciseProgressPage() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Best PRs Section */}
+                {(() => {
+                    const prs = getBestPRs();
+                    if (!prs) return null;
+
+                    const formatDate = (dateString: string) => {
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    };
+
+                    return (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            {/* Best Weight PR */}
+                            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-purple-400 text-sm font-medium">💪 Best Weight</span>
+                                    <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">PR</span>
+                                </div>
+                                <div className="text-4xl font-bold text-white mb-2">{prs.bestWeight.value} kg</div>
+                                <div className="text-gray-400 text-sm">{formatDate(prs.bestWeight.date)}</div>
+                            </div>
+
+                            {/* Best Volume PR */}
+                            <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-500/30 rounded-xl p-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-pink-400 text-sm font-medium">📊 Best Volume</span>
+                                    <span className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded">PR</span>
+                                </div>
+                                <div className="text-4xl font-bold text-white mb-2">{Math.round(prs.bestVolume.value)} kg</div>
+                                <div className="text-gray-400 text-sm">{formatDate(prs.bestVolume.date)}</div>
+                            </div>
+
+                            {/* Best e1RM PR */}
+                            <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-xl p-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-green-400 text-sm font-medium">🎯 Best e1RM</span>
+                                    <span className="text-xs px-2 py-1 bg-green-500/20 text-green-300 rounded">PR</span>
+                                </div>
+                                <div className="text-4xl font-bold text-white mb-2">{prs.beste1RM.value} kg</div>
+                                <div className="text-gray-400 text-sm">{formatDate(prs.beste1RM.date)}</div>
+                            </div>
+                        </div>
+                    );
+                })()}
+
                 {filteredData.length === 0 ? (
                     <div className="text-center text-gray-400 py-12">
                         <p className="text-xl">No workout data in this time period</p>

@@ -5,6 +5,7 @@ import { exerciseService, type Exercise } from '../services/exerciseService';
 import EditExerciseModal from '../components/EditExerciseModal';
 import AddDayModal from '../components/AddDayModal';
 import ConfirmModal from '../components/ConfirmModal';
+import ExerciseModal from '../components/ExerciseModal';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ export default function ProgramDetailsPage() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [editingExercise, setEditingExercise] = useState<DayExercise | null>(null);
     const [showAddDayModal, setShowAddDayModal] = useState(false);
+    const [selectedExerciseInfo, setSelectedExerciseInfo] = useState<Exercise | null>(null);
     const [confirmAction, setConfirmAction] = useState<{
         title: string;
         message: string;
@@ -254,6 +256,23 @@ export default function ProgramDetailsPage() {
                                                 </div>
                                                 <div className="flex space-x-2">
                                                     <button
+                                                        onClick={async () => {
+                                                            const ex = await exerciseService.getById(dayEx.exerciseId);
+                                                            setSelectedExerciseInfo(ex);
+                                                        }}
+                                                        className="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 rounded hover:bg-blue-500/10"
+                                                        title="Exercise Info"
+                                                    >
+                                                        ℹ️
+                                                    </button>
+                                                    <button
+                                                        onClick={() => navigate(`/exercise/${dayEx.exerciseId}/progress`)}
+                                                        className="text-green-400 hover:text-green-300 transition-colors px-2 py-1 rounded hover:bg-green-500/10"
+                                                        title="View Progress"
+                                                    >
+                                                        📊
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleEditExercise(dayEx)}
                                                         className="text-purple-400 hover:text-purple-300 transition-colors px-2 py-1 rounded hover:bg-purple-500/10"
                                                     >
@@ -303,14 +322,38 @@ export default function ProgramDetailsPage() {
                                 {exercises.map((exercise) => (
                                     <div
                                         key={exercise.id}
-                                        onClick={() => handleSelectExercise(exercise.id)}
-                                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500 cursor-pointer transition-all duration-200 hover:scale-102"
+                                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-200"
                                     >
-                                        <h3 className="font-semibold text-white mb-1">{exercise.nameEn}</h3>
-                                        <p className="text-gray-400 text-sm mb-2">{exercise.muscleGroups.join(', ')}</p>
-                                        <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">
-                                            {exercise.difficulty}
-                                        </span>
+                                        <div
+                                            onClick={() => handleSelectExercise(exercise.id)}
+                                            className="cursor-pointer"
+                                        >
+                                            <h3 className="font-semibold text-white mb-1">{exercise.nameEn}</h3>
+                                            <p className="text-gray-400 text-sm mb-2">{exercise.muscleGroups.join(', ')}</p>
+                                            <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">
+                                                {exercise.difficulty}
+                                            </span>
+                                        </div>
+                                        <div className="flex space-x-2 mt-3 pt-3 border-t border-gray-700">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedExerciseInfo(exercise);
+                                                }}
+                                                className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                            >
+                                                ℹ️ Info
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/exercise/${exercise.id}/progress`);
+                                                }}
+                                                className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                            >
+                                                📊 Progress
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -348,6 +391,13 @@ export default function ProgramDetailsPage() {
                     danger={true}
                 />
             )}
+
+            {/* Exercise Info Modal */}
+            <ExerciseModal
+                exercise={selectedExerciseInfo}
+                isOpen={!!selectedExerciseInfo}
+                onClose={() => setSelectedExerciseInfo(null)}
+            />
         </div>
     );
 }

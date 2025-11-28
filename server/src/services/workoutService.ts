@@ -209,6 +209,58 @@ export const workoutService = {
             }
         });
 
+        // Calculate PRs for each exercise log
+        for (const exerciseLog of updated.exerciseLogs) {
+            const sets = exerciseLog.sets as any[];
+            if (!sets || sets.length === 0) continue;
+
+            const maxWeight = Math.max(...sets.map((s: any) => s.weight || 0));
+            const totalVolume = sets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
+            const maxReps = Math.max(...sets.map((s: any) => s.reps || 0));
+
+            // Get previous logs for this exercise (excluding current workout)
+            const previousLogs = await prisma.exerciseLog.findMany({
+                where: {
+                    exerciseId: exerciseLog.exerciseId,
+                    workoutLog: {
+                        userId,
+                        status: 'completed'
+                    },
+                    workoutLogId: {
+                        not: workoutLogId
+                    }
+                }
+            });
+
+            // Determine if PRs were set
+            let isWeightPR = true;
+            let isVolumePR = true;
+            let isRepsPR = true;
+
+            for (const prevLog of previousLogs) {
+                const prevSets = prevLog.sets as any[];
+                if (!prevSets || prevSets.length === 0) continue;
+
+                const prevMaxWeight = Math.max(...prevSets.map((s: any) => s.weight || 0));
+                const prevTotalVolume = prevSets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
+                const prevMaxReps = Math.max(...prevSets.map((s: any) => s.reps || 0));
+
+                if (prevMaxWeight >= maxWeight) isWeightPR = false;
+                if (prevTotalVolume >= totalVolume) isVolumePR = false;
+                if (prevMaxReps >= maxReps) isRepsPR = false;
+            }
+
+            // Update exercise log with PR flags
+            await prisma.exerciseLog.update({
+                where: { id: exerciseLog.id },
+                data: {
+                    isWeightPR: isWeightPR && maxWeight > 0,
+                    isVolumePR: isVolumePR && totalVolume > 0,
+                    isRepsPR: isRepsPR && maxReps > 0
+                }
+            });
+        }
+
         return updated;
     },
 

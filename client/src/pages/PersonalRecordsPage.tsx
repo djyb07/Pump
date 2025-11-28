@@ -19,13 +19,15 @@ export default function PersonalRecordsPage() {
     const [error, setError] = useState('');
     const [filter, setFilter] = useState<'all' | 'weight' | 'volume' | 'reps'>('all');
 
+    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     useEffect(() => {
         loadRecords();
     }, []);
 
     const loadRecords = async () => {
         try {
-            const response = await fetch('/api/analytics/personal-records', {
+            const response = await fetch(`${BASE_URL}/api/analytics/personal-records`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -86,10 +88,10 @@ export default function PersonalRecordsPage() {
                             <p className="text-gray-400 mt-1">Your best performances across all exercises</p>
                         </div>
                         <button
-                            onClick={() => navigate('/workout/history')}
+                            onClick={() => navigate(-1)}
                             className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
                         >
-                            ← Back to History
+                            ← Go Back
                         </button>
                     </div>
 
@@ -105,8 +107,8 @@ export default function PersonalRecordsPage() {
                                 key={f.value}
                                 onClick={() => setFilter(f.value)}
                                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === f.value
-                                        ? 'bg-purple-600 text-white'
-                                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                                     }`}
                             >
                                 {f.icon} {f.label}

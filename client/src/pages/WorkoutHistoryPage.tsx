@@ -97,15 +97,21 @@ export default function WorkoutHistoryPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-white">Workout History</h1>
+                            <h1 className="text-3xl font-bold text-white">📊 Workout History</h1>
                             <p className="text-gray-400 mt-1">{workouts.length} completed workouts</p>
                         </div>
-                        <button
-                            onClick={() => navigate('/programs')}
-                            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
-                        >
-                            ← Back to Programs
-                        </button>
+                        <div className="flex space-x-3">
+                            <button
+                                onClick={() => navigate('/personal-records')}
+                                className="px-6 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-lg font-semibold transition-all">
+                                🏆 Personal Records
+                            </button>
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all">
+                                ← Back to Dashboard
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -124,8 +130,7 @@ export default function WorkoutHistoryPage() {
                         <p className="text-gray-400 mb-6">Start your first workout to see it here</p>
                         <button
                             onClick={() => navigate('/programs')}
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all"
-                        >
+                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all">
                             Go to Programs
                         </button>
                     </div>
@@ -140,8 +145,7 @@ export default function WorkoutHistoryPage() {
                                 <div
                                     key={workout.id}
                                     onClick={() => navigate(`/workout/${workout.id}`)}
-                                    className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-purple-500/50 transition-all cursor-pointer"
-                                >
+                                    className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-purple-500/50 transition-all cursor-pointer">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <h3 className="text-xl font-bold text-white">

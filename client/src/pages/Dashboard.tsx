@@ -209,6 +209,11 @@ export default function Dashboard() {
                                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
                                     📚 Browse Exercises
                                 </button>
+                                <button
+                                    onClick={() => navigate('/personal-records')}
+                                    className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                    🏆 Personal Records
+                                </button>
                             </div>
                         </div>
 

@@ -10,6 +10,7 @@ import {
     getExerciseProgress,
     getPersonalRecords
 } from '../controllers/workoutController';
+import { recalculatePRs } from '../controllers/migrationController';
 
 const router = Router();
 
@@ -29,5 +30,8 @@ router.get('/workouts/:id', getWorkoutById);          // Get specific workout
 // Analytics
 router.get('/analytics/progress/:exerciseId', getExerciseProgress);
 router.get('/analytics/personal-records', getPersonalRecords);
+
+// Migrations
+router.post('/migrations/recalculate-prs', recalculatePRs);
 
 export default router;

@@ -107,10 +107,10 @@ export default function ExerciseProgressPage() {
                 <div className="text-center">
                     <div className="text-red-400 text-xl mb-4">{error || 'Exercise not found'}</div>
                     <button
-                        onClick={() => navigate('/workout/history')}
+                        onClick={() => navigate(-1)}
                         className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
                     >
-                        ← Back to History
+                        ← Go Back
                     </button>
                 </div>
             </div>
@@ -135,10 +135,10 @@ export default function ExerciseProgressPage() {
                             <p className="text-gray-400 mt-1">{exercise.nameHe}</p>
                         </div>
                         <button
-                            onClick={() => navigate('/workout/history')}
+                            onClick={() => navigate(-1)}
                             className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
                         >
-                            ← Back to History
+                            ← Go Back
                         </button>
                     </div>
 

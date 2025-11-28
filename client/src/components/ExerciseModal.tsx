@@ -130,13 +130,10 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex gap-3 mt-8">
-                        <button className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-purple-500/50">
-                            ➕ Add to Workout
-                        </button>
+                    <div className="flex justify-end mt-8">
                         <button
                             onClick={onClose}
-                            className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-semibold rounded-xl transition-all duration-200 border border-gray-700"
+                            className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-semibold rounded-xl transition-all duration-200 border border-gray-700"
                         >
                             Close
                         </button>

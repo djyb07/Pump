@@ -288,11 +288,12 @@ export default function Dashboard() {
 
     const startWorkout = async (dayId: string, programId: string) => {
         try {
-            const response = await apiClient.post('/api/workouts/start', {
+            await apiClient.post('/api/workouts/start', {
                 dayId,
                 programId
             });
-            navigate(`/workout/${response.data.id}`);
+            // Navigate to the active workout page
+            navigate('/workout/active');
         } catch (error) {
             console.error('Failed to start workout:', error);
         }

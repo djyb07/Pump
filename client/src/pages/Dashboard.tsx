@@ -58,6 +58,12 @@ export default function Dashboard() {
         sets: 0,
         prs: 0
     });
+    const [lastWeekStats, setLastWeekStats] = useState({
+        workouts: 0,
+        volume: 0,
+        sets: 0,
+        prs: 0
+    });
 
     useEffect(() => {
         setMounted(true);
@@ -117,12 +123,22 @@ export default function Dashboard() {
     };
 
     const processWeekStats = (workouts: WorkoutLog[]) => {
-        const oneWeekAgo = new Date();
+        const now = new Date();
+        const oneWeekAgo = new Date(now);
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const twoWeeksAgo = new Date(now);
+        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
+        // This week
         const thisWeek = workouts.filter(w =>
             new Date(w.startTime) >= oneWeekAgo && w.status === 'completed'
         );
+
+        // Last week
+        const lastWeek = workouts.filter(w => {
+            const date = new Date(w.startTime);
+            return date >= twoWeeksAgo && date < oneWeekAgo && w.status === 'completed';
+        });
 
         const stats = {
             workouts: thisWeek.length,
@@ -131,7 +147,15 @@ export default function Dashboard() {
             prs: thisWeek.reduce((sum, w) => sum + getPRCount(w), 0)
         };
 
+        const lastStats = {
+            workouts: lastWeek.length,
+            volume: lastWeek.reduce((sum, w) => sum + calculateVolume(w), 0),
+            sets: lastWeek.reduce((sum, w) => sum + getTotalSets(w), 0),
+            prs: lastWeek.reduce((sum, w) => sum + getPRCount(w), 0)
+        };
+
         setWeekStats(stats);
+        setLastWeekStats(lastStats);
     };
 
     const calculateVolume = (workout: WorkoutLog) => {
@@ -417,19 +441,47 @@ export default function Dashboard() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <div className="text-gray-400 text-sm mb-1">Workouts</div>
-                                            <div className="text-3xl font-bold text-white">{weekStats.workouts}</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-3xl font-bold text-white">{weekStats.workouts}</div>
+                                                {lastWeekStats.workouts > 0 && weekStats.workouts !== lastWeekStats.workouts && (
+                                                    <span className={`text-sm ${weekStats.workouts > lastWeekStats.workouts ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.workouts > lastWeekStats.workouts ? '↑' : '↓'}{Math.abs(weekStats.workouts - lastWeekStats.workouts)}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                         <div>
                                             <div className="text-gray-400 text-sm mb-1">Total Sets</div>
-                                            <div className="text-3xl font-bold text-white">{weekStats.sets}</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-3xl font-bold text-white">{weekStats.sets}</div>
+                                                {lastWeekStats.sets > 0 && weekStats.sets !== lastWeekStats.sets && (
+                                                    <span className={`text-sm ${weekStats.sets > lastWeekStats.sets ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.sets > lastWeekStats.sets ? '↑' : '↓'}{Math.abs(weekStats.sets - lastWeekStats.sets)}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                         <div>
                                             <div className="text-gray-400 text-sm mb-1">Volume</div>
-                                            <div className="text-2xl font-bold text-white">{(weekStats.volume / 1000).toFixed(1)}k kg</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-2xl font-bold text-white">{(weekStats.volume / 1000).toFixed(1)}k</div>
+                                                {lastWeekStats.volume > 0 && weekStats.volume !== lastWeekStats.volume && (
+                                                    <span className={`text-xs ${weekStats.volume > lastWeekStats.volume ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.volume > lastWeekStats.volume ? '↑' : '↓'}{((Math.abs(weekStats.volume - lastWeekStats.volume) / 1000).toFixed(1))}k
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                         <div>
                                             <div className="text-gray-400 text-sm mb-1">PRs</div>
-                                            <div className="text-3xl font-bold text-yellow-400">{weekStats.prs}</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-3xl font-bold text-yellow-400">{weekStats.prs}</div>
+                                                {lastWeekStats.prs > 0 && weekStats.prs !== lastWeekStats.prs && (
+                                                    <span className={`text-sm ${weekStats.prs > lastWeekStats.prs ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.prs > lastWeekStats.prs ? '↑' : '↓'}{Math.abs(weekStats.prs - lastWeekStats.prs)}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                     {weekStats.workouts > 0 && (

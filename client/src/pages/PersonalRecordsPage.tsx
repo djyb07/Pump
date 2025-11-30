@@ -241,7 +241,7 @@ export default function PersonalRecordsPage() {
                                 {/* PR Cards */}
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     {/* Weight PR */}
-                                    {record.bestWeight > 0 && (
+                                    {record.bestWeight > 0 && (prType === 'all' || prType === 'weight') && (
                                         <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-lg p-4">
                                             <div className="text-purple-400 text-sm font-medium mb-1">💪 Weight PR</div>
                                             <div className="text-3xl font-bold text-white">{record.bestWeight} kg</div>
@@ -250,7 +250,7 @@ export default function PersonalRecordsPage() {
                                     )}
 
                                     {/* Volume PR */}
-                                    {record.bestVolume > 0 && (
+                                    {record.bestVolume > 0 && (prType === 'all' || prType === 'volume') && (
                                         <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-500/30 rounded-lg p-4">
                                             <div className="text-pink-400 text-sm font-medium mb-1">📊 Volume PR</div>
                                             <div className="text-3xl font-bold text-white">{Math.round(record.bestVolume)} kg</div>
@@ -259,7 +259,7 @@ export default function PersonalRecordsPage() {
                                     )}
 
                                     {/* Reps PR */}
-                                    {record.bestReps > 0 && (
+                                    {record.bestReps > 0 && (prType === 'all' || prType === 'reps') && (
                                         <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-lg p-4">
                                             <div className="text-green-400 text-sm font-medium mb-1">🔥 Reps PR</div>
                                             <div className="text-3xl font-bold text-white">{record.bestReps}</div>

@@ -175,7 +175,8 @@ export const workoutService = {
 
         // Calculate duration
         const endTime = new Date();
-        const duration = Math.round((endTime.getTime() - workoutLog.startTime.getTime()) / 60000); // minutes
+        const startTime = new Date(workoutLog.startTime);
+        const duration = Math.round((endTime.getTime() - startTime.getTime()) / 60000); // minutes
 
         // Update workout log
         const updated = await prisma.workoutLog.update({

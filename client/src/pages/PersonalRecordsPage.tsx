@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../services/apiClient';
 
 interface ExercisePR {
     exerciseId: string;
@@ -17,9 +18,11 @@ export default function PersonalRecordsPage() {
     const [records, setRecords] = useState<ExercisePR[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [filter, setFilter] = useState<'all' | 'weight' | 'volume' | 'reps'>('all');
 
-    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    // Filter state
+    const [dateRange, setDateRange] = useState<'30' | '90' | '180' | '365' | 'all'>('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [prType, setPrType] = useState<'all' | 'weight' | 'volume' | 'reps'>('all');
 
     useEffect(() => {
         loadRecords();
@@ -27,16 +30,8 @@ export default function PersonalRecordsPage() {
 
     const loadRecords = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/analytics/personal-records`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-
-            if (!response.ok) throw new Error('Failed to load personal records');
-
-            const data = await response.json();
-            setRecords(data);
+            const response = await apiClient.get(`/api/analytics/personal-records`);
+            setRecords(response.data);
         } catch (err: any) {
             setError(err.message || 'Failed to load personal records');
         } finally {
@@ -54,15 +49,53 @@ export default function PersonalRecordsPage() {
         });
     };
 
-    const getFilteredRecords = () => {
-        if (filter === 'all') return records;
+    // Apply filters
+    const filteredRecords = useMemo(() => {
+        let filtered = [...records];
 
-        return records.filter(record => {
-            if (filter === 'weight') return record.bestWeight > 0;
-            if (filter === 'volume') return record.bestVolume > 0;
-            if (filter === 'reps') return record.bestReps > 0;
-            return true;
-        });
+        // Date range filter - filter by most recent PR date
+        if (dateRange !== 'all') {
+            const days = parseInt(dateRange);
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - days);
+
+            filtered = filtered.filter(record => {
+                const mostRecentPRDate = [
+                    new Date(record.bestWeightDate),
+                    new Date(record.bestVolumeDate),
+                    new Date(record.bestRepsDate)
+                ].sort((a, b) => b.getTime() - a.getTime())[0];
+
+                return mostRecentPRDate >= cutoffDate;
+            });
+        }
+
+        // Exercise name search filter
+        if (searchQuery.trim()) {
+            filtered = filtered.filter(record =>
+                record.exerciseName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        // PR type filter
+        if (prType !== 'all') {
+            filtered = filtered.filter(record => {
+                if (prType === 'weight') return record.bestWeight > 0;
+                if (prType === 'volume') return record.bestVolume > 0;
+                if (prType === 'reps') return record.bestReps > 0;
+                return true;
+            });
+        }
+
+        return filtered;
+    }, [records, dateRange, searchQuery, prType]);
+
+    const hasActiveFilters = dateRange !== 'all' || searchQuery.trim() !== '' || prType !== 'all';
+
+    const clearFilters = () => {
+        setDateRange('all');
+        setSearchQuery('');
+        setPrType('all');
     };
 
     if (loading) {
@@ -72,8 +105,6 @@ export default function PersonalRecordsPage() {
             </div>
         );
     }
-
-    const filteredRecords = getFilteredRecords();
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20">
@@ -85,7 +116,10 @@ export default function PersonalRecordsPage() {
                             <h1 className="text-3xl font-bold text-white flex items-center">
                                 🏆 Personal Records
                             </h1>
-                            <p className="text-gray-400 mt-1">Your best performances across all exercises</p>
+                            <p className="text-gray-400 mt-1">
+                                {filteredRecords.length} {filteredRecords.length === 1 ? 'exercise' : 'exercises'}
+                                {hasActiveFilters && ` (filtered from ${records.length})`}
+                            </p>
                         </div>
                         <button
                             onClick={() => navigate(-1)}
@@ -94,29 +128,70 @@ export default function PersonalRecordsPage() {
                             ← Go Back
                         </button>
                     </div>
-
-                    {/* Filter Buttons */}
-                    <div className="mt-6 flex space-x-2">
-                        {[
-                            { value: 'all' as const, label: 'All Records', icon: '🏆' },
-                            { value: 'weight' as const, label: 'Weight PRs', icon: '💪' },
-                            { value: 'volume' as const, label: 'Volume PRs', icon: '📊' },
-                            { value: 'reps' as const, label: 'Reps PRs', icon: '🔥' }
-                        ].map(f => (
-                            <button
-                                key={f.value}
-                                onClick={() => setFilter(f.value)}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === f.value
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                                    }`}
-                            >
-                                {f.icon} {f.label}
-                            </button>
-                        ))}
-                    </div>
                 </div>
             </header>
+
+            {/* Filters */}
+            <div className="bg-gray-800/50 border-b border-gray-700 sticky top-[89px] z-10 backdrop-blur-md">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Date Range Filter */}
+                        <div>
+                            <label className="block text-gray-400 text-sm mb-2">📅 Date Range</label>
+                            <select
+                                value={dateRange}
+                                onChange={(e) => setDateRange(e.target.value as any)}
+                                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                                <option value="all">All Time</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                                <option value="180">Last 6 Months</option>
+                                <option value="365">Last Year</option>
+                            </select>
+                        </div>
+
+                        {/* Exercise Search */}
+                        <div>
+                            <label className="block text-gray-400 text-sm mb-2">💪 Exercise Search</label>
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search exercises..."
+                                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                            />
+                        </div>
+
+                        {/* PR Type Filter */}
+                        <div>
+                            <label className="block text-gray-400 text-sm mb-2">🏆 PR Type</label>
+                            <select
+                                value={prType}
+                                onChange={(e) => setPrType(e.target.value as any)}
+                                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                                <option value="all">All PRs</option>
+                                <option value="weight">Weight PRs</option>
+                                <option value="volume">Volume PRs</option>
+                                <option value="reps">Reps PRs</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {hasActiveFilters && (
+                        <div className="mt-4 flex items-center justify-between">
+                            <span className="text-gray-400 text-sm">
+                                {filteredRecords.length} result{filteredRecords.length !== 1 ? 's' : ''} found
+                            </span>
+                            <button
+                                onClick={clearFilters}
+                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-semibold transition-all">
+                                ✕ Clear Filters
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {error && (
@@ -127,8 +202,23 @@ export default function PersonalRecordsPage() {
 
                 {filteredRecords.length === 0 ? (
                     <div className="text-center text-gray-400 py-12">
-                        <p className="text-xl">No personal records yet</p>
-                        <p className="mt-2">Start working out to set your first PRs!</p>
+                        <div className="text-6xl mb-4">🏆</div>
+                        <p className="text-xl mb-2">
+                            {hasActiveFilters ? 'No PRs match your filters' : 'No personal records yet'}
+                        </p>
+                        <p className="mt-2">
+                            {hasActiveFilters
+                                ? 'Try adjusting your filters'
+                                : 'Start working out to set your first PRs!'
+                            }
+                        </p>
+                        {hasActiveFilters && (
+                            <button
+                                onClick={clearFilters}
+                                className="mt-4 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold transition-all">
+                                Clear Filters
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

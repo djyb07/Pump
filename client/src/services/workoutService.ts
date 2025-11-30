@@ -1,7 +1,6 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const API_URL = `${BASE_URL}/api`;
+const API_URL = `/api`;
 
 // Workout interfaces
 export interface WorkoutLog {
@@ -40,18 +39,12 @@ export interface SetLog {
     timestamp: string;
 }
 
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 export const workoutService = {
     // Start a new workout
     async startWorkout(dayId: string, programId?: string): Promise<WorkoutLog> {
-        const response = await axios.post(
+        const response = await apiClient.post(
             `${API_URL}/workouts/start`,
-            { dayId, programId },
-            { headers: getAuthHeader() }
+            { dayId, programId }
         );
         return response.data;
     },
@@ -59,10 +52,7 @@ export const workoutService = {
     // Get active workout (if any)
     async getActiveWorkout(): Promise<WorkoutLog | null> {
         try {
-            const response = await axios.get(
-                `${API_URL}/workouts/active`,
-                { headers: getAuthHeader() }
-            );
+            const response = await apiClient.get(`${API_URL}/workouts/active`);
             return response.data;
         } catch (error: any) {
             if (error.response?.status === 404) {
@@ -80,39 +70,31 @@ export const workoutService = {
         weight?: number,
         completed: boolean = true
     ): Promise<ExerciseLog> {
-        const response = await axios.post(
+        const response = await apiClient.post(
             `${API_URL}/workouts/${workoutLogId}/sets`,
-            { dayExerciseId, reps, weight, completed },
-            { headers: getAuthHeader() }
+            { dayExerciseId, reps, weight, completed }
         );
         return response.data;
     },
 
     // Finish workout
     async finishWorkout(workoutLogId: string, notes?: string): Promise<WorkoutLog> {
-        const response = await axios.patch(
+        const response = await apiClient.patch(
             `${API_URL}/workouts/${workoutLogId}/finish`,
-            { notes },
-            { headers: getAuthHeader() }
+            { notes }
         );
         return response.data;
     },
 
     // Get workout history
     async getWorkoutHistory(limit: number = 20): Promise<WorkoutLog[]> {
-        const response = await axios.get(
-            `${API_URL}/workouts?limit=${limit}`,
-            { headers: getAuthHeader() }
-        );
+        const response = await apiClient.get(`${API_URL}/workouts?limit=${limit}`);
         return response.data;
     },
 
     // Get specific workout
     async getWorkoutById(workoutLogId: string): Promise<WorkoutLog> {
-        const response = await axios.get(
-            `${API_URL}/workouts/${workoutLogId}`,
-            { headers: getAuthHeader() }
-        );
+        const response = await apiClient.get(`${API_URL}/workouts/${workoutLogId}`);
         return response.data;
     }
 };

@@ -15,8 +15,14 @@ export const getPrograms = async (req: Request, res: Response) => {
             include: {
                 days: {
                     include: {
-                        exercises: true
-                    }
+                        exercises: {
+                            include: {
+                                exercise: true
+                            },
+                            orderBy: { orderIndex: 'asc' }
+                        }
+                    },
+                    orderBy: { orderIndex: 'asc' }
                 }
             },
             orderBy: { createdAt: 'desc' }

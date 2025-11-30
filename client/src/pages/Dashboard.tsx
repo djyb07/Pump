@@ -288,8 +288,8 @@ export default function Dashboard() {
                 dayId,
                 programId
             });
-            // Navigate to the active workout page
-            navigate('/workout/active');
+            // Navigate to the active page workout with dayId
+            navigate(`/workout/active?dayId=${dayId}`);
         } catch (error) {
             console.error('Failed to start workout:', error);
         }

@@ -401,7 +401,7 @@ export default function Dashboard() {
                                                 <div className="mb-4 space-y-1">
                                                     {nextWorkout.exercises.slice(0, 3).map((ex: any, idx: number) => (
                                                         <div key={idx} className="text-gray-300 text-sm">
-                                                            • {(ex.exercise as any)?.name || 'Exercise'}
+                                                            • {ex.exercise?.nameEn || ex.exercise?.name || 'Exercise'}
                                                         </div>
                                                     ))}
                                                     {nextWorkout.exercises.length > 3 && (

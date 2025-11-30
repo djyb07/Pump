@@ -40,20 +40,24 @@ export default function ActiveWorkoutPage() {
 
     const initWorkout = async () => {
         try {
-            if (!dayId) {
-                setError('No day selected');
-                return;
-            }
-
-            // Check if there's already an active workout
+            // First, check if there's already an active workout
             const activeWorkout = await workoutService.getActiveWorkout();
             if (activeWorkout) {
                 setWorkout(activeWorkout);
-            } else {
-                // Start new workout
-                const newWorkout = await workoutService.startWorkout(dayId);
-                setWorkout(newWorkout);
+                setLoading(false);
+                return;
             }
+
+            // No active workout - need dayId to start a new one
+            if (!dayId) {
+                setError('No day selected');
+                setLoading(false);
+                return;
+            }
+
+            // Start new workout
+            const newWorkout = await workoutService.startWorkout(dayId);
+            setWorkout(newWorkout);
         } catch (err: any) {
             setError(err.response?.data?.error || 'Failed to start workout');
         } finally {

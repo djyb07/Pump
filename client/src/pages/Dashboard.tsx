@@ -45,8 +45,6 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
 
     // Data state
-    const [programs, setPrograms] = useState<Program[]>([]);
-    const [workouts, setWorkouts] = useState<WorkoutLog[]>([]);
     const [recentPRs, setRecentPRs] = useState<ExercisePR[]>([]);
 
     // Derived state
@@ -78,11 +76,9 @@ export default function Dashboard() {
                 apiClient.get('/api/analytics/personal-records')
             ]);
 
-            setPrograms(programsData.data);
-            setWorkouts(workoutsData.data);
             setRecentPRs(prsData.data);
 
-            // Process data
+            // Process data using the fetched data directly
             processActiveProgram(programsData.data, workoutsData.data);
             processWeekStats(workoutsData.data);
         } catch (error) {

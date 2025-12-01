@@ -290,3 +290,132 @@ export const getPersonalRecords = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to fetch personal records' });
     }
 };
+
+// Delete workout
+export const deleteWorkout = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user!.id;
+        const { id: workoutId } = req.params;
+
+        // 1. Get workout with exercise logs to find affected exercises
+        const workout = await prisma.workoutLog.findUnique({
+            where: { id: workoutId },
+            include: {
+                exerciseLogs: {
+                    select: { exerciseId: true }
+                }
+            }
+        });
+
+        if (!workout) {
+            return res.status(404).json({ error: 'Workout not found' });
+        }
+
+        // 2. Verify ownership
+        if (workout.userId !== userId) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        // 3. Get unique exercise IDs from this workout
+        const affectedExerciseIds = [...new Set(
+            workout.exerciseLogs.map(log => log.exerciseId).filter(id => id)
+        )];
+
+        // 4. Delete workout (cascade deletes exercise logs automatically)
+        await prisma.workoutLog.delete({
+            where: { id: workoutId }
+        });
+
+        // 5. Recalculate PRs for affected exercises
+        for (const exerciseId of affectedExerciseIds) {
+            // Get all remaining logs for this exercise
+            const logs = await prisma.exerciseLog.findMany({
+                where: {
+                    exerciseId,
+                    workoutLog: { userId, status: 'completed' }
+                },
+                include: {
+                    workoutLog: {
+                        select: { startTime: true }
+                    }
+                }
+            });
+
+            let bestWeight = 0;
+            let bestWeightDate: Date | null = null;
+            let bestVolume = 0;
+            let bestVolumeDate: Date | null = null;
+            let bestReps = 0;
+            let bestRepsDate: Date | null = null;
+
+            // Calculate new PRs
+            logs.forEach(log => {
+                const sets = log.sets as any[];
+                sets.forEach(set => {
+                    if (set.weight && set.reps) {
+                        // Weight PR
+                        if (set.weight > bestWeight) {
+                            bestWeight = set.weight;
+                            bestWeightDate = log.workoutLog.startTime;
+                        }
+                        // Volume for this set
+                        const volume = set.weight * set.reps;
+                        // Reps PR
+                        if (set.reps > bestReps) {
+                            bestReps = set.reps;
+                            bestRepsDate = log.workoutLog.startTime;
+                        }
+                    }
+                });
+
+                // Total volume for this exercise log
+                const totalVolume = sets.reduce((sum, set) => {
+                    return sum + (set.weight && set.reps ? set.weight * set.reps : 0);
+                }, 0);
+
+                if (totalVolume > bestVolume) {
+                    bestVolume = totalVolume;
+                    bestVolumeDate = log.workoutLog.startTime;
+                }
+            });
+
+            // Update or delete ExerciseStats
+            if (logs.length === 0) {
+                // No more logs for this exercise - delete stats
+                await prisma.exerciseStats.deleteMany({
+                    where: { userId, exerciseId }
+                });
+            } else {
+                // Update stats with new PRs
+                await prisma.exerciseStats.upsert({
+                    where: {
+                        userId_exerciseId: { userId, exerciseId }
+                    },
+                    create: {
+                        userId,
+                        exerciseId,
+                        bestWeight,
+                        bestWeightDate,
+                        bestVolume,
+                        bestVolumeDate,
+                        bestReps,
+                        bestRepsDate
+                    },
+                    update: {
+                        bestWeight,
+                        bestWeightDate,
+                        bestVolume,
+                        bestVolumeDate,
+                        bestReps,
+                        bestRepsDate
+                    }
+                });
+            }
+        }
+
+        res.json({ message: 'Workout deleted successfully' });
+    } catch (error: any) {
+        console.error('Error deleting workout:', error);
+        res.status(500).json({ error: error.message || 'Failed to delete workout' });
+    }
+};

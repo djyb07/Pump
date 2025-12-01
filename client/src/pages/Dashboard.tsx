@@ -319,51 +319,260 @@ export default function Dashboard() {
                                 🚪 Logout
                             </button>
                         </div>
-                                    )}
                     </div>
-            </div>
+                </header>
 
-            {/* Quick Actions */}
-            <div className={`bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 shadow-lg transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <span className="mr-2">⚡</span>
-                    Quick Actions
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button
-                        onClick={() => navigate('/programs')}
-                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
-                        🏋️ Programs
-                    </button>
-                    <button
-                        onClick={() => navigate('/workout/history')}
-                        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
-                        📊 History
-                    </button>
-                    <button
-                        onClick={() => navigate('/exercises')}
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
-                        📚 Exercises
-                    </button>
-                    <button
-                        onClick={() => navigate('/personal-records')}
-                        className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
-                        🏆 Records
-                    </button>
-                </div>
-            </div>
-        </>
-    )
-}
+                {/* Main Content */}
+                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Welcome Section */}
+                    <div className={`mb-8 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/40 to-purple-900/40 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 shadow-2xl">
+                            <div className="flex items-center space-x-6">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                    {userInfo.initials}
+                                </div>
+                                <div className="flex-1">
+                                    <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                                        Welcome Back, {userInfo.name}! 👋
+                                    </h1>
+                                    {userInfo.email && (
+                                        <p className="text-purple-300/80 text-sm">{userInfo.email}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-{/* Footer */ }
-<div className="mt-8 text-center">
-    <p className="text-gray-600 text-sm">
-        🚀 Powered by Azure & Vercel | Built with ❤️
-    </p>
-</div>
-                </main >
-            </div >
-        </div >
+                    {loading ? (
+                        <div className="text-center py-12">
+                            <div className="text-white text-xl">Loading your dashboard...</div>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Dashboard Cards Grid */}
+                            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                {/* Active Program Card */}
+                                <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 backdrop-blur-sm border border-purple-500/30 rounded-xl p-6 shadow-lg">
+                                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">🏋️</span>
+                                        Active Program
+                                    </h3>
+                                    {activeProgram ? (
+                                        <>
+                                            <div className="mb-4">
+                                                <h4 className="text-2xl font-bold text-white mb-1">{activeProgram.name}</h4>
+                                                <p className="text-gray-400 text-sm">
+                                                    {activeProgram.days.length} days • {activeProgram.description || 'Custom program'}
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => navigate(`/programs/${activeProgram.id}`)}
+                                                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200">
+                                                View Program →
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-400 mb-4">No active program</p>
+                                            <button
+                                                onClick={() => navigate('/programs')}
+                                                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all">
+                                                Create Program
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Next Workout Card */}
+                                <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/30 backdrop-blur-sm border border-pink-500/30 rounded-xl p-6 shadow-lg">
+                                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">📅</span>
+                                        Next Workout
+                                    </h3>
+                                    {nextWorkout && activeProgram ? (
+                                        <>
+                                            <div className="mb-4">
+                                                <h4 className="text-2xl font-bold text-white mb-1">{nextWorkout.name}</h4>
+                                                <p className="text-gray-400 text-sm">
+                                                    {nextWorkout.exercises?.length || 0} exercises • Day {nextWorkout.dayNumber}
+                                                </p>
+                                            </div>
+                                            {nextWorkout.exercises && nextWorkout.exercises.length > 0 && (
+                                                <div className="mb-4 space-y-1">
+                                                    {nextWorkout.exercises.slice(0, 3).map((ex: any, idx: number) => (
+                                                        <div key={idx} className="text-gray-300 text-sm">
+                                                            • {ex.exercise?.nameEn || ex.exercise?.name || 'Exercise'}
+                                                        </div>
+                                                    ))}
+                                                    {nextWorkout.exercises.length > 3 && (
+                                                        <div className="text-gray-400 text-sm">
+                                                            +{nextWorkout.exercises.length - 3} more...
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                            <button
+                                                onClick={() => startWorkout(nextWorkout.id, activeProgram.id)}
+                                                className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200">
+                                                Start Workout →
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-400 mb-4">No workout scheduled</p>
+                                            <button
+                                                onClick={() => navigate('/programs')}
+                                                className="px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-semibold transition-all">
+                                                Browse Programs
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Week Stats Card */}
+                                <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 backdrop-blur-sm border border-blue-500/30 rounded-xl p-6 shadow-lg">
+                                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">📊</span>
+                                        This Week
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <div className="text-gray-400 text-sm mb-1">Workouts</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-3xl font-bold text-white">{weekStats.workouts}</div>
+                                                {lastWeekStats.workouts > 0 && weekStats.workouts !== lastWeekStats.workouts && (
+                                                    <span className={`text-sm ${weekStats.workouts > lastWeekStats.workouts ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.workouts > lastWeekStats.workouts ? '↑' : '↓'}{Math.abs(weekStats.workouts - lastWeekStats.workouts)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-gray-400 text-sm mb-1">Total Sets</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-3xl font-bold text-white">{weekStats.sets}</div>
+                                                {lastWeekStats.sets > 0 && weekStats.sets !== lastWeekStats.sets && (
+                                                    <span className={`text-sm ${weekStats.sets > lastWeekStats.sets ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.sets > lastWeekStats.sets ? '↑' : '↓'}{Math.abs(weekStats.sets - lastWeekStats.sets)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-gray-400 text-sm mb-1">Volume</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-2xl font-bold text-white">{(weekStats.volume / 1000).toFixed(1)}k</div>
+                                                {lastWeekStats.volume > 0 && weekStats.volume !== lastWeekStats.volume && (
+                                                    <span className={`text-xs ${weekStats.volume > lastWeekStats.volume ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.volume > lastWeekStats.volume ? '↑' : '↓'}{((Math.abs(weekStats.volume - lastWeekStats.volume) / 1000).toFixed(1))}k
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-gray-400 text-sm mb-1">PRs</div>
+                                            <div className="flex items-center space-x-2">
+                                                <div className="text-3xl font-bold text-yellow-400">{weekStats.prs}</div>
+                                                {lastWeekStats.prs > 0 && weekStats.prs !== lastWeekStats.prs && (
+                                                    <span className={`text-sm ${weekStats.prs > lastWeekStats.prs ? 'text-green-400' : 'text-red-400'}`}>
+                                                        {weekStats.prs > lastWeekStats.prs ? '↑' : '↓'}{Math.abs(weekStats.prs - lastWeekStats.prs)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {weekStats.workouts > 0 && (
+                                        <div className="mt-4 pt-4 border-t border-blue-500/30 text-center">
+                                            <p className="text-blue-300 text-sm">
+                                                {weekStats.workouts >= 4 ? "🔥 Great progress!" : "💪 Keep it up!"}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Recent Progress Card */}
+                                <div className="bg-gradient-to-br from-yellow-900/30 to-orange-800/30 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-6 shadow-lg">
+                                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">🏆</span>
+                                        Recent Progress
+                                    </h3>
+                                    {topPRs.length > 0 ? (
+                                        <>
+                                            <div className="space-y-3 mb-4">
+                                                {topPRs.map((pr, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between">
+                                                        <div className="flex-1">
+                                                            <div className="text-white font-semibold">{pr.exerciseName}</div>
+                                                            <div className="text-gray-400 text-sm">{formatDate(pr.date)}</div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-yellow-400 font-bold">{pr.value}</div>
+                                                            <div className="text-gray-400 text-xs">
+                                                                {pr.type === 'weight' ? '💪' : pr.type === 'volume' ? '📊' : '🔥'}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button
+                                                onClick={() => navigate('/personal-records')}
+                                                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 text-sm">
+                                                View All PRs →
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-400 mb-4">No PRs yet</p>
+                                            <button
+                                                onClick={() => navigate('/programs')}
+                                                className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-semibold transition-all">
+                                                Start Training
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Quick Actions */}
+                            <div className={`bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 shadow-lg transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span className="mr-2">⚡</span>
+                                    Quick Actions
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <button
+                                        onClick={() => navigate('/programs')}
+                                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        🏋️ Programs
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/workout/history')}
+                                        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        📊 History
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/exercises')}
+                                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        📚 Exercises
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/personal-records')}
+                                        className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        🏆 Records
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Footer */}
+                    <div className="mt-8 text-center">
+                        <p className="text-gray-600 text-sm">
+                            🚀 Powered by Azure & Vercel | Built with ❤️
+                        </p>
+                    </div>
+                </main>
+            </div>
+        </div>
     );
 }

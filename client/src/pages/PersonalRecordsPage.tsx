@@ -132,7 +132,7 @@ export default function PersonalRecordsPage() {
             </header>
 
             {/* Filters */}
-            <div className="bg-gray-800/50 border-b border-gray-700 sticky top-[89px] z-10 backdrop-blur-md">
+            <div className="bg-gray-800/50 border-b border-gray-700 md:sticky md:top-[89px] z-10 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Date Range Filter */}

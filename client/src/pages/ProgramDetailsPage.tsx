@@ -172,24 +172,22 @@ export default function ProgramDetailsPage() {
                                 >
                                     ← Back
                                 </button>
-                                <h1 className="text-2xl font-bold text-white">{program.name}</h1>
+                                <h1 className="text-xl sm:text-2xl font-bold text-white">{program.name}</h1>
                                 {program.isActive && (
                                     <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs font-medium border border-green-500/30">
                                         Active
                                     </span>
                                 )}
                             </div>
-                            <div className="flex space-x-3">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                                 <button
                                     onClick={() => setShowAddDayModal(true)}
-                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
-                                >
+                                    className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200 min-h-[44px]">
                                     + Add Day
                                 </button>
                                 <button
                                     onClick={handleDeleteProgram}
-                                    className="px-4 py-2 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-lg font-semibold transition-all duration-200 border border-red-700"
-                                >
+                                    className="w-full sm:w-auto px-4 py-2 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-lg font-semibold transition-all duration-200 border border-red-700 min-h-[44px]">
                                     Delete Program
                                 </button>
                             </div>

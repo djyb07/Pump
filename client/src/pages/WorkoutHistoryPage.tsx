@@ -13,6 +13,7 @@ export default function WorkoutHistoryPage() {
     const [selectedProgram, setSelectedProgram] = useState('all');
     const [selectedExercise, setSelectedExercise] = useState('all');
     const [showOnlyPRs, setShowOnlyPRs] = useState(false);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     useEffect(() => {
         loadHistory();
@@ -154,6 +155,17 @@ export default function WorkoutHistoryPage() {
         setSelectedExercise('all');
         setShowOnlyPRs(false);
     };
+    const handleDeleteWorkout = async (workoutId: string) => {
+        try {
+            await workoutService.deleteWorkout(workoutId);
+            loadHistory();
+            setDeleteConfirmId(null);
+        } catch (err: any) {
+            console.error('Error deleting workout:', err);
+            alert('Failed to delete workout');
+        }
+    };
+
 
     if (loading) {
         return (
@@ -322,14 +334,27 @@ export default function WorkoutHistoryPage() {
                                                 {(workout as any).programName || 'Ad-hoc workout'}
                                             </p>
                                         </div>
-                                        <div className="text-right">
-                                            <div className="text-white font-semibold">
-                                                {formatDate(workout.startTime)}
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-right">
+                                                <div className="text-white font-semibold">
+                                                    {formatDate(workout.startTime)}
+                                                </div>
+                                                <div className="text-gray-400 text-sm">
+                                                    {formatDuration(workout.duration)}
+                                                </div>
                                             </div>
-                                            <div className="text-gray-400 text-sm">
-                                                {formatDuration(workout.duration)}
-                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setDeleteConfirmId(workout.id);
+                                                }}
+                                                className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
+                                                title="Delete workout"
+                                            >
+                                                🗑️
+                                            </button>
                                         </div>
+
                                     </div>
 
                                     <div className="grid grid-cols-3 gap-4">
@@ -365,6 +390,29 @@ export default function WorkoutHistoryPage() {
                     </div>
                 )}
             </main>
+            {deleteConfirmId && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg">
+                        <p className="text-white text-lg mb-4">
+                            Are you sure you want to delete this workout?
+                        </p>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={() => setDeleteConfirmId(null)}
+                                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleDeleteWorkout(deleteConfirmId)}
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

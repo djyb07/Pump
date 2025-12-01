@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
 import { useToast } from '../contexts/ToastContext';
-import { useToast } from '../contexts/ToastContext';
 
 export default function WorkoutHistoryPage() {
     const navigate = useNavigate();

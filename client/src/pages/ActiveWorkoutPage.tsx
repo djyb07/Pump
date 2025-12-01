@@ -151,18 +151,18 @@ export default function ActiveWorkoutPage() {
             {/* Header */}
             <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-white">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <h1 className="text-xl sm:text-2xl font-bold text-white">
                                 {workout.day?.name || 'Active Workout'}
                             </h1>
-                            <p className="text-gray-400 text-sm">
+                            <p className="text-gray-400 text-xs sm:text-sm">
                                 {workout.day?.program?.name} • {getElapsedTime()} elapsed
                             </p>
                         </div>
                         <button
                             onClick={handleFinishWorkout}
-                            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold transition-all"
+                            className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold transition-all text-base sm:text-sm min-h-[44px]"
                         >
                             ✓ Finish Workout
                         </button>
@@ -171,26 +171,26 @@ export default function ActiveWorkoutPage() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6">
                     {/* Main Exercise Area */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Exercise Navigator */}
                         <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-4">
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
                                 <button
                                     onClick={() => setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1))}
                                     disabled={currentExerciseIndex === 0}
-                                    className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full sm:w-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[44px]"
                                 >
                                     ← Previous
                                 </button>
-                                <span className="text-gray-400">
+                                <span className="text-gray-400 text-sm">
                                     Exercise {currentExerciseIndex + 1} of {totalExercises}
                                 </span>
                                 <button
                                     onClick={() => setCurrentExerciseIndex(Math.min(totalExercises - 1, currentExerciseIndex + 1))}
                                     disabled={currentExerciseIndex >= totalExercises - 1}
-                                    className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full sm:w-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[44px]"
                                 >
                                     Next →
                                 </button>
@@ -221,18 +221,19 @@ export default function ActiveWorkoutPage() {
 
                         {/* Set Logger */}
                         <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
-                            <h3 className="text-lg font-bold text-white mb-4">Log Set #{currentSets.length + 1}</h3>
+                            <h3 className="text-base sm:text-lg font-bold text-white mb-4">Log Set #{currentSets.length + 1}</h3>
 
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2">
                                         Reps *
                                     </label>
                                     <input
                                         type="number"
+                                        inputMode="numeric"
                                         value={reps}
                                         onChange={(e) => setReps(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white text-xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white text-2xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[56px]"
                                         placeholder="0"
                                     />
                                 </div>
@@ -242,10 +243,11 @@ export default function ActiveWorkoutPage() {
                                     </label>
                                     <input
                                         type="number"
+                                        inputMode="decimal"
                                         step="0.5"
                                         value={weight}
                                         onChange={(e) => setWeight(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white text-xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white text-2xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[56px]"
                                         placeholder="0"
                                     />
                                 </div>
@@ -254,7 +256,7 @@ export default function ActiveWorkoutPage() {
                             <button
                                 onClick={handleLogSet}
                                 disabled={!reps}
-                                className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold text-base sm:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
                             >
                                 ✓ Log Set
                             </button>

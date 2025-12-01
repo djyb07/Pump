@@ -38,20 +38,21 @@ export default function ActiveWorkoutPage() {
         return () => clearInterval(interval);
     }, [startTime]);
 
+
     const initWorkout = async () => {
         try {
-            // If dayId is provided, start a new workout (user clicked Start Workout)
-            if (dayId) {
-                const newWorkout = await workoutService.startWorkout(dayId);
-                setWorkout(newWorkout);
+            // First, always check if there's an active workout
+            const activeWorkout = await workoutService.getActiveWorkout();
+            if (activeWorkout) {
+                setWorkout(activeWorkout);
                 setLoading(false);
                 return;
             }
 
-            // No dayId - check if there's an active workout (page refresh scenario)
-            const activeWorkout = await workoutService.getActiveWorkout();
-            if (activeWorkout) {
-                setWorkout(activeWorkout);
+            // If dayId is provided and no active workout exists, start a new workout
+            if (dayId) {
+                const newWorkout = await workoutService.startWorkout(dayId);
+                setWorkout(newWorkout);
                 setLoading(false);
                 return;
             }

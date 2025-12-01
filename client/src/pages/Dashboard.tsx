@@ -326,17 +326,17 @@ export default function Dashboard() {
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Welcome Section */}
                     <div className={`mb-8 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                        <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/40 to-purple-900/40 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 shadow-2xl">
-                            <div className="flex items-center space-x-6">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/40 to-purple-900/40 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-4 sm:p-8 shadow-2xl">
+                            <div className="flex items-center space-x-4 sm:space-x-6">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-lg">
                                     {userInfo.initials}
                                 </div>
                                 <div className="flex-1">
-                                    <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
                                         Welcome Back, {userInfo.name}! 👋
                                     </h1>
                                     {userInfo.email && (
-                                        <p className="text-purple-300/80 text-sm">{userInfo.email}</p>
+                                        <p className="text-purple-300/80 text-xs sm:text-sm">{userInfo.email}</p>
                                     )}
                                 </div>
                             </div>
@@ -534,30 +534,30 @@ export default function Dashboard() {
                             </div>
 
                             {/* Quick Actions */}
-                            <div className={`bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 shadow-lg transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                            <div className={`bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-4 sm:p-6 shadow-lg transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                <h3 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center">
                                     <span className="mr-2">⚡</span>
                                     Quick Actions
                                 </h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                                     <button
                                         onClick={() => navigate('/programs')}
-                                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-3 sm:px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]">
                                         🏋️ Programs
                                     </button>
                                     <button
                                         onClick={() => navigate('/workout/history')}
-                                        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 px-3 sm:px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]">
                                         📊 History
                                     </button>
                                     <button
                                         onClick={() => navigate('/exercises')}
-                                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 px-3 sm:px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]">
                                         📚 Exercises
                                     </button>
                                     <button
                                         onClick={() => navigate('/personal-records')}
-                                        className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                        className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white py-3 px-3 sm:px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]">
                                         🏆 Records
                                     </button>
                                 </div>

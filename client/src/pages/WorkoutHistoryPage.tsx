@@ -13,7 +13,6 @@ export default function WorkoutHistoryPage() {
     const [selectedProgram, setSelectedProgram] = useState('all');
     const [selectedExercise, setSelectedExercise] = useState('all');
     const [showOnlyPRs, setShowOnlyPRs] = useState(false);
-    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     useEffect(() => {
         loadHistory();
@@ -154,17 +153,6 @@ export default function WorkoutHistoryPage() {
         setSelectedProgram('all');
         setSelectedExercise('all');
         setShowOnlyPRs(false);
-    };
-
-    const handleDeleteWorkout = async (workoutId: string) => {
-        try {
-            await workoutService.deleteWorkout(workoutId);
-            loadHistory();
-            setDeleteConfirmId(null);
-        } catch (err: any) {
-            console.error('Error deleting workout:', err);
-            alert('Failed to delete workout');
-        }
     };
 
     if (loading) {
@@ -334,25 +322,13 @@ export default function WorkoutHistoryPage() {
                                                 {(workout as any).programName || 'Ad-hoc workout'}
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="text-right">
-                                                <div className="text-white font-semibold">
-                                                    {formatDate(workout.startTime)}
-                                                </div>
-                                                <div className="text-gray-400 text-sm">
-                                                    {formatDuration(workout.duration)}
-                                                </div>
+                                        <div className="text-right">
+                                            <div className="text-white font-semibold">
+                                                {formatDate(workout.startTime)}
                                             </div>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setDeleteConfirmId(workout.id);
-                                                }}
-                                                className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
-                                                title="Delete workout"
-                                            >
-                                                🗑️
-                                            </button>
+                                            <div className="text-gray-400 text-sm">
+                                                {formatDuration(workout.duration)}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -384,235 +360,11 @@ export default function WorkoutHistoryPage() {
                                         </div>
                                     )}
                                 </div>
-                            <button
-                                onClick={() => navigate('/personal-records')}
-                                className="px-6 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-lg font-semibold transition-all">
-                                🏆 Personal Records
-                            </button>
-                            <button
-                                onClick={() => navigate('/dashboard')}
-                                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all">
-                                ← Back to Dashboard
-                            </button>
-                        </div>
-                    </div>
-                </div >
-            </header >
-
-        {/* Filters */ }
-        < div className = "bg-gray-800/50 border-b border-gray-700 md:sticky md:top-[89px] z-10 backdrop-blur-md" >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* Date Range Filter */}
-                    <div>
-                        <label className="block text-gray-400 text-sm mb-2">📅 Date Range</label>
-                        <select
-                            value={dateRange}
-                            onChange={(e) => setDateRange(e.target.value as any)}
-                            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-                            <option value="all">All Time</option>
-                            <option value="7">Last 7 Days</option>
-                            <option value="30">Last 30 Days</option>
-                            <option value="90">Last 90 Days</option>
-                        </select>
-                    </div>
-
-                    {/* Program Filter */}
-                    <div>
-                        <label className="block text-gray-400 text-sm mb-2">🏋️ Program</label>
-                        <select
-                            value={selectedProgram}
-                            onChange={(e) => setSelectedProgram(e.target.value)}
-                            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-                            <option value="all">All Programs</option>
-                            {uniquePrograms.map(p => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Exercise Filter */}
-                    <div>
-                        <label className="block text-gray-400 text-sm mb-2">💪 Exercise</label>
-                        <select
-                            value={selectedExercise}
-                            onChange={(e) => setSelectedExercise(e.target.value)}
-                            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-                            <option value="all">All Exercises</option>
-                            {uniqueExercises.map(ex => (
-                                <option key={ex.id} value={ex.id}>{ex.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* PR Filter */}
-                    <div>
-                        <label className="block text-gray-400 text-sm mb-2">🏆 PRs Only</label>
-                        <button
-                            onClick={() => setShowOnlyPRs(!showOnlyPRs)}
-                            className={`w-full px-4 py-2 rounded-lg font-semibold transition-all ${showOnlyPRs
-                                ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                                : 'bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-700'
-                                }`}>
-                            {showOnlyPRs ? '✓ PRs Only' : 'Show All'}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Clear Filters Button */}
-                {hasActiveFilters && (
-                    <div className="mt-4 flex items-center justify-between">
-                        <span className="text-gray-400 text-sm">
-                            {filteredWorkouts.length} result{filteredWorkouts.length !== 1 ? 's' : ''} found
-                        </span>
-                        <button
-                            onClick={clearFilters}
-                            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-semibold transition-all">
-                            ✕ Clear Filters
-                        </button>
+                            );
+                        })}
                     </div>
                 )}
-            </div>
-            </div >
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {error && (
-                <div className="mb-4 p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-                    {error}
-                </div>
-            )}
-
-            {filteredWorkouts.length === 0 ? (
-                <div className="text-center py-12">
-                    <div className="text-6xl mb-4">💪</div>
-                    <h2 className="text-2xl font-bold text-white mb-2">
-                        {hasActiveFilters ? 'No workouts match your filters' : 'No workouts yet!'}
-                    </h2>
-                    <p className="text-gray-400 mb-6">
-                        {hasActiveFilters
-                            ? 'Try adjusting your filters or clear them to see all workouts'
-                            : 'Start your first workout to see it here'
-                        }
-                    </p>
-                    {hasActiveFilters ? (
-                        <button
-                            onClick={clearFilters}
-                            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold transition-all">
-                            Clear Filters
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => navigate('/programs')}
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all">
-                            Go to Programs
-                        </button>
-                    )}
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {filteredWorkouts.map((workout) => {
-                        const prCount = getPRCount(workout);
-                        const volume = calculateTotalVolume(workout);
-                        const sets = getTotalSets(workout);
-
-                        return (
-                            <div
-                                key={workout.id}
-                                onClick={() => navigate(`/workout/${workout.id}`)}
-                                className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-purple-500/50 transition-all cursor-pointer">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">
-                                            {(workout as any).dayName || 'Custom Workout'}
-                                        </h3>
-                                        <p className="text-gray-400 text-sm">
-                                            {(workout as any).programName || 'Ad-hoc workout'}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-right">
-                                            <div className="text-white font-semibold">
-                                                {formatDate(workout.startTime)}
-                                            </div>
-                                            <div className="text-gray-400 text-sm">
-                                                {formatDuration(workout.duration)}
-                                            </div>
-                                        </div >
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setDeleteConfirmId(workout.id);
-                                            }}
-                                            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
-                                            title="Delete workout"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="bg-gray-800/50 rounded-lg p-3">
-                                        <div className="text-gray-400 text-sm mb-1">Exercises</div>
-                                        <div className="text-white font-bold text-lg">
-                                            {workout.exerciseLogs?.length || 0}
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-800/50 rounded-lg p-3">
-                                        <div className="text-gray-400 text-sm mb-1">Total Sets</div>
-                                        <div className="text-white font-bold text-lg">{sets}</div>
-                                    </div>
-                                    <div className="bg-gray-800/50 rounded-lg p-3">
-                                        <div className="text-gray-400 text-sm mb-1">Volume</div>
-                                        <div className="text-white font-bold text-lg">
-                                            {volume.toLocaleString()} kg
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {prCount > 0 && (
-                                    <div className="mt-4 flex items-center space-x-2">
-                                        <span className="text-yellow-500 text-xl">🏆</span>
-                                        <span className="text-yellow-400 font-semibold">
-                                            {prCount} Personal Record{prCount > 1 ? 's' : ''}!
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-        </main>
-
-    {/* Delete Confirmation Modal */ }
-    {
-        deleteConfirmId && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-md mx-4">
-                    <h3 className="text-xl font-bold text-white mb-2">Delete Workout?</h3>
-                    <p className="text-gray-400 mb-6">
-                        This will permanently delete this workout and recalculate your PRs.
-                        This action cannot be undone.
-                    </p>
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => setDeleteConfirmId(null)}
-                            className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => handleDeleteWorkout(deleteConfirmId)}
-                            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-        </div >
+            </main>
+        </div>
     );
 }

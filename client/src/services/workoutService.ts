@@ -96,10 +96,5 @@ export const workoutService = {
     async getWorkoutById(workoutLogId: string): Promise<WorkoutLog> {
         const response = await apiClient.get(`${API_URL}/workouts/${workoutLogId}`);
         return response.data;
-    },
-
-    // Delete workout
-    async deleteWorkout(workoutId: string): Promise<void> {
-        await apiClient.delete(`${API_URL}/workouts/${workoutId}`);
     }
 };

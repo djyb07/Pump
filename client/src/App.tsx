@@ -13,8 +13,6 @@ import WorkoutHistoryPage from './pages/WorkoutHistoryPage';
 import WorkoutDetailsPage from './pages/WorkoutDetailsPage';
 import ExerciseProgressPage from './pages/ExerciseProgressPage';
 import PersonalRecordsPage from './pages/PersonalRecordsPage';
-import { ToastProvider } from './contexts/ToastContext';
-import ToastContainer from './components/ToastContainer';
 
 // Simple protected route check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -27,73 +25,96 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <ToastProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-
-          {/* Protected routes */}
-          <Route path="/dashboard" element={
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/dashboard"
+          element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
-          } />
-          <Route path="/exercises" element={
+          }
+        />
+        <Route
+          path="/exercises"
+          element={
             <ProtectedRoute>
               <ExerciseLibrary />
             </ProtectedRoute>
-          } />
-          <Route path="/programs" element={
+          }
+        />
+        <Route
+          path="/programs"
+          element={
             <ProtectedRoute>
               <ProgramsPage />
             </ProtectedRoute>
-          } />
-          <Route path="/programs/new" element={
+          }
+        />
+        <Route
+          path="/programs/new"
+          element={
             <ProtectedRoute>
               <CreateProgramPage />
             </ProtectedRoute>
-          } />
-          <Route path="/programs/:id" element={
+          }
+        />
+        <Route
+          path="/programs/:id"
+          element={
             <ProtectedRoute>
               <ProgramDetailsPage />
             </ProtectedRoute>
-          } />
-          <Route path="/active-workout" element={
+          }
+        />
+        <Route
+          path="/workout/active"
+          element={
             <ProtectedRoute>
               <ActiveWorkoutPage />
             </ProtectedRoute>
-          } />
-          <Route path="/history" element={
+          }
+        />
+        <Route
+          path="/workout/history"
+          element={
             <ProtectedRoute>
               <WorkoutHistoryPage />
             </ProtectedRoute>
-          } />
-          <Route path="/workout/:id" element={
+          }
+        />
+        <Route
+          path="/workout/:id"
+          element={
             <ProtectedRoute>
               <WorkoutDetailsPage />
             </ProtectedRoute>
-          } />
-          <Route path="/exercise/:exerciseId/progress" element={
+          }
+        />
+        <Route
+          path="/exercise/:exerciseId/progress"
+          element={
             <ProtectedRoute>
               <ExerciseProgressPage />
             </ProtectedRoute>
-          } />
-          <Route path="/personal-records" element={
+          }
+        />
+        <Route
+          path="/personal-records"
+          element={
             <ProtectedRoute>
               <PersonalRecordsPage />
             </ProtectedRoute>
-          } />
-        </Routes>
-      </Router>
-      <ToastContainer />
-    </ToastProvider>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
-export default App;
+export default App

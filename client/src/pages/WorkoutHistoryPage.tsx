@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
+import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../contexts/ToastContext';
 
 export default function WorkoutHistoryPage() {
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const [workouts, setWorkouts] = useState<WorkoutLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -158,11 +161,12 @@ export default function WorkoutHistoryPage() {
     const handleDeleteWorkout = async (workoutId: string) => {
         try {
             await workoutService.deleteWorkout(workoutId);
+            showToast('success', 'Workout deleted successfully');
             loadHistory();
             setDeleteConfirmId(null);
         } catch (err: any) {
             console.error('Error deleting workout:', err);
-            alert('Failed to delete workout');
+            showToast('error', err.response?.data?.error || 'Failed to delete workout');
         }
     };
 

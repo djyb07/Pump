@@ -170,7 +170,7 @@ export default function WorkoutHistoryPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-white">📊 Workout History</h1>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-white">Workout History</h1>
                             <p className="text-gray-400 mt-1">
                                 {filteredWorkouts.length} {filteredWorkouts.length === 1 ? 'workout' : 'workouts'}
                                 {hasActiveFilters && ` (filtered from ${workouts.length})`}
@@ -244,8 +244,8 @@ export default function WorkoutHistoryPage() {
                             <button
                                 onClick={() => setShowOnlyPRs(!showOnlyPRs)}
                                 className={`w-full px-4 py-2 rounded-lg font-semibold transition-all ${showOnlyPRs
-                                        ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                                        : 'bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-700'
+                                    ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                                    : 'bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-700'
                                     }`}>
                                 {showOnlyPRs ? '✓ PRs Only' : 'Show All'}
                             </button>

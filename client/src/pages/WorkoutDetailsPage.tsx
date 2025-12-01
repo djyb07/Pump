@@ -130,7 +130,7 @@ export default function WorkoutDetailsPage() {
                             </p>
                         </div>
                         <button
-                            onClick={() => navigate('/history')}
+                            onClick={() => navigate('/workout/history')}
                             className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
                         >
                             ← Back to History

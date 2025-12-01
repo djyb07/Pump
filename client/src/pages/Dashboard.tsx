@@ -283,16 +283,8 @@ export default function Dashboard() {
     const topPRs = getRecentPRs();
 
     const startWorkout = async (dayId: string, programId: string) => {
-        try {
-            await apiClient.post('/api/workouts/start', {
-                dayId,
-                programId
-            });
-            // Navigate to the active page workout with dayId
-            navigate(`/workout/active?dayId=${dayId}`);
-        } catch (error) {
-            console.error('Failed to start workout:', error);
-        }
+        // Just navigate to active workout page - it will handle starting the workout
+        navigate(`/active-workout?dayId=${dayId}`);
     };
 
     return (

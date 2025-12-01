@@ -8,7 +8,8 @@ import {
     getWorkoutHistory,
     getWorkoutById,
     getExerciseProgress,
-    getPersonalRecords
+    getPersonalRecords,
+    deleteWorkout
 } from '../controllers/workoutController';
 import { recalculatePRs } from '../controllers/migrationController';
 
@@ -26,6 +27,7 @@ router.patch('/workouts/:id/finish', finishWorkout);  // Finish workout
 // Workout history
 router.get('/workouts', getWorkoutHistory);           // Get workout history
 router.get('/workouts/:id', getWorkoutById);          // Get specific workout
+router.delete('/workouts/:id', deleteWorkout);        // Delete workout
 
 // Analytics
 router.get('/analytics/progress/:exerciseId', getExerciseProgress);

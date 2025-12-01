@@ -16,6 +16,7 @@ export default function ProgramDetailsPage() {
     const [showExerciseModal, setShowExerciseModal] = useState(false);
     const [selectedDayId, setSelectedDayId] = useState<string>('');
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [exerciseSearch, setExerciseSearch] = useState('');
     const [editingExercise, setEditingExercise] = useState<DayExercise | null>(null);
     const [showAddDayModal, setShowAddDayModal] = useState(false);
     const [selectedExerciseInfo, setSelectedExerciseInfo] = useState<Exercise | null>(null);
@@ -314,48 +315,62 @@ export default function ProgramDetailsPage() {
                                     ×
                                 </button>
                             </div>
+                            {/* Search Bar */}
+                            <input
+                                type="text"
+                                placeholder="Search exercises..."
+                                value={exerciseSearch}
+                                onChange={(e) => setExerciseSearch(e.target.value)}
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
                         </div>
 
                         {/* Exercise List */}
                         <div className="flex-1 overflow-y-auto p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {exercises.map((exercise) => (
-                                    <div
-                                        key={exercise.id}
-                                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-200"
-                                    >
+                                {exercises
+                                    .filter(ex =>
+                                        exerciseSearch === '' ||
+                                        ex.nameEn.toLowerCase().includes(exerciseSearch.toLowerCase()) ||
+                                        ex.muscleGroups.some(mg => mg.toLowerCase().includes(exerciseSearch.toLowerCase()))
+                                    )
+                                    .map((exercise) => (
                                         <div
-                                            onClick={() => handleSelectExercise(exercise.id)}
-                                            className="cursor-pointer"
+                                            key={exercise.id}
+                                            className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-200"
                                         >
-                                            <h3 className="font-semibold text-white mb-1">{exercise.nameEn}</h3>
-                                            <p className="text-gray-400 text-sm mb-2">{exercise.muscleGroups.join(', ')}</p>
-                                            <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">
-                                                {exercise.difficulty}
-                                            </span>
-                                        </div>
-                                        <div className="flex space-x-2 mt-3 pt-3 border-t border-gray-700">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setSelectedExerciseInfo(exercise);
-                                                }}
-                                                className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                            <div
+                                                onClick={() => handleSelectExercise(exercise.id)}
+                                                className="cursor-pointer"
                                             >
-                                                ℹ️ Info
-                                            </button>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/exercise/${exercise.id}/progress`);
-                                                }}
-                                                className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all text-sm"
-                                            >
-                                                📊 Progress
-                                            </button>
+                                                <h3 className="font-semibold text-white mb-1">{exercise.nameEn}</h3>
+                                                <p className="text-gray-400 text-sm mb-2">{exercise.muscleGroups.join(', ')}</p>
+                                                <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">
+                                                    {exercise.difficulty}
+                                                </span>
+                                            </div>
+                                            <div className="flex space-x-2 mt-3 pt-3 border-t border-gray-700">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedExerciseInfo(exercise);
+                                                    }}
+                                                    className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                                >
+                                                    ℹ️ Info
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/exercise/${exercise.id}/progress`);
+                                                    }}
+                                                    className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                                >
+                                                    📊 Progress
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         </div>
                     </div>

@@ -87,7 +87,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     {exercise.muscleDiagramUrl && (
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold text-white mb-3">💪 Target Muscles</h3>
-                            <div className="rounded-xl overflow-hidden border-2 border-purple-500/30 bg-gray-800/50">
+                            <div className="rounded-xl overflow-hidden border-2 border-purple-500/30 bg-white">
                                 <img
                                     src={exercise.muscleDiagramUrl}
                                     alt={`${exercise.nameEn} muscle diagram`}

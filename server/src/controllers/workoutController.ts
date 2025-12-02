@@ -419,3 +419,147 @@ export const deleteWorkout = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message || 'Failed to delete workout' });
     }
 };
+
+// Update a specific set in an exercise log
+export const updateSet = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user!.id;
+        const { workoutLogId, exerciseLogId, setIndex } = req.params;
+        const { weight, reps } = req.body;
+
+        if (reps === undefined) {
+            return res.status(400).json({ error: 'reps is required' });
+        }
+
+        const setIdx = parseInt(setIndex);
+        if (isNaN(setIdx) || setIdx < 0) {
+            return res.status(400).json({ error: 'Invalid set index' });
+        }
+
+        // Verify workout belongs to user and is active
+        const workout = await prisma.workoutLog.findFirst({
+            where: {
+                id: workoutLogId,
+                userId,
+                status: 'active'
+            }
+        });
+
+        if (!workout) {
+            return res.status(404).json({ error: 'Active workout not found' });
+        }
+
+        // Get the exercise log
+        const exerciseLog = await prisma.exerciseLog.findFirst({
+            where: {
+                id: exerciseLogId,
+                workoutLogId
+            }
+        });
+
+        if (!exerciseLog) {
+            return res.status(404).json({ error: 'Exercise log not found' });
+        }
+
+        const sets = exerciseLog.sets as any[];
+        if (setIdx >= sets.length) {
+            return res.status(400).json({ error: 'Set index out of range' });
+        }
+
+        // Update the set
+        const updatedSets = [...sets];
+        updatedSets[setIdx] = {
+            ...updatedSets[setIdx],
+            weight: weight ?? updatedSets[setIdx].weight,
+            reps
+        };
+
+        // Update in database
+        const updated = await prisma.exerciseLog.update({
+            where: { id: exerciseLogId },
+            data: { sets: updatedSets },
+            include: {
+                dayExercise: {
+                    include: {
+                        exercise: true
+                    }
+                }
+            }
+        });
+
+        res.json(updated);
+    } catch (error: any) {
+        console.error('Error updating set:', error);
+        res.status(500).json({ error: error.message || 'Failed to update set' });
+    }
+};
+
+// Delete a specific set from an exercise log
+export const deleteSet = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user!.id;
+        const { workoutLogId, exerciseLogId, setIndex } = req.params;
+
+        const setIdx = parseInt(setIndex);
+        if (isNaN(setIdx) || setIdx < 0) {
+            return res.status(400).json({ error: 'Invalid set index' });
+        }
+
+        // Verify workout belongs to user and is active
+        const workout = await prisma.workoutLog.findFirst({
+            where: {
+                id: workoutLogId,
+                userId,
+                status: 'active'
+            }
+        });
+
+        if (!workout) {
+            return res.status(404).json({ error: 'Active workout not found' });
+        }
+
+        // Get the exercise log
+        const exerciseLog = await prisma.exerciseLog.findFirst({
+            where: {
+                id: exerciseLogId,
+                workoutLogId
+            }
+        });
+
+        if (!exerciseLog) {
+            return res.status(404).json({ error: 'Exercise log not found' });
+        }
+
+        const sets = exerciseLog.sets as any[];
+        if (setIdx >= sets.length) {
+            return res.status(400).json({ error: 'Set index out of range' });
+        }
+
+        // Remove the set
+        const updatedSets = sets.filter((_, index) => index !== setIdx);
+
+        // Update set numbers
+        const renumberedSets = updatedSets.map((set, index) => ({
+            ...set,
+            setNumber: index + 1
+        }));
+
+        // Update in database
+        const updated = await prisma.exerciseLog.update({
+            where: { id: exerciseLogId },
+            data: { sets: renumberedSets },
+            include: {
+                dayExercise: {
+                    include: {
+                        exercise: true
+                    }
+                }
+            }
+        });
+
+        res.json(updated);
+    } catch (error: any) {
+        console.error('Error deleting set:', error);
+        res.status(500).json({ error: error.message || 'Failed to delete set' });
+    }
+};

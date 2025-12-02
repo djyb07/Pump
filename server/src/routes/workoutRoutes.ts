@@ -9,7 +9,9 @@ import {
     getWorkoutById,
     getExerciseProgress,
     getPersonalRecords,
-    deleteWorkout
+    deleteWorkout,
+    updateSet,
+    deleteSet
 } from '../controllers/workoutController';
 import { recalculatePRs } from '../controllers/migrationController';
 
@@ -22,6 +24,8 @@ router.use(authenticateToken);
 router.post('/workouts/start', startWorkout);         // Start new workout
 router.get('/workouts/active', getActiveWorkout);     // Get current active workout
 router.post('/workouts/:id/sets', logSet);            // Log a set
+router.patch('/workouts/:workoutLogId/sets/:exerciseLogId/:setIndex', updateSet);  // Update a set
+router.delete('/workouts/:workoutLogId/sets/:exerciseLogId/:setIndex', deleteSet); // Delete a set
 router.patch('/workouts/:id/finish', finishWorkout);  // Finish workout
 
 // Workout history

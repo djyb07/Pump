@@ -436,17 +436,16 @@ export const updateSet = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Invalid set index' });
         }
 
-        // Verify workout belongs to user and is active
+        // Verify workout belongs to user
         const workout = await prisma.workoutLog.findFirst({
             where: {
                 id: workoutLogId,
-                userId,
-                status: 'active'
+                userId
             }
         });
 
         if (!workout) {
-            return res.status(404).json({ error: 'Active workout not found' });
+            return res.status(404).json({ error: 'Workout not found or access denied' });
         }
 
         // Get the exercise log

@@ -284,7 +284,7 @@ export default function Dashboard() {
 
     const startWorkout = async (dayId: string, programId: string) => {
         // Navigate to active workout page - let it handle starting the workout
-        navigate(`/active-workout?dayId=${dayId}&programId=${programId}`);
+        navigate(`/workout/active?dayId=${dayId}&programId=${programId}`);
     };
 
     return (

@@ -80,9 +80,9 @@ export default function WorkoutDetailsPage() {
         if (!workout?.exerciseLogs) return 0;
         let count = 0;
         workout.exerciseLogs.forEach(log => {
-            if (log.isWeightPR || log.isVolumePR || log.isRepsPR) {
-                count++;
-            }
+            if (log.isWeightPR) count++;
+            if (log.isVolumePR) count++;
+            if (log.isRepsPR) count++;
         });
         return count;
     };
@@ -140,21 +140,6 @@ export default function WorkoutDetailsPage() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* PR Banner - shown if any PRs */}
-                {prCount > 0 && (
-                    <div className="bg-gradient-to-r from-yellow-900/40 to-amber-900/40 border border-yellow-500/50 rounded-xl p-4 mb-6 shadow-lg">
-                        <div className="flex items-center space-x-3">
-                            <span className="text-3xl">🏆</span>
-                            <div>
-                                <h3 className="text-xl font-bold text-yellow-400">
-                                    {prCount} Personal Record{prCount > 1 ? 's' : ''} Achieved!
-                                </h3>
-                                <p className="text-yellow-200/80 text-sm">Great job! You hit new PRs in this workout.</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">

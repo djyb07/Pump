@@ -24,6 +24,12 @@ export default function ActiveWorkoutPage() {
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
     const [finishedWorkout, setFinishedWorkout] = useState<WorkoutLog | null>(null);
 
+    // Edit/Delete state
+    const [editingSet, setEditingSet] = useState<{ exerciseLogId: string, setIndex: number } | null>(null);
+    const [showEditConfirm, setShowEditConfirm] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [setToDelete, setSetToDelete] = useState<{ exerciseLogId: string, setIndex: number } | null>(null);
+
     useEffect(() => {
         initWorkout();
     }, [dayId]);
@@ -108,6 +114,89 @@ export default function ActiveWorkoutPage() {
     const handleCloseSummary = () => {
         setShowSummary(false);
         navigate('/workout/history');
+    };
+
+    // Handle edit set - load values into inputs
+    const handleEditSet = (exerciseLogId: string, setIndex: number, set: any) => {
+        setShowEditConfirm(true);
+        setEditingSet({ exerciseLogId, setIndex });
+        setReps(set.reps.toString());
+        setWeight(set.weight ? set.weight.toString() : '');
+    };
+
+    const confirmEdit = () => {
+        setShowEditConfirm(false);
+        // editingSet is already set, inputs are populated
+    };
+
+    const cancelEdit = () => {
+        setShowEditConfirm(false);
+        setEditingSet(null);
+        setReps('');
+        setWeight('');
+    };
+
+    // Handle update set (when in edit mode)
+    const handleUpdateSet = async () => {
+        if (!workout || !editingSet || !reps) return;
+
+        try {
+            const repsNum = parseInt(reps);
+            const weightNum = weight ? parseFloat(weight) : undefined;
+
+            await workoutService.updateSet(
+                workout.id,
+                editingSet.exerciseLogId,
+                editingSet.setIndex,
+                repsNum,
+                weightNum
+            );
+
+            // Reload workout to get updated data
+            const updatedWorkout = await workoutService.getWorkoutById(workout.id);
+            setWorkout(updatedWorkout);
+
+            // Clear editing state and inputs
+            setEditingSet(null);
+            setReps('');
+            setWeight('');
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to update set');
+        }
+    };
+
+    // Handle delete set request
+    const handleRequestDelete = (exerciseLogId: string, setIndex: number) => {
+        setSetToDelete({ exerciseLogId, setIndex });
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!workout || !setToDelete) return;
+
+        try {
+            await workoutService.deleteSet(
+                workout.id,
+                setToDelete.exerciseLogId,
+                setToDelete.setIndex
+            );
+
+            // Reload workout to get updated data
+            const updatedWorkout = await workoutService.getWorkoutById(workout.id);
+            setWorkout(updatedWorkout);
+
+            // Clear state
+            setSetToDelete(null);
+            setShowDeleteConfirm(false);
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to delete set');
+            setShowDeleteConfirm(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setSetToDelete(null);
+        setShowDeleteConfirm(false);
     };
 
     const getCurrentExerciseSets = (): SetLog[] => {
@@ -222,7 +311,9 @@ export default function ActiveWorkoutPage() {
 
                         {/* Set Logger */}
                         <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
-                            <h3 className="text-base sm:text-lg font-bold text-white mb-4">Log Set #{currentSets.length + 1}</h3>
+                            <h3 className="text-base sm:text-lg font-bold text-white mb-4">
+                                {editingSet ? `Edit Set #${editingSet.setIndex + 1}` : `Log Set #${currentSets.length + 1}`}
+                            </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
@@ -281,12 +372,24 @@ export default function ActiveWorkoutPage() {
                             </div>
 
                             <button
-                                onClick={handleLogSet}
+                                onClick={editingSet ? handleUpdateSet : handleLogSet}
                                 disabled={!reps}
                                 className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold text-base sm:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
                             >
-                                ✓ Log Set
+                                {editingSet ? '✓ Update Set' : '✓ Log Set'}
                             </button>
+                            {editingSet && (
+                                <button
+                                    onClick={() => {
+                                        setEditingSet(null);
+                                        setReps('');
+                                        setWeight('');
+                                    }}
+                                    className="w-full px-6 py-2 mt-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                                >
+                                    Cancel Edit
+                                </button>
+                            )}
                         </div>
 
                         {/* Set History */}
@@ -294,18 +397,40 @@ export default function ActiveWorkoutPage() {
                             <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
                                 <h3 className="text-lg font-bold text-white mb-4">Completed Sets</h3>
                                 <div className="space-y-2">
-                                    {currentSets.map((set, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"
-                                        >
-                                            <span className="text-gray-400">Set {set.setNumber}</span>
-                                            <span className="text-white font-semibold">
-                                                {set.weight ? `${set.weight}kg × ` : ''}{set.reps} reps
-                                            </span>
-                                            <span className="text-green-500">✓</span>
-                                        </div>
-                                    ))}
+                                    {currentSets.map((set, index) => {
+                                        const currentExerciseLog = workout.exerciseLogs?.find(
+                                            log => log.dayExerciseId === currentExercise?.id
+                                        );
+
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg gap-2"
+                                            >
+                                                <span className="text-gray-400">Set {set.setNumber}</span>
+                                                <span className="text-white font-semibold flex-1 text-center">
+                                                    {set.weight ? `${set.weight}kg × ` : ''}{set.reps} reps
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => currentExerciseLog && handleEditSet(currentExerciseLog.id, index, set)}
+                                                        className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold transition-all"
+                                                        title="Edit set"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                    <button
+                                                        onClick={() => currentExerciseLog && handleRequestDelete(currentExerciseLog.id, index)}
+                                                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-semibold transition-all"
+                                                        title="Delete set"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                    <span className="text-green-500">✓</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -324,6 +449,54 @@ export default function ActiveWorkoutPage() {
                     workout={finishedWorkout}
                     onClose={handleCloseSummary}
                 />
+            )}
+
+            {/* Edit Confirmation Modal */}
+            {showEditConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full">
+                        <h3 className="text-xl font-bold text-white mb-2">Edit This Set?</h3>
+                        <p className="text-gray-400 mb-6">The set values have been loaded into the input fields. Make your changes and click "Update Set".</p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={confirmEdit}
+                                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all"
+                            >
+                                OK
+                            </button>
+                            <button
+                                onClick={cancelEdit}
+                                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full">
+                        <h3 className="text-xl font-bold text-white mb-2">Delete This Set?</h3>
+                        <p className="text-gray-400 mb-6">Are you sure you want to delete this set? This action cannot be undone.</p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={confirmDelete}
+                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all"
+                            >
+                                Delete
+                            </button>
+                            <button
+                                onClick={cancelDelete}
+                                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* Exercise Info Modal */}

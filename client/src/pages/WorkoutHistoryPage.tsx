@@ -82,9 +82,9 @@ export default function WorkoutHistoryPage() {
     const getPRCount = (workout: WorkoutLog) => {
         let count = 0;
         workout.exerciseLogs?.forEach(log => {
-            if (log.isWeightPR || log.isVolumePR || log.isRepsPR) {
-                count++;
-            }
+            if (log.isWeightPR) count++;
+            if (log.isVolumePR) count++;
+            if (log.isRepsPR) count++;
         });
         return count;
     };

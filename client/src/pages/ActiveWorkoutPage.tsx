@@ -234,7 +234,19 @@ export default function ActiveWorkoutPage() {
                                         inputMode="numeric"
                                         min="1"
                                         value={reps}
-                                        onChange={(e) => setReps(e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            // Allow empty string for clearing
+                                            if (value === '') {
+                                                setReps('');
+                                                return;
+                                            }
+                                            // Only allow positive integers
+                                            const numValue = parseInt(value);
+                                            if (!isNaN(numValue) && numValue >= 1) {
+                                                setReps(value);
+                                            }
+                                        }}
                                         className="w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white text-2xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[56px]"
                                         placeholder="0"
                                     />
@@ -249,7 +261,19 @@ export default function ActiveWorkoutPage() {
                                         step="0.5"
                                         min="0"
                                         value={weight}
-                                        onChange={(e) => setWeight(e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            // Allow empty string for clearing
+                                            if (value === '') {
+                                                setWeight('');
+                                                return;
+                                            }
+                                            // Only allow non-negative numbers
+                                            const numValue = parseFloat(value);
+                                            if (!isNaN(numValue) && numValue >= 0) {
+                                                setWeight(value);
+                                            }
+                                        }}
                                         className="w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white text-2xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[56px]"
                                         placeholder="0"
                                     />

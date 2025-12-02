@@ -232,6 +232,7 @@ export default function ActiveWorkoutPage() {
                                     <input
                                         type="number"
                                         inputMode="numeric"
+                                        min="1"
                                         value={reps}
                                         onChange={(e) => setReps(e.target.value)}
                                         className="w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white text-2xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[56px]"
@@ -246,6 +247,7 @@ export default function ActiveWorkoutPage() {
                                         type="number"
                                         inputMode="decimal"
                                         step="0.5"
+                                        min="0"
                                         value={weight}
                                         onChange={(e) => setWeight(e.target.value)}
                                         className="w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white text-2xl text-center focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[56px]"

@@ -404,7 +404,13 @@ export default function Dashboard() {
                                                 </div>
                                             )}
                                             <button
-                                                onClick={() => startWorkout(nextWorkout.id, activeProgram.id)}
+                                                onClick={() => {
+                                                    if (!nextWorkout.exercises || nextWorkout.exercises.length === 0) {
+                                                        alert('Cannot start workout: This day has no exercises. Please add exercises first.');
+                                                        return;
+                                                    }
+                                                    startWorkout(nextWorkout.id, activeProgram.id);
+                                                }}
                                                 className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200">
                                                 Start Workout →
                                             </button>

@@ -98,8 +98,36 @@ export const workoutService = {
         return response.data;
     },
 
+
     // Delete workout
     async deleteWorkout(workoutId: string): Promise<void> {
         await apiClient.delete(`${API_URL}/workouts/${workoutId}`);
+    },
+
+    // Update a set in an active workout
+    async updateSet(
+        workoutLogId: string,
+        exerciseLogId: string,
+        setIndex: number,
+        reps: number,
+        weight?: number
+    ): Promise<ExerciseLog> {
+        const response = await apiClient.patch(
+            `${API_URL}/workouts/${workoutLogId}/sets/${exerciseLogId}/${setIndex}`,
+            { reps, weight }
+        );
+        return response.data;
+    },
+
+    // Delete a set from an active workout
+    async deleteSet(
+        workoutLogId: string,
+        exerciseLogId: string,
+        setIndex: number
+    ): Promise<ExerciseLog> {
+        const response = await apiClient.delete(
+            `${API_URL}/workouts/${workoutLogId}/sets/${exerciseLogId}/${setIndex}`
+        );
+        return response.data;
     }
 };

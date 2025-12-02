@@ -10,6 +10,7 @@ export default function ActiveWorkoutPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const dayId = searchParams.get('dayId');
+    const programId = searchParams.get('programId');
 
     const [workout, setWorkout] = useState<WorkoutLog | null>(null);
     const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ export default function ActiveWorkoutPage() {
         try {
             // If dayId is provided, start a new workout (user clicked Start Workout)
             if (dayId) {
-                const newWorkout = await workoutService.startWorkout(dayId);
+                const newWorkout = await workoutService.startWorkout(dayId, programId || undefined);
                 setWorkout(newWorkout);
                 setLoading(false);
                 return;

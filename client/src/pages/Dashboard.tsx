@@ -282,21 +282,17 @@ export default function Dashboard() {
     const userInfo = getUserInfo();
     const topPRs = getRecentPRs();
 
-    const startWorkout = async (dayId: string) => {
-        // Check if there's already an active workout
+    const startWorkout = async (dayId: string, programId: string) => {
         try {
-            const response = await apiClient.get('/api/workouts/active');
-            if (response.data) {
-                // Active workout exists - navigate to it
-                navigate('/active-workout');
-                return;
-            }
+            await apiClient.post('/api/workouts/start', {
+                dayId,
+                programId
+            });
+            // Navigate to the active page workout with dayId
+            navigate(`/workout/active?dayId=${dayId}`);
         } catch (error) {
-            // No active workout or error - continue to start new one
+            console.error('Failed to start workout:', error);
         }
-
-        // No active workout - navigate with dayId to start new one
-        navigate(`/active-workout?dayId=${dayId}`);
     };
 
     return (
@@ -416,7 +412,7 @@ export default function Dashboard() {
                                                 </div>
                                             )}
                                             <button
-                                                onClick={() => startWorkout(nextWorkout.id)}
+                                                onClick={() => startWorkout(nextWorkout.id, activeProgram.id)}
                                                 className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200">
                                                 Start Workout →
                                             </button>

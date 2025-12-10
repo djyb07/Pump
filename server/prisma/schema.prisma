@@ -15,6 +15,7 @@ model User {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   googleId             String?   @unique
+  // Password reset functionality - token expires after 1 hour
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 

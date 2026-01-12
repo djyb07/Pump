@@ -1,0 +1,2 @@
+# Python dependencies for E2E Selenium tests
+selenium>=4.0.0

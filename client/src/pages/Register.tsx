@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/auth';
+import { registerUser, loginUser } from '../services/auth';
 
 const Register: React.FC = () => {
     const navigate = useNavigate();
+
+    // Get API URL for Google OAuth (same as Login page)
+    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const API_URL = `${BASE_URL}/api`;
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -29,16 +34,26 @@ const Register: React.FC = () => {
 
         setLoading(true);
         try {
+            // Step 1: Register the user
             await registerUser({
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
                 password: formData.password,
             });
-            // Redirect to login or dashboard after success
-            // For now, let's just alert
-            alert('Registration successful! Please log in.');
-            navigate('/login');
+
+            // Step 2: Auto-login with the same credentials
+            const loginResponse = await loginUser({
+                email: formData.email,
+                password: formData.password,
+            });
+
+            // Step 3: Store token and user info in localStorage
+            localStorage.setItem('token', loginResponse.token);
+            localStorage.setItem('user', JSON.stringify(loginResponse.user));
+
+            // Step 4: Redirect directly to dashboard
+            navigate('/dashboard');
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -145,7 +160,7 @@ const Register: React.FC = () => {
 
                     <div className="mt-6">
                         <a
-                            href="http://localhost:5000/api/auth/google"
+                            href={`${API_URL}/auth/google`}
                             className="w-full flex items-center justify-center px-4 py-2 border border-gray-600 rounded shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 transition duration-200"
                         >
                             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">

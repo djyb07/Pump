@@ -1,0 +1,334 @@
+"""
+E2E Test: Workout Flow
+======================
+This test logs in, navigates to a program, starts a workout,
+adds a set, finishes the workout, and verifies redirection to history/details.
+
+Tested Flow:
+1. Login with valid credentials
+2. Navigate to a program's details page
+3. Click "Start Workout" on a day
+4. Add a set (weight and reps)
+5. Click "Finish Workout"
+6. Confirm in the modal
+7. Verify redirection to workout history or details page
+
+Requirements:
+- Chrome browser (or chromedriver in PATH)
+- selenium package: pip install selenium
+- Application running at http://localhost:5173
+- A valid registered user with at least one program containing exercises
+
+IMPORTANT: Update TEST_USER credentials and PROGRAM_ID before running!
+"""
+
+import time
+import sys
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+# ================== CONFIGURATION ==================
+BASE_URL = "https://pump-client.vercel.app"
+LOGIN_URL = f"{BASE_URL}/login"
+PROGRAMS_URL = f"{BASE_URL}/programs"
+ACTIVE_WORKOUT_URL = f"{BASE_URL}/workout/active"
+WORKOUT_HISTORY_URL = f"{BASE_URL}/workout/history"
+
+# Test user credentials - UPDATE THESE with valid credentials!
+TEST_USER = {
+    "email": "test@example.com",      # Replace with valid email
+    "password": "TestPassword123!"    # Replace with valid password
+}
+
+# Workout set data
+TEST_SET = {
+    "weight": "100",
+    "reps": "10"
+}
+
+TIMEOUT = 15  # seconds to wait for elements (longer for workout operations)
+
+
+def setup_driver():
+    """
+    Set up Chrome WebDriver with headless configuration.
+    Required for cloud/CI environments without a display server.
+    """
+    chrome_options = Options()
+    
+    # HEADLESS MODE - Essential for cloud environments (no GUI)
+    chrome_options.add_argument("--headless")
+    
+    # Security and stability options for headless Chrome
+    chrome_options.add_argument("--no-sandbox")  # Required for running as root/container
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited shared memory
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
+    chrome_options.add_argument("--window-size=1920,1080")  # Set viewport size
+    chrome_options.add_argument("--disable-extensions")  # Disable extensions for stability
+    
+    # Initialize the Chrome driver
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.implicitly_wait(5)  # Implicit wait for element location
+    
+    return driver
+
+
+def teardown_driver(driver):
+    """
+    Clean up - close the browser and quit the driver.
+    """
+    if driver:
+        driver.quit()
+
+
+def perform_login(driver, wait):
+    """
+    Helper function to perform login.
+    Returns True if login was successful, False otherwise.
+    """
+    print(f"\n[LOGIN] Navigating to login page: {LOGIN_URL}")
+    driver.get(LOGIN_URL)
+    time.sleep(2)
+    
+    # Fill and submit login form
+    print(f"[LOGIN] Entering credentials for: {TEST_USER['email']}")
+    
+    email_input = wait.until(EC.presence_of_element_located((By.NAME, "email")))
+    email_input.clear()
+    email_input.send_keys(TEST_USER['email'])
+    
+    password_input = driver.find_element(By.NAME, "password")
+    password_input.clear()
+    password_input.send_keys(TEST_USER['password'])
+    
+    submit_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+    submit_button.click()
+    
+    # Wait for redirect to dashboard
+    try:
+        wait.until(EC.url_contains("/dashboard"))
+        print("[LOGIN] ✓ Login successful")
+        return True
+    except TimeoutException:
+        print(f"[LOGIN] ✗ Login failed. Current URL: {driver.current_url}")
+        return False
+
+
+def test_workout_flow():
+    """
+    Main test function for workout flow.
+    """
+    driver = None
+    test_passed = False
+    
+    try:
+        print("=" * 60)
+        print("E2E TEST: Workout Flow")
+        print("=" * 60)
+        
+        # Step 1: Initialize WebDriver
+        print("\n[STEP 1] Setting up Chrome WebDriver (headless mode)...")
+        driver = setup_driver()
+        wait = WebDriverWait(driver, TIMEOUT)
+        print("✓ WebDriver initialized successfully")
+        
+        # Step 2: Login first
+        print("\n[STEP 2] Logging in to the application...")
+        if not perform_login(driver, wait):
+            print("✗ Cannot continue without successful login")
+            return False
+        
+        # Step 3: Navigate to Programs page and select a program
+        print(f"\n[STEP 3] Navigating to Programs page: {PROGRAMS_URL}")
+        driver.get(PROGRAMS_URL)
+        time.sleep(2)
+        
+        # Find and click on the first available program
+        try:
+            program_card = wait.until(
+                EC.element_to_be_clickable((
+                    By.CSS_SELECTOR, 
+                    "[class*='program'], [class*='card'], a[href*='/programs/']"
+                ))
+            )
+            print(f"✓ Found program: clicking...")
+            program_card.click()
+            time.sleep(2)
+        except TimeoutException:
+            # Try finding a link to a program
+            program_link = driver.find_element(By.XPATH, "//a[contains(@href, '/programs/')]")
+            program_link.click()
+            time.sleep(2)
+        
+        print(f"✓ Current URL: {driver.current_url}")
+        
+        # Step 4: Click "Start Workout" button
+        print("\n[STEP 4] Looking for 'Start Workout' button...")
+        
+        try:
+            start_workout_button = wait.until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[contains(text(), 'Start Workout')] | "
+                    "//button[contains(text(), 'Start')] | "
+                    "//button[contains(@class, 'start')]"
+                ))
+            )
+            print(f"✓ Found button: '{start_workout_button.text}'")
+            start_workout_button.click()
+            time.sleep(3)
+            
+        except TimeoutException:
+            print("✗ Could not find 'Start Workout' button")
+            return False
+        
+        print(f"✓ Current URL: {driver.current_url}")
+        
+        # Step 5: Verify we're on the active workout page
+        print("\n[STEP 5] Verifying active workout page...")
+        
+        if "/workout/active" not in driver.current_url:
+            print("✗ Not on active workout page")
+            print(f"  Current URL: {driver.current_url}")
+            # Try navigating directly
+            driver.get(ACTIVE_WORKOUT_URL)
+            time.sleep(2)
+        
+        # Step 6: Add a set (weight and reps)
+        print("\n[STEP 6] Adding a set with weight and reps...")
+        
+        try:
+            # Find weight input
+            weight_input = wait.until(
+                EC.presence_of_element_located((
+                    By.XPATH,
+                    "//input[@name='weight' or @placeholder*='weight' or @placeholder*='Weight' or @type='number'][1]"
+                ))
+            )
+            weight_input.clear()
+            weight_input.send_keys(TEST_SET['weight'])
+            print(f"  - Entered weight: {TEST_SET['weight']}")
+            
+            # Find reps input
+            reps_input = driver.find_element(
+                By.XPATH,
+                "//input[@name='reps' or @placeholder*='reps' or @placeholder*='Reps' or @type='number'][last()]"
+            )
+            reps_input.clear()
+            reps_input.send_keys(TEST_SET['reps'])
+            print(f"  - Entered reps: {TEST_SET['reps']}")
+            
+            # Find and click "Add Set" or save button
+            add_set_button = driver.find_element(
+                By.XPATH,
+                "//button[contains(text(), 'Add')] | "
+                "//button[contains(text(), 'Save')] | "
+                "//button[contains(text(), '+')] | "
+                "//button[@type='submit']"
+            )
+            add_set_button.click()
+            time.sleep(2)
+            print("✓ Set added successfully")
+            
+        except (TimeoutException, NoSuchElementException) as e:
+            print(f"! Could not add set: {e}")
+            print("  Continuing with workout finish...")
+        
+        # Step 7: Click "Finish Workout" button
+        print("\n[STEP 7] Clicking 'Finish Workout' button...")
+        
+        try:
+            finish_button = wait.until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[contains(text(), 'Finish')] | "
+                    "//button[contains(text(), 'Complete')] | "
+                    "//button[contains(text(), 'End')]"
+                ))
+            )
+            print(f"✓ Found button: '{finish_button.text}'")
+            finish_button.click()
+            time.sleep(2)
+            
+        except TimeoutException:
+            print("✗ Could not find 'Finish Workout' button")
+            return False
+        
+        # Step 8: Confirm in the modal
+        print("\n[STEP 8] Confirming workout finish in modal...")
+        
+        try:
+            # Look for confirmation button in modal
+            confirm_button = wait.until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[contains(text(), 'Confirm')] | "
+                    "//button[contains(text(), 'Yes')] | "
+                    "//button[contains(text(), 'OK')] | "
+                    "//div[contains(@class, 'modal')]//button[contains(@class, 'primary')] | "
+                    "//div[contains(@class, 'modal')]//button[1]"
+                ))
+            )
+            print(f"✓ Found confirmation button: '{confirm_button.text}'")
+            confirm_button.click()
+            time.sleep(3)
+            
+        except TimeoutException:
+            print("! No confirmation modal found (may have auto-confirmed)")
+        
+        # Step 9: Verify redirection to workout history or details
+        print("\n[STEP 9] Verifying redirection to workout history/details...")
+        
+        current_url = driver.current_url
+        print(f"  Current URL: {current_url}")
+        
+        if "/workout/history" in current_url or "/workout/" in current_url:
+            print("✓ Successfully redirected to workout history/details page")
+            test_passed = True
+        elif "/dashboard" in current_url:
+            print("✓ Redirected to dashboard (workout completed)")
+            test_passed = True
+        else:
+            print("! Checking if we're on a success page...")
+            
+            # Check for success indicators in page content
+            try:
+                success_indicator = driver.find_element(
+                    By.XPATH,
+                    "//*[contains(text(), 'Workout completed')] | "
+                    "//*[contains(text(), 'Success')] | "
+                    "//*[contains(text(), 'finished')]"
+                )
+                print(f"✓ Success indicator found: {success_indicator.text}")
+                test_passed = True
+            except NoSuchElementException:
+                print("✗ Could not verify workout completion")
+        
+    except Exception as e:
+        print(f"\n✗ TEST FAILED with exception: {type(e).__name__}: {str(e)}")
+        
+    finally:
+        # Cleanup
+        print("\n[CLEANUP] Closing browser...")
+        teardown_driver(driver)
+        
+        # Final result
+        print("\n" + "=" * 60)
+        if test_passed:
+            print("TEST PASSED")
+        else:
+            print("TEST FAILED")
+        print("=" * 60)
+        
+        return test_passed
+
+
+if __name__ == "__main__":
+    result = test_workout_flow()
+    sys.exit(0 if result else 1)

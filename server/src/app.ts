@@ -15,20 +15,7 @@ import passport from 'passport';
 // Load .env only in development (Azure uses Configuration settings)
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
-    console.log('📁 Loaded .env file (development mode)');
-} else {
-    console.log('☁️ Using Azure App Service Configuration (production mode)');
 }
-
-// DEBUG: Verify environment variables
-console.log('=== ENVIRONMENT VARIABLES ===');
-console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
-console.log('SERVER_URL:', process.env.SERVER_URL || 'NOT SET');
-console.log('CLIENT_URL:', process.env.CLIENT_URL || 'NOT SET');
-console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'SET ✅' : 'MISSING ❌');
-console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET ✅' : 'MISSING ❌');
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET ✅' : 'MISSING ❌');
-console.log('=============================');
 
 const app = express();
 
@@ -55,26 +42,13 @@ app.use(cors({
 app.use(express.json());
 app.use(passport.initialize());
 
-console.log('Mounting auth routes at /api/auth');
-console.log('authRoutes type:', typeof authRoutes);
-
+// Mount routes
 app.use('/api/auth', authRoutes);
-console.log('✅ Auth routes mounted');
-
 app.use('/api/exercises', exerciseRoutes);
-console.log('✅ Exercise routes mounted');
-
 app.use('/api/programs', programRoutes);
-console.log('✅ Program routes mounted');
-
 app.use('/api', dayRoutes);
-console.log('✅ Day routes mounted');
-
 app.use('/api', dayExerciseRoutes);
-console.log('✅ Day Exercise routes mounted');
-
 app.use('/api', workoutRoutes);
-console.log('✅ Workout routes mounted');
 
 app.get('/', (req, res) => {
     res.send('PUMP API is running');

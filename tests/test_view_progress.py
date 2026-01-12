@@ -272,60 +272,80 @@ def test_view_progress():
         
         print(f"✓ Current URL: {driver.current_url}")
         
-        # Step 7: Verify progress chart/graph component loads
-        print("\n[STEP 7] Verifying progress chart/graph component...")
+        # Step 7: Verify progress chart/graph component OR empty state
+        # Based on ExerciseProgressPage.tsx analysis:
+        # - Charts: Uses Recharts (LineChart, ResponsiveContainer)
+        # - Empty state: "No workout data in this time period"
+        print("\n[STEP 7] Verifying progress page content (chart OR empty state)...")
         
+        # First, check for empty state (new users have no data)
         try:
-            # Look for chart container elements (Recharts uses SVG)
-            # Multiple selectors to catch various chart implementations
-            chart_element = wait.until(
-                EC.presence_of_element_located((
-                    By.XPATH,
-                    "//div[contains(@class, 'chart')] | "
-                    "//div[contains(@class, 'recharts')] | "
-                    "//svg[contains(@class, 'recharts')] | "
-                    "//*[local-name()='svg'][@class='recharts-surface'] | "
-                    "//div[contains(@class, 'progress')] | "
-                    "//canvas | "
-                    "//*[contains(@class, 'graph')]"
-                ))
+            empty_state = driver.find_element(
+                By.XPATH,
+                "//*[contains(text(), 'No workout data')] | "
+                "//*[contains(text(), 'no data')] | "
+                "//*[contains(text(), 'No history')] | "
+                "//*[contains(text(), 'Start a workout')] | "
+                "//*[contains(text(), 'Try selecting')]"
             )
-            
-            print(f"✓ Chart element found: <{chart_element.tag_name}> with class='{chart_element.get_attribute('class')}'")
+            print(f"✓ Empty state found: '{empty_state.text[:50]}'")
+            print("✓ Test PASSED: Progress page loaded correctly (no data for new user)")
             test_passed = True
-            
-        except TimeoutException:
-            print("! Could not find chart using primary selectors")
-            
-            # Fallback: Check for SVG elements (common in charting libraries)
+        except NoSuchElementException:
+            print("  No empty state message found, checking for charts...")
+        
+        # If no empty state, look for charts
+        if not test_passed:
             try:
-                svg_elements = driver.find_elements(By.TAG_NAME, "svg")
-                if svg_elements:
-                    print(f"✓ Found {len(svg_elements)} SVG element(s) - likely charts")
-                    
-                    # Check if any SVG looks like a chart (has path elements, etc.)
-                    for svg in svg_elements:
-                        paths = svg.find_elements(By.TAG_NAME, "path")
-                        if len(paths) > 2:  # Charts typically have multiple paths
-                            print(f"✓ Found chart SVG with {len(paths)} paths")
-                            test_passed = True
-                            break
-                    
-                    if not test_passed:
-                        print("  SVG found but may not be a chart")
+                # Look for chart container elements (Recharts uses SVG)
+                chart_element = wait.until(
+                    EC.presence_of_element_located((
+                        By.XPATH,
+                        "//div[contains(@class, 'recharts')] | "
+                        "//*[local-name()='svg' and contains(@class, 'recharts')] | "
+                        "//div[contains(@class, 'chart')] | "
+                        "//*[contains(@class, 'ResponsiveContainer')]"
+                    ))
+                )
+                
+                print(f"✓ Chart element found: <{chart_element.tag_name}> with class='{chart_element.get_attribute('class')}'")
+                test_passed = True
+                
+            except TimeoutException:
+                print("! Could not find chart using primary selectors")
+                
+                # Fallback: Check for SVG elements (common in charting libraries)
+                try:
+                    svg_elements = driver.find_elements(By.TAG_NAME, "svg")
+                    if svg_elements:
+                        print(f"✓ Found {len(svg_elements)} SVG element(s)")
                         
-            except Exception as e:
-                print(f"  Error checking for SVG: {e}")
-            
-            # Also check page source for recharts indicators
-            if not test_passed:
-                page_source = driver.page_source
-                if "recharts" in page_source.lower() or "chart" in page_source.lower():
-                    print("✓ Chart-related content found in page source")
-                    test_passed = True
-                else:
-                    print("✗ No chart elements found on page")
-                    print(f"  Page title: {driver.title}")
+                        # Check if any SVG looks like a chart (has path elements)
+                        for svg in svg_elements:
+                            paths = svg.find_elements(By.TAG_NAME, "path")
+                            if len(paths) > 2:  # Charts typically have multiple paths
+                                print(f"✓ Found chart SVG with {len(paths)} paths")
+                                test_passed = True
+                                break
+                        
+                        if not test_passed:
+                            print("  SVG found but may not be a chart")
+                            
+                except Exception as e:
+                    print(f"  Error checking for SVG: {e}")
+                
+                # Also check page source for recharts indicators
+                if not test_passed:
+                    page_source = driver.page_source
+                    if "recharts" in page_source.lower():
+                        print("✓ Recharts library detected in page source")
+                        test_passed = True
+                    elif "No workout data" in page_source or "no data" in page_source.lower():
+                        print("✓ Empty state detected in page source")
+                        test_passed = True
+                    else:
+                        print("✗ No chart or empty state found on page")
+                        print(f"  Page title: {driver.title}")
         
         # Additional verification: Check for chart data/labels
         if test_passed:

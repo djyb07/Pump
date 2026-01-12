@@ -256,37 +256,49 @@ def test_workout_flow():
         print("\n[STEP 6] Adding a set with weight and reps...")
         
         try:
-            # Find weight input
-            weight_input = wait.until(
-                EC.presence_of_element_located((
-                    By.XPATH,
-                    "//input[@name='weight' or @placeholder*='weight' or @placeholder*='Weight' or @type='number'][1]"
+            # Based on ActiveWorkoutPage.tsx analysis:
+            # - Reps input: first input[type="number"] with label "Reps *"
+            # - Weight input: second input[type="number"] with label "Weight (kg)"
+            # Both have placeholder="0"
+            
+            # Find all number inputs in the set logger section
+            number_inputs = wait.until(
+                EC.presence_of_all_elements_located((
+                    By.CSS_SELECTOR,
+                    "input[type='number']"
                 ))
             )
-            weight_input.clear()
-            weight_input.send_keys(TEST_SET['weight'])
-            print(f"  - Entered weight: {TEST_SET['weight']}")
             
-            # Find reps input
-            reps_input = driver.find_element(
-                By.XPATH,
-                "//input[@name='reps' or @placeholder*='reps' or @placeholder*='Reps' or @type='number'][last()]"
-            )
-            reps_input.clear()
-            reps_input.send_keys(TEST_SET['reps'])
-            print(f"  - Entered reps: {TEST_SET['reps']}")
+            if len(number_inputs) >= 2:
+                # First input is Reps, second is Weight
+                reps_input = number_inputs[0]
+                weight_input = number_inputs[1]
+                
+                # Enter reps first (required)
+                reps_input.clear()
+                reps_input.send_keys(TEST_SET['reps'])
+                print(f"  - Entered reps: {TEST_SET['reps']}")
+                
+                # Enter weight
+                weight_input.clear()
+                weight_input.send_keys(TEST_SET['weight'])
+                print(f"  - Entered weight: {TEST_SET['weight']}")
+            else:
+                print(f"  Found {len(number_inputs)} number inputs, expected 2")
+                # Try anyway with first input
+                if number_inputs:
+                    number_inputs[0].send_keys(TEST_SET['reps'])
+                    print(f"  - Entered reps in first input: {TEST_SET['reps']}")
             
-            # Find and click "Add Set" or save button
-            add_set_button = driver.find_element(
+            # Find and click "Log Set" button (contains text "Log Set" or "✓ Log Set")
+            log_set_button = driver.find_element(
                 By.XPATH,
-                "//button[contains(text(), 'Add')] | "
-                "//button[contains(text(), 'Save')] | "
-                "//button[contains(text(), '+')] | "
-                "//button[@type='submit']"
+                "//button[contains(text(), 'Log Set')] | "
+                "//button[contains(text(), 'Update Set')]"
             )
-            add_set_button.click()
+            log_set_button.click()
             time.sleep(2)
-            print("✓ Set added successfully")
+            print("✓ Set logged successfully")
             
         except (TimeoutException, NoSuchElementException) as e:
             print(f"! Could not add set: {e}")

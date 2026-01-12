@@ -147,26 +147,78 @@ def test_workout_flow():
         # Step 3: Navigate to Programs page and select a program
         print(f"\n[STEP 3] Navigating to Programs page: {PROGRAMS_URL}")
         driver.get(PROGRAMS_URL)
+        time.sleep(3)  # Allow page and API to load
+        
+        # Wait for the main content/grid to load
+        print("  Waiting for programs grid to load...")
+        try:
+            wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "main, [class*='grid'], [class*='container']"))
+            )
+            print("✓ Main content loaded")
+        except TimeoutException:
+            print("✗ Main content did not load")
+            return False
+        
+        # Find and click on a program card
+        print("  Looking for a program card to click...")
+        program_clicked = False
+        
+        # Strategy 1: Find by text containing "PPL", "Program", or common split names
+        try:
+            program_card = driver.find_element(
+                By.XPATH,
+                "//div[contains(text(), 'PPL')] | "
+                "//h3[contains(text(), 'PPL')] | "
+                "//h2[contains(text(), 'PPL')] | "
+                "//div[contains(text(), 'Push')] | "
+                "//h3[contains(text(), 'Push')] | "
+                "//div[contains(text(), 'Upper')] | "
+                "//h3[contains(text(), 'Upper')] | "
+                "//a[contains(@href, '/programs/') and not(contains(@href, '/new'))]"
+            )
+            print(f"✓ Found program by text/link: '{program_card.text[:30] if program_card.text else 'link'}'")
+            program_card.click()
+            program_clicked = True
+        except NoSuchElementException:
+            print("  No program found by text, trying grid...")
+        
+        # Strategy 2: Find first clickable element in grid
+        if not program_clicked:
+            try:
+                # Find any clickable card in a grid layout
+                grid_items = driver.find_elements(
+                    By.CSS_SELECTOR,
+                    "[class*='grid'] > div, [class*='grid'] > a, [class*='card'], [class*='program']"
+                )
+                if grid_items:
+                    for item in grid_items:
+                        # Skip "Create New" buttons
+                        if "new" in item.text.lower() or "create" in item.text.lower():
+                            continue
+                        print(f"✓ Found grid item: '{item.text[:30] if item.text else 'card'}', clicking...")
+                        item.click()
+                        program_clicked = True
+                        break
+            except Exception as e:
+                print(f"  Grid search failed: {e}")
+        
+        if not program_clicked:
+            print("✗ Could not find any program to click")
+            return False
+        
         time.sleep(2)
         
-        # Find and click on the first available program
-        try:
-            program_card = wait.until(
-                EC.element_to_be_clickable((
-                    By.CSS_SELECTOR, 
-                    "[class*='program'], [class*='card'], a[href*='/programs/']"
-                ))
-            )
-            print(f"✓ Found program: clicking...")
-            program_card.click()
-            time.sleep(2)
-        except TimeoutException:
-            # Try finding a link to a program
-            program_link = driver.find_element(By.XPATH, "//a[contains(@href, '/programs/')]")
-            program_link.click()
-            time.sleep(2)
+        # CRITICAL ASSERTION: Verify URL changed to /programs/{id}
+        current_url = driver.current_url
+        print(f"  Current URL after click: {current_url}")
         
-        print(f"✓ Current URL: {driver.current_url}")
+        if "/programs/" not in current_url or "/programs/new" in current_url or current_url == PROGRAMS_URL:
+            print("✗ ASSERTION FAILED: URL did not change to a program details page")
+            print(f"  Expected URL to contain '/programs/{{id}}', got: {current_url}")
+            return False
+        
+        print(f"✓ ASSERTION PASSED: Successfully navigated to program details: {current_url}")
         
         # Step 4: Click "Start Workout" button
         print("\n[STEP 4] Looking for 'Start Workout' button...")

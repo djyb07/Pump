@@ -2,7 +2,14 @@
 
 ## Project Overview
 
-PUMP is a full-stack fitness tracking web application that allows users to:
+PUMP is a full-stack fitness tracking web application deployed in the cloud:
+
+**Live Production URLs:**
+- **Frontend:** Hosted on **Vercel** - `https://pump-client.vercel.app`
+- **Backend API:** Hosted on **Render** - `https://pump-api.onrender.com`
+- **Database:** **Supabase** PostgreSQL
+
+**Features:**
 - Create and manage workout programs
 - Track workouts in real-time
 - Log exercises with sets, reps, and weights
@@ -25,7 +32,8 @@ PUMP is a full-stack fitness tracking web application that allows users to:
 | Axios | 1.13.2 | HTTP client |
 | Recharts | 3.5.0 | Charts for progress visualization |
 
-**Development Server:** `http://localhost:5173`
+**Production:** Vercel (`https://pump-client.vercel.app`)  
+**Local Development:** `http://localhost:5173`
 
 ### Backend (Server)
 | Technology | Version | Purpose |
@@ -34,13 +42,14 @@ PUMP is a full-stack fitness tracking web application that allows users to:
 | Express | 5.1.0 | Web framework |
 | TypeScript | 5.9.3 | Type safety |
 | Prisma | 7.0.0 | ORM |
-| PostgreSQL | - | Database |
+| PostgreSQL | - | Database (Supabase) |
 | Passport.js | 0.7.0 | Authentication |
 | JWT | 9.0.2 | Token-based auth |
 | bcrypt | 6.0.0 | Password hashing |
 | Nodemailer | 7.0.10 | Email service |
 
-**API Server:** `http://localhost:5000`
+**Production:** Render (`https://pump-api.onrender.com`)  
+**Local Development:** `http://localhost:5000`
 
 ---
 
@@ -123,8 +132,8 @@ Pump/
 │   └── tsconfig.json
 │
 ├── .github/workflows/           # GitHub Actions
-│   ├── keep-alive.yml           # Azure keep-alive ping
-│   └── sync-to-azure-devops.yml
+│   ├── keep-alive.yml           # Server keep-alive ping
+│   └── sync-to-azure-devops.yml # Azure DevOps sync
 │
 ├── README.md
 ├── DEPLOYMENT_GUIDE.md
@@ -361,13 +370,13 @@ model ExerciseLog {
 
 ## Environment Variables
 
-### Server (.env)
+### Server Environment Variables (Render)
 ```env
-DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
+DATABASE_URL=postgresql://user:pass@supabase-host:5432/postgres?sslmode=require
 PORT=5000
 JWT_SECRET=your-secret-key
-SERVER_URL=http://localhost:5000
-CLIENT_URL=http://localhost:5173
+SERVER_URL=https://pump-api.onrender.com
+CLIENT_URL=https://pump-client.vercel.app
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-xxx
 EMAIL_HOST=smtp.gmail.com
@@ -376,10 +385,16 @@ EMAIL_USER=email@gmail.com
 EMAIL_PASSWORD=app-password
 ```
 
-### Client (.env)
+### Client Environment Variables (Vercel)
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=https://pump-api.onrender.com
 ```
+
+### Local Development
+For local development, use localhost URLs:
+- `SERVER_URL=http://localhost:5000`
+- `CLIENT_URL=http://localhost:5173`
+- `VITE_API_URL=http://localhost:5000`
 
 ---
 
@@ -450,9 +465,13 @@ Run seed: `npx prisma db execute --file prisma/seed.sql`
 
 ## Production Deployment
 
-- **Frontend:** Vercel (auto-deploy from GitHub)
-- **Backend:** Azure App Service
-- **Database:** PostgreSQL (Azure or Supabase)
+| Component | Platform | URL |
+|-----------|----------|-----|
+| **Frontend** | Vercel | `https://pump-client.vercel.app` |
+| **Backend API** | Render | `https://pump-api.onrender.com` |
+| **Database** | Supabase | PostgreSQL (managed) |
+
+All deployments are automatic via GitHub integration.
 
 ---
 

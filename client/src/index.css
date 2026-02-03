@@ -2,19 +2,35 @@
 
 /* Midnight Pro Design System */
 
-/* Glass Card Utility - use as a base for all cards/containers */
-.glass-card {
-    @apply bg-slate-900/60 backdrop-blur-md border border-white/5 shadow-xl rounded-xl;
+/* Root background with subtle lime glow for glass depth */
+body,
+#root {
+    background: radial-gradient(circle at 50% -20%, rgba(132, 204, 22, 0.15) 0%, rgba(2, 6, 23, 1) 50%);
+    min-height: 100vh;
 }
 
-/* Glass Card Variants */
+/* Glass Card Utility - True glassmorphism with depth */
+.glass-card {
+    @apply bg-slate-900/30 backdrop-blur-xl border border-white/10 rounded-xl;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Glass Card Large Variant */
 .glass-card-lg {
-    @apply bg-slate-900/60 backdrop-blur-md border border-white/5 shadow-xl rounded-2xl;
+    @apply bg-slate-900/30 backdrop-blur-xl border border-white/10 rounded-2xl;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Glass Card with lime accent border */
 .glass-card-accent {
-    @apply bg-slate-900/60 backdrop-blur-md border border-lime-400/20 shadow-xl rounded-xl;
+    @apply bg-slate-900/30 backdrop-blur-xl border border-lime-400/20 rounded-xl;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Primary Button Style */
@@ -50,9 +66,4 @@
 /* Smooth page transitions */
 html {
     scroll-behavior: smooth;
-}
-
-/* Prevent flash of white during page load */
-body {
-    @apply bg-slate-950;
 }

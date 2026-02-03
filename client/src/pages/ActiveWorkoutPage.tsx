@@ -224,15 +224,15 @@ export default function ActiveWorkoutPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
-                <div className="text-white text-xl">Loading workout...</div>
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="text-slate-200 text-xl">Loading workout...</div>
             </div>
         );
     }
 
     if (error || !workout) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
                 <div className="text-red-400 text-xl">{error || 'Failed to load workout'}</div>
             </div>
         );
@@ -246,7 +246,7 @@ export default function ActiveWorkoutPage() {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20">
+        <div className="min-h-screen bg-slate-950">
             {/* Header - Extracted Component */}
             <WorkoutHeader
                 workout={workout}
@@ -309,19 +309,19 @@ export default function ActiveWorkoutPage() {
             {/* Edit Confirmation Modal */}
             {showEditConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full">
+                    <div className="glass-card p-6 max-w-md w-full">
                         <h3 className="text-xl font-bold text-white mb-2">Edit This Set?</h3>
-                        <p className="text-gray-400 mb-6">The set values have been loaded into the input fields. Make your changes and click "Update Set".</p>
+                        <p className="text-slate-400 mb-6">The set values have been loaded into the input fields. Make your changes and click "Update Set".</p>
                         <div className="flex gap-3">
                             <button
                                 onClick={confirmEdit}
-                                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all"
+                                className="flex-1 px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                             >
                                 OK
                             </button>
                             <button
                                 onClick={cancelEdit}
-                                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                                className="flex-1 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all"
                             >
                                 Cancel
                             </button>
@@ -333,9 +333,9 @@ export default function ActiveWorkoutPage() {
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full">
+                    <div className="glass-card p-6 max-w-md w-full">
                         <h3 className="text-xl font-bold text-white mb-2">Delete This Set?</h3>
-                        <p className="text-gray-400 mb-6">Are you sure you want to delete this set? This action cannot be undone.</p>
+                        <p className="text-slate-400 mb-6">Are you sure you want to delete this set? This action cannot be undone.</p>
                         <div className="flex gap-3">
                             <button
                                 onClick={confirmDelete}
@@ -345,7 +345,7 @@ export default function ActiveWorkoutPage() {
                             </button>
                             <button
                                 onClick={cancelDelete}
-                                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                                className="flex-1 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all"
                             >
                                 Cancel
                             </button>

@@ -24,7 +24,7 @@ export function NextWorkoutCard({ nextWorkout, activeProgram, onStartWorkout, on
     };
 
     return (
-        <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/30 backdrop-blur-sm border border-pink-500/30 rounded-xl p-6 shadow-lg">
+        <div className="glass-card p-6">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                 <span className="mr-2">📅</span>
                 Next Workout
@@ -33,19 +33,19 @@ export function NextWorkoutCard({ nextWorkout, activeProgram, onStartWorkout, on
                 <>
                     <div className="mb-4">
                         <h4 className="text-2xl font-bold text-white mb-1">{nextWorkout.name}</h4>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-slate-400 text-sm">
                             {nextWorkout.exercises?.length || 0} exercises • Day {nextWorkout.dayNumber}
                         </p>
                     </div>
                     {nextWorkout.exercises && nextWorkout.exercises.length > 0 && (
                         <div className="mb-4 space-y-1">
                             {nextWorkout.exercises.slice(0, 3).map((ex: any, idx: number) => (
-                                <div key={idx} className="text-gray-300 text-sm">
+                                <div key={idx} className="text-slate-300 text-sm">
                                     • {ex.exercise?.nameEn || ex.exercise?.name || 'Exercise'}
                                 </div>
                             ))}
                             {nextWorkout.exercises.length > 3 && (
-                                <div className="text-gray-400 text-sm">
+                                <div className="text-slate-500 text-sm">
                                     +{nextWorkout.exercises.length - 3} more...
                                 </div>
                             )}
@@ -53,16 +53,16 @@ export function NextWorkoutCard({ nextWorkout, activeProgram, onStartWorkout, on
                     )}
                     <button
                         onClick={handleStartWorkout}
-                        className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200">
+                        className="w-full bg-lime-400 hover:bg-lime-500 text-slate-950 py-3 px-4 rounded-lg font-semibold transition-all duration-200">
                         Start Workout →
                     </button>
                 </>
             ) : (
                 <div className="text-center py-8">
-                    <p className="text-gray-400 mb-4">No workout scheduled</p>
+                    <p className="text-slate-400 mb-4">No workout scheduled</p>
                     <button
                         onClick={() => onNavigate('/programs')}
-                        className="px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-semibold transition-all">
+                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all">
                         Browse Programs
                     </button>
                 </div>

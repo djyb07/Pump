@@ -62,7 +62,7 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
     const progress = ((initialSeconds - seconds) / initialSeconds) * 100;
 
     return (
-        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+        <div className="glass-card p-6">
             <h3 className="text-lg font-bold text-white mb-4">⏱️ Rest Timer</h3>
 
             {/* Circular Progress */}
@@ -76,7 +76,7 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
                             stroke="currentColor"
                             strokeWidth="8"
                             fill="none"
-                            className="text-gray-800"
+                            className="text-slate-800"
                         />
                         <circle
                             cx="64"
@@ -87,7 +87,7 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
                             fill="none"
                             strokeDasharray={`${2 * Math.PI * 56}`}
                             strokeDashoffset={`${2 * Math.PI * 56 * (1 - progress / 100)}`}
-                            className="text-purple-500 transition-all duration-1000"
+                            className="text-lime-400 transition-all duration-1000"
                             strokeLinecap="round"
                         />
                     </svg>
@@ -104,27 +104,27 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
                 {!isRunning ? (
                     <button
                         onClick={startTimer}
-                        className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
+                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                     >
                         ▶️ Start
                     </button>
                 ) : (
                     <button
                         onClick={pauseTimer}
-                        className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-semibold transition-all"
+                        className="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-lg font-semibold transition-all"
                     >
                         {isPaused ? '▶️ Resume' : '⏸️ Pause'}
                     </button>
                 )}
                 <button
                     onClick={resetTimer}
-                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                    className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all"
                 >
                     🔄 Reset
                 </button>
                 <button
                     onClick={skipTimer}
-                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                    className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all"
                 >
                     ⏭️ Skip
                 </button>

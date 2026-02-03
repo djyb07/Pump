@@ -100,30 +100,30 @@ export default function PersonalRecordsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
-                <div className="text-white text-xl">Loading records...</div>
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="text-slate-200 text-xl">Loading records...</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20">
+        <div className="min-h-screen bg-slate-950">
             {/* Header */}
-            <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10">
+            <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center">
                                 🏆 Personal Records
                             </h1>
-                            <p className="text-gray-400 mt-1">
+                            <p className="text-slate-400 mt-1">
                                 {filteredRecords.length} {filteredRecords.length === 1 ? 'exercise' : 'exercises'}
                                 {hasActiveFilters && ` (filtered from ${records.length})`}
                             </p>
                         </div>
                         <button
                             onClick={() => navigate(-1)}
-                            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
+                            className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                         >
                             ← Go Back
                         </button>
@@ -132,16 +132,16 @@ export default function PersonalRecordsPage() {
             </header>
 
             {/* Filters */}
-            <div className="bg-gray-800/50 border-b border-gray-700 md:sticky md:top-[89px] z-10 backdrop-blur-md">
+            <div className="bg-slate-900/60 border-b border-white/5 md:sticky md:top-[89px] z-10 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Date Range Filter */}
                         <div>
-                            <label className="block text-gray-400 text-sm mb-2">📅 Date Range</label>
+                            <label className="block text-slate-400 text-sm mb-2">📅 Date Range</label>
                             <select
                                 value={dateRange}
                                 onChange={(e) => setDateRange(e.target.value as any)}
-                                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                                className="w-full px-4 py-2 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50">
                                 <option value="all">All Time</option>
                                 <option value="30">Last 30 Days</option>
                                 <option value="90">Last 90 Days</option>
@@ -152,23 +152,23 @@ export default function PersonalRecordsPage() {
 
                         {/* Exercise Search */}
                         <div>
-                            <label className="block text-gray-400 text-sm mb-2">💪 Exercise Search</label>
+                            <label className="block text-slate-400 text-sm mb-2">💪 Exercise Search</label>
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search exercises..."
-                                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                                className="w-full px-4 py-2 bg-slate-800/60 border border-white/5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                             />
                         </div>
 
                         {/* PR Type Filter */}
                         <div>
-                            <label className="block text-gray-400 text-sm mb-2">🏆 PR Type</label>
+                            <label className="block text-slate-400 text-sm mb-2">🏆 PR Type</label>
                             <select
                                 value={prType}
                                 onChange={(e) => setPrType(e.target.value as any)}
-                                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                                className="w-full px-4 py-2 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50">
                                 <option value="all">All PRs</option>
                                 <option value="weight">Weight PRs</option>
                                 <option value="volume">Volume PRs</option>
@@ -180,12 +180,12 @@ export default function PersonalRecordsPage() {
                     {/* Clear Filters Button */}
                     {hasActiveFilters && (
                         <div className="mt-4 flex items-center justify-between">
-                            <span className="text-gray-400 text-sm">
+                            <span className="text-slate-400 text-sm">
                                 {filteredRecords.length} result{filteredRecords.length !== 1 ? 's' : ''} found
                             </span>
                             <button
                                 onClick={clearFilters}
-                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-semibold transition-all">
+                                className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-slate-300 rounded-lg text-sm font-semibold transition-all">
                                 ✕ Clear Filters
                             </button>
                         </div>
@@ -201,7 +201,7 @@ export default function PersonalRecordsPage() {
                 )}
 
                 {filteredRecords.length === 0 ? (
-                    <div className="text-center text-gray-400 py-12">
+                    <div className="text-center text-slate-400 py-12">
                         <div className="text-6xl mb-4">🏆</div>
                         <p className="text-xl mb-2">
                             {hasActiveFilters ? 'No PRs match your filters' : 'No personal records yet'}
@@ -215,7 +215,7 @@ export default function PersonalRecordsPage() {
                         {hasActiveFilters && (
                             <button
                                 onClick={clearFilters}
-                                className="mt-4 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold transition-all">
+                                className="mt-4 px-6 py-3 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold transition-all">
                                 Clear Filters
                             </button>
                         )}
@@ -225,16 +225,16 @@ export default function PersonalRecordsPage() {
                         {filteredRecords.map(record => (
                             <div
                                 key={record.exerciseId}
-                                className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-purple-500/50 transition-all"
+                                className="glass-card p-6 hover:border-lime-400/30 transition-all"
                             >
                                 {/* Exercise Header */}
                                 <button
                                     onClick={() => navigate(`/exercise/${record.exerciseId}/progress`)}
-                                    className="w-full text-left mb-4 hover:text-purple-400 transition-colors"
+                                    className="w-full text-left mb-4 hover:text-lime-400 transition-colors"
                                 >
                                     <h2 className="text-2xl font-bold text-white flex items-center justify-between">
                                         {record.exerciseName}
-                                        <span className="text-sm text-gray-400">📊 View Progress</span>
+                                        <span className="text-sm text-slate-400">📊 View Progress</span>
                                     </h2>
                                 </button>
 
@@ -242,28 +242,28 @@ export default function PersonalRecordsPage() {
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     {/* Weight PR */}
                                     {record.bestWeight > 0 && (prType === 'all' || prType === 'weight') && (
-                                        <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-lg p-4">
-                                            <div className="text-purple-400 text-sm font-medium mb-1">💪 Weight PR</div>
+                                        <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4">
+                                            <div className="text-lime-400 text-sm font-medium mb-1">💪 Weight PR</div>
                                             <div className="text-3xl font-bold text-white">{record.bestWeight} kg</div>
-                                            <div className="text-gray-400 text-xs mt-1">{formatDate(record.bestWeightDate)}</div>
+                                            <div className="text-slate-400 text-xs mt-1">{formatDate(record.bestWeightDate)}</div>
                                         </div>
                                     )}
 
                                     {/* Volume PR */}
                                     {record.bestVolume > 0 && (prType === 'all' || prType === 'volume') && (
-                                        <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-500/30 rounded-lg p-4">
-                                            <div className="text-pink-400 text-sm font-medium mb-1">📊 Volume PR</div>
+                                        <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4">
+                                            <div className="text-lime-400 text-sm font-medium mb-1">📊 Volume PR</div>
                                             <div className="text-3xl font-bold text-white">{Math.round(record.bestVolume)} kg</div>
-                                            <div className="text-gray-400 text-xs mt-1">{formatDate(record.bestVolumeDate)}</div>
+                                            <div className="text-slate-400 text-xs mt-1">{formatDate(record.bestVolumeDate)}</div>
                                         </div>
                                     )}
 
                                     {/* Reps PR */}
                                     {record.bestReps > 0 && (prType === 'all' || prType === 'reps') && (
-                                        <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-lg p-4">
-                                            <div className="text-green-400 text-sm font-medium mb-1">🔥 Reps PR</div>
+                                        <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4">
+                                            <div className="text-lime-400 text-sm font-medium mb-1">🔥 Reps PR</div>
                                             <div className="text-3xl font-bold text-white">{record.bestReps}</div>
-                                            <div className="text-gray-400 text-xs mt-1">{formatDate(record.bestRepsDate)}</div>
+                                            <div className="text-slate-400 text-xs mt-1">{formatDate(record.bestRepsDate)}</div>
                                         </div>
                                     )}
                                 </div>

@@ -23,12 +23,12 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900 rounded-xl border border-gray-800 max-w-md w-full p-6">
+            <div className="glass-card-lg max-w-md w-full p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-white">Edit Exercise</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-white text-2xl"
+                        className="text-slate-400 hover:text-white text-2xl"
                     >
                         ×
                     </button>
@@ -36,16 +36,16 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-gray-300 font-semibold mb-2">
+                        <label className="block text-slate-300 font-semibold mb-2">
                             {dayExercise.exercise?.nameEn}
                         </label>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-slate-500 text-sm">
                             {dayExercise.exercise?.muscleGroups.join(', ')}
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-gray-300 font-medium mb-2">
+                        <label className="block text-slate-300 font-medium mb-2">
                             Target Sets
                         </label>
                         <input
@@ -54,13 +54,13 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
                             max="10"
                             value={sets}
                             onChange={(e) => setSets(parseInt(e.target.value))}
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                            className="w-full px-4 py-3 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-gray-300 font-medium mb-2">
+                        <label className="block text-slate-300 font-medium mb-2">
                             Target Reps
                         </label>
                         <input
@@ -69,13 +69,13 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
                             max="50"
                             value={reps}
                             onChange={(e) => setReps(parseInt(e.target.value))}
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                            className="w-full px-4 py-3 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-gray-300 font-medium mb-2">
+                        <label className="block text-slate-300 font-medium mb-2">
                             Target Weight (kg) - Optional
                         </label>
                         <input
@@ -84,7 +84,7 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
                             step="0.5"
                             value={weight}
                             onChange={(e) => setWeight(parseFloat(e.target.value))}
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                            className="w-full px-4 py-3 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50"
                         />
                     </div>
 
@@ -92,13 +92,13 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
+                            className="flex-1 px-4 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg font-semibold transition-colors border border-white/5"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors"
+                            className="flex-1 px-4 py-3 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-colors"
                         >
                             Save Changes
                         </button>

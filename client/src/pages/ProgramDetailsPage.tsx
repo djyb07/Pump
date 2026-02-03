@@ -140,41 +140,41 @@ export default function ProgramDetailsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
-                <div className="text-white text-xl">Loading program...</div>
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="text-slate-200 text-xl">Loading program...</div>
             </div>
         );
     }
 
     if (!program) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
-                <div className="text-white text-xl">Program not found</div>
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="text-slate-200 text-xl">Program not found</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
-            {/* Background orbs */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl animate-pulse delay-700"></div>
+        <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+            {/* Background subtle glow */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
 
             <div className="relative z-10">
                 {/* Header */}
-                <header className="border-b border-gray-800/50 backdrop-blur-sm bg-gray-900/30">
+                <header className="border-b border-white/5 backdrop-blur-sm bg-slate-900/60">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                                 <button
                                     onClick={() => navigate('/programs')}
-                                    className="text-gray-400 hover:text-white transition-colors"
+                                    className="text-slate-400 hover:text-white transition-colors"
                                 >
                                     ← Back
                                 </button>
                                 <h1 className="text-xl sm:text-2xl font-bold text-white">{program.name}</h1>
                                 {program.isActive && (
-                                    <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs font-medium border border-green-500/30">
+                                    <span className="px-3 py-1 bg-lime-400/20 text-lime-400 rounded-full text-xs font-medium border border-lime-400/30">
                                         Active
                                     </span>
                                 )}
@@ -182,7 +182,7 @@ export default function ProgramDetailsPage() {
                             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                                 <button
                                     onClick={() => setShowAddDayModal(true)}
-                                    className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200 min-h-[44px]">
+                                    className="w-full sm:w-auto px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all duration-200 min-h-[44px]">
                                     + Add Day
                                 </button>
                                 <button
@@ -208,24 +208,24 @@ export default function ProgramDetailsPage() {
                         {program.days?.map((day) => (
                             <div
                                 key={day.id}
-                                className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6"
+                                className="glass-card p-6"
                             >
                                 {/* Day Header */}
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
                                         <h2 className="text-xl font-bold text-white">{day.name}</h2>
-                                        <p className="text-gray-400 text-sm">{day.exercises?.length || 0} exercises</p>
+                                        <p className="text-slate-400 text-sm">{day.exercises?.length || 0} exercises</p>
                                     </div>
                                     <div className="flex space-x-2">
                                         <button
                                             onClick={() => navigate(`/workout/active?dayId=${day.id}`)}
-                                            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all duration-200 transform hover:scale-105"
+                                            className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold transition-all duration-200 transform hover:scale-105"
                                         >
                                             ▶️ Start Workout
                                         </button>
                                         <button
                                             onClick={() => handleAddExercise(day.id)}
-                                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
+                                            className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all duration-200"
                                         >
                                             + Add Exercise
                                         </button>
@@ -244,11 +244,11 @@ export default function ProgramDetailsPage() {
                                         {day.exercises.map((dayEx: DayExercise) => (
                                             <div
                                                 key={dayEx.id}
-                                                className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-colors"
+                                                className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-white/5 hover:border-lime-400/30 transition-colors"
                                             >
                                                 <div className="flex-1">
                                                     <h3 className="font-semibold text-white">{dayEx.exercise?.nameEn}</h3>
-                                                    <p className="text-gray-400 text-sm">
+                                                    <p className="text-slate-400 text-sm">
                                                         {dayEx.targetSets} sets × {dayEx.targetReps} reps
                                                         {dayEx.targetWeight && ` @ ${dayEx.targetWeight}kg`}
                                                     </p>
@@ -259,21 +259,21 @@ export default function ProgramDetailsPage() {
                                                             const ex = await exerciseService.getById(dayEx.exerciseId);
                                                             setSelectedExerciseInfo(ex);
                                                         }}
-                                                        className="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 rounded hover:bg-blue-500/10"
+                                                        className="text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
                                                         title="Exercise Info"
                                                     >
                                                         ℹ️
                                                     </button>
                                                     <button
                                                         onClick={() => navigate(`/exercise/${dayEx.exerciseId}/progress`)}
-                                                        className="text-green-400 hover:text-green-300 transition-colors px-2 py-1 rounded hover:bg-green-500/10"
+                                                        className="text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
                                                         title="View Progress"
                                                     >
                                                         📊
                                                     </button>
                                                     <button
                                                         onClick={() => handleEditExercise(dayEx)}
-                                                        className="text-purple-400 hover:text-purple-300 transition-colors px-2 py-1 rounded hover:bg-purple-500/10"
+                                                        className="text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
                                                     >
                                                         ✏️ Edit
                                                     </button>
@@ -288,7 +288,7 @@ export default function ProgramDetailsPage() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-8 text-gray-500">
+                                    <div className="text-center py-8 text-slate-500">
                                         No exercises yet. Click "Add Exercise" to get started.
                                     </div>
                                 )}
@@ -301,14 +301,14 @@ export default function ProgramDetailsPage() {
             {/* Exercise Selection Modal */}
             {showExerciseModal && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-gray-900 rounded-xl border border-gray-800 max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+                    <div className="glass-card-lg max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-gray-800">
+                        <div className="p-6 border-b border-white/5">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold text-white">Select Exercise</h2>
                                 <button
                                     onClick={() => setShowExerciseModal(false)}
-                                    className="text-gray-400 hover:text-white text-2xl"
+                                    className="text-slate-400 hover:text-white text-2xl"
                                 >
                                     ×
                                 </button>
@@ -319,7 +319,7 @@ export default function ProgramDetailsPage() {
                                 placeholder="Search exercises..."
                                 value={exerciseSearch}
                                 onChange={(e) => setExerciseSearch(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-4 py-3 mt-4 bg-slate-800/60 border border-white/5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                             />
                         </div>
 
@@ -335,25 +335,25 @@ export default function ProgramDetailsPage() {
                                     .map((exercise) => (
                                         <div
                                             key={exercise.id}
-                                            className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-200"
+                                            className="p-4 bg-slate-800/50 rounded-lg border border-white/5 hover:border-lime-400/30 transition-all duration-200"
                                         >
                                             <div
                                                 onClick={() => handleSelectExercise(exercise.id)}
                                                 className="cursor-pointer"
                                             >
                                                 <h3 className="font-semibold text-white mb-1">{exercise.nameEn}</h3>
-                                                <p className="text-gray-400 text-sm mb-2">{exercise.muscleGroups.join(', ')}</p>
-                                                <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">
+                                                <p className="text-slate-400 text-sm mb-2">{exercise.muscleGroups.join(', ')}</p>
+                                                <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">
                                                     {exercise.difficulty}
                                                 </span>
                                             </div>
-                                            <div className="flex space-x-2 mt-3 pt-3 border-t border-gray-700">
+                                            <div className="flex space-x-2 mt-3 pt-3 border-t border-white/5">
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setSelectedExerciseInfo(exercise);
                                                     }}
-                                                    className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                                    className="flex-1 px-3 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all text-sm"
                                                 >
                                                     ℹ️ Info
                                                 </button>
@@ -362,7 +362,7 @@ export default function ProgramDetailsPage() {
                                                         e.stopPropagation();
                                                         navigate(`/exercise/${exercise.id}/progress`);
                                                     }}
-                                                    className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all text-sm"
+                                                    className="flex-1 px-3 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all text-sm"
                                                 >
                                                     📊 Progress
                                                 </button>

@@ -62,12 +62,12 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-            <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-xl p-8">
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+            <div className="max-w-md w-full glass-card p-8">
                 <h2 className="text-3xl font-bold text-center text-white mb-8">Create Account</h2>
 
                 {error && (
-                    <div className="bg-red-500 text-white p-3 rounded mb-4 text-center">
+                    <div className="bg-red-900/50 border border-red-500/30 text-red-200 p-3 rounded-lg mb-4 text-center">
                         {error}
                     </div>
                 )}
@@ -75,25 +75,25 @@ const Register: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">First Name</label>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">First Name</label>
                             <input
                                 type="text"
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
                                 placeholder="John"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Last Name</label>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Last Name</label>
                             <input
                                 type="text"
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
                                 placeholder="Doe"
                                 required
                             />
@@ -101,39 +101,39 @@ const Register: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
                             placeholder="john@example.com"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Password</label>
                         <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
                             placeholder="••••••••"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Confirm Password</label>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Confirm Password</label>
                         <input
                             type="password"
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleChange}
-                            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
                             placeholder="••••••••"
                             required
                         />
@@ -142,7 +142,7 @@ const Register: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full bg-lime-400 hover:bg-lime-500 text-slate-950 font-bold py-2 px-4 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
@@ -151,17 +151,17 @@ const Register: React.FC = () => {
                 <div className="mt-6">
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-600"></div>
+                            <div className="w-full border-t border-white/10"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-gray-800 text-gray-400">Or sign up with</span>
+                            <span className="px-2 bg-slate-900/60 text-slate-400">Or sign up with</span>
                         </div>
                     </div>
 
                     <div className="mt-6">
                         <a
                             href={`${API_URL}/auth/google`}
-                            className="w-full flex items-center justify-center px-4 py-2 border border-gray-600 rounded shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 transition duration-200"
+                            className="w-full flex items-center justify-center px-4 py-2 border border-white/10 rounded-lg shadow-sm text-sm font-medium text-slate-200 bg-slate-800/60 hover:bg-slate-700/60 transition duration-200"
                         >
                             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                                 <path
@@ -186,9 +186,9 @@ const Register: React.FC = () => {
                     </div>
                 </div>
 
-                <p className="mt-6 text-center text-gray-400 text-sm">
+                <p className="mt-6 text-center text-slate-400 text-sm">
                     Already have an account?{' '}
-                    <Link to="/login" className="text-blue-500 hover:text-blue-400">
+                    <Link to="/login" className="text-lime-400 hover:text-lime-300">
                         Log in
                     </Link>
                 </p>

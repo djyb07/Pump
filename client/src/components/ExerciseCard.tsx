@@ -15,10 +15,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
     };
 
     return (
-        <div className="group relative bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-purple-500/50 hover:bg-gray-800/70 transition-all duration-300 overflow-hidden">
-            {/* Gradient overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
+        <div className="group glass-card p-6 hover:border-lime-400/30 transition-all duration-300 overflow-hidden">
             <div className="relative z-10">
                 {/* Image placeholder or actual image */}
                 {exercise.imageUrl ? (
@@ -30,14 +27,14 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                         />
                     </div>
                 ) : (
-                    <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/30 to-pink-900/30 rounded-lg flex items-center justify-center">
+                    <div className="mb-4 h-40 bg-slate-800/60 rounded-lg flex items-center justify-center">
                         <span className="text-6xl">💪</span>
                     </div>
                 )}
 
                 {/* Header - English Only */}
                 <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-xl font-bold text-white group-hover:text-purple-300 transition-colors">
+                    <h3 className="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">
                         {exercise.nameEn}
                     </h3>
                     <span
@@ -53,13 +50,13 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                     {exercise.muscleGroups.slice(0, 3).map((muscle, idx) => (
                         <span
                             key={idx}
-                            className="px-2.5 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-lg border border-purple-500/30 font-medium"
+                            className="px-2.5 py-1 bg-lime-400/20 text-lime-400 text-xs rounded-lg border border-lime-400/30 font-medium"
                         >
                             {muscle}
                         </span>
                     ))}
                     {exercise.muscleGroups.length > 3 && (
-                        <span className="px-2.5 py-1 bg-gray-700/50 text-gray-400 text-xs rounded-lg font-medium">
+                        <span className="px-2.5 py-1 bg-slate-700/50 text-slate-400 text-xs rounded-lg font-medium">
                             +{exercise.muscleGroups.length - 3}
                         </span>
                     )}
@@ -70,7 +67,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                     {exercise.workoutTypes.map((type, idx) => (
                         <span
                             key={idx}
-                            className="px-2 py-0.5 bg-gray-700/50 text-gray-300 text-xs rounded"
+                            className="px-2 py-0.5 bg-slate-700/50 text-slate-300 text-xs rounded"
                         >
                             {type}
                         </span>
@@ -78,8 +75,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                 </div>
 
                 {/* Equipment */}
-                <div className="pt-3 border-t border-gray-700/50 mb-3">
-                    <p className="text-xs text-gray-500">
+                <div className="pt-3 border-t border-white/5 mb-3">
+                    <p className="text-xs text-slate-500">
                         🔧 {exercise.equipment.join(', ')}
                     </p>
                 </div>
@@ -91,7 +88,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                             e.stopPropagation();
                             onClick();
                         }}
-                        className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all text-sm"
+                        className="flex-1 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all text-sm"
                     >
                         ℹ️ Info
                     </button>
@@ -101,7 +98,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                                 e.stopPropagation();
                                 onViewProgress();
                             }}
-                            className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all text-sm"
+                            className="flex-1 px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all text-sm"
                         >
                             📊 Progress
                         </button>

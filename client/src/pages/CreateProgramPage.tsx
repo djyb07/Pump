@@ -47,19 +47,19 @@ export default function CreateProgramPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
-            {/* Background orbs */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl animate-pulse delay-700"></div>
+        <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+            {/* Background subtle glow */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
 
             <div className="relative z-10">
                 {/* Header */}
-                <header className="border-b border-gray-800/50 backdrop-blur-sm bg-gray-900/30">
+                <header className="border-b border-white/5 backdrop-blur-sm bg-slate-900/60">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                         <div className="flex items-center space-x-3">
                             <button
                                 onClick={() => navigate('/programs')}
-                                className="text-gray-400 hover:text-white transition-colors"
+                                className="text-slate-400 hover:text-white transition-colors"
                             >
                                 ← Back
                             </button>
@@ -72,7 +72,7 @@ export default function CreateProgramPage() {
                 <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         {/* Program Name */}
-                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+                        <div className="glass-card p-6">
                             <label className="block text-white font-semibold mb-2">
                                 Program Name
                             </label>
@@ -81,10 +81,10 @@ export default function CreateProgramPage() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="e.g., Summer Gains PPL"
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                                className="w-full px-4 py-3 bg-slate-800/60 border border-white/5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-colors"
                                 maxLength={50}
                             />
-                            <p className="text-gray-500 text-sm mt-2">{name.length}/50 characters</p>
+                            <p className="text-slate-500 text-sm mt-2">{name.length}/50 characters</p>
                         </div>
 
                         {/* Split Type Selection */}
@@ -96,21 +96,21 @@ export default function CreateProgramPage() {
                                         key={split.value}
                                         onClick={() => setSelectedSplit(split.value)}
                                         className={`group cursor-pointer p-6 rounded-xl transition-all duration-300 ${selectedSplit === split.value
-                                                ? 'bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-2 border-purple-500 scale-105'
-                                                : 'bg-gray-900/50 border-2 border-gray-800 hover:border-purple-500/50 hover:scale-102'
+                                            ? 'bg-lime-400/10 border-2 border-lime-400 scale-105'
+                                            : 'bg-slate-900/50 border-2 border-white/5 hover:border-lime-400/30 hover:scale-102'
                                             }`}
                                     >
                                         <div className="flex items-start space-x-4">
                                             <div className="text-4xl">{split.icon}</div>
                                             <div className="flex-1">
-                                                <h3 className={`font-bold mb-1 ${selectedSplit === split.value ? 'text-white' : 'text-gray-300 group-hover:text-white'
+                                                <h3 className={`font-bold mb-1 ${selectedSplit === split.value ? 'text-white' : 'text-slate-300 group-hover:text-white'
                                                     }`}>
                                                     {split.label}
                                                 </h3>
-                                                <p className="text-gray-400 text-sm">{split.description}</p>
+                                                <p className="text-slate-400 text-sm">{split.description}</p>
                                             </div>
                                             {selectedSplit === split.value && (
-                                                <div className="text-green-400 text-2xl">✓</div>
+                                                <div className="text-lime-400 text-2xl">✓</div>
                                             )}
                                         </div>
                                     </div>
@@ -130,14 +130,14 @@ export default function CreateProgramPage() {
                             <button
                                 type="button"
                                 onClick={() => navigate('/programs')}
-                                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-all duration-200 border border-gray-700"
+                                className="px-6 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg font-semibold transition-all duration-200 border border-white/5"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading || !name.trim() || !selectedSplit}
-                                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="px-6 py-3 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {loading ? 'Creating...' : 'Create Program'}
                             </button>

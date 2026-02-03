@@ -13,13 +13,13 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
             <div
-                className="relative bg-gray-900 rounded-2xl border border-gray-700 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                className="relative glass-card-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition-all"
+                    className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-all"
                 >
                     ✕
                 </button>
@@ -28,20 +28,20 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                 <div className="p-8">
                     {/* Title */}
                     <div className="mb-6">
-                        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                        <h2 className="text-3xl font-bold text-lime-400 mb-2">
                             {exercise.nameEn}
                         </h2>
                     </div>
 
                     {/* Badges */}
                     <div className="flex flex-wrap gap-2 mb-6">
-                        <span className="px-3 py-1.5 bg-purple-500/20 text-purple-300 rounded-lg border border-purple-500/30 font-medium">
+                        <span className="px-3 py-1.5 bg-lime-400/20 text-lime-400 rounded-lg border border-lime-400/30 font-medium">
                             {exercise.difficulty}
                         </span>
                         {exercise.muscleGroups.map((muscle, idx) => (
                             <span
                                 key={idx}
-                                className="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-lg border border-gray-700"
+                                className="px-3 py-1.5 bg-slate-800/60 text-slate-300 rounded-lg border border-white/5"
                             >
                                 💪 {muscle}
                             </span>
@@ -51,14 +51,14 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     {/* Description */}
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold text-white mb-3">Exercise Description</h3>
-                        <p className="text-gray-300 leading-relaxed">{exercise.descriptionHe}</p>
+                        <p className="text-slate-300 leading-relaxed">{exercise.descriptionHe}</p>
                     </div>
 
                     {/* Video/GIF Tutorial */}
                     {exercise.videoUrl && (
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold text-white mb-3">🎬 How to Perform</h3>
-                            <div className="rounded-xl overflow-hidden border-2 border-pink-500/30 bg-gray-800/50">
+                            <div className="rounded-xl overflow-hidden border border-lime-400/30 bg-slate-800/50">
                                 {exercise.videoUrl.toLowerCase().includes('.gif') ? (
                                     <img
                                         src={exercise.videoUrl}
@@ -77,7 +77,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                                     </video>
                                 )}
                             </div>
-                            <p className="text-xs text-gray-500 mt-2 text-center">
+                            <p className="text-xs text-slate-500 mt-2 text-center">
                                 Step-by-step demonstration of proper form
                             </p>
                         </div>
@@ -87,14 +87,14 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     {exercise.muscleDiagramUrl && (
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold text-white mb-3">💪 Target Muscles</h3>
-                            <div className="rounded-xl overflow-hidden border-2 border-purple-500/30 bg-white">
+                            <div className="rounded-xl overflow-hidden border border-lime-400/30 bg-white">
                                 <img
                                     src={exercise.muscleDiagramUrl}
                                     alt={`${exercise.nameEn} muscle diagram`}
                                     className="w-full h-auto"
                                 />
                             </div>
-                            <p className="text-xs text-gray-500 mt-2 text-center">
+                            <p className="text-xs text-slate-500 mt-2 text-center">
                                 Visual representation of muscles worked during this exercise
                             </p>
                         </div>
@@ -107,7 +107,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                             {exercise.workoutTypes.map((type, idx) => (
                                 <span
                                     key={idx}
-                                    className="px-3 py-2 bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-purple-300 rounded-lg border border-purple-500/30"
+                                    className="px-3 py-2 bg-lime-400/20 text-lime-400 rounded-lg border border-lime-400/30"
                                 >
                                     {type}Day                                </span>
                             ))}
@@ -121,7 +121,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                             {exercise.equipment.map((item, idx) => (
                                 <span
                                     key={idx}
-                                    className="px-3 py-2 bg-gray-800 text-gray-300 rounded-lg border border-gray-700"
+                                    className="px-3 py-2 bg-slate-800/60 text-slate-300 rounded-lg border border-white/5"
                                 >
                                     🔧 {item}
                                 </span>
@@ -133,7 +133,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ exercise, isOpen, onClose
                     <div className="flex justify-end mt-8">
                         <button
                             onClick={onClose}
-                            className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-semibold rounded-xl transition-all duration-200 border border-gray-700"
+                            className="px-8 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white font-semibold rounded-xl transition-all duration-200 border border-white/5"
                         >
                             Close
                         </button>

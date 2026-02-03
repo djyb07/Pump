@@ -118,20 +118,20 @@ export default function ExerciseProgressPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
-                <div className="text-white text-xl">Loading progress...</div>
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="text-slate-200 text-xl">Loading progress...</div>
             </div>
         );
     }
 
     if (error || !exercise) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20 flex items-center justify-center">
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
                 <div className="text-center">
                     <div className="text-red-400 text-xl mb-4">{error || 'Exercise not found'}</div>
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
+                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                     >
                         ← Go Back
                     </button>
@@ -148,18 +148,18 @@ export default function ExerciseProgressPage() {
     }));
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-pink-900/20">
+        <div className="min-h-screen bg-slate-950">
             {/* Header */}
-            <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10">
+            <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-bold text-white">{exercise.nameEn}</h1>
-                            <p className="text-gray-400 mt-1">{exercise.nameHe}</p>
+                            <p className="text-slate-400 mt-1">{exercise.nameHe}</p>
                         </div>
                         <button
                             onClick={() => navigate(-1)}
-                            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
+                            className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                         >
                             ← Go Back
                         </button>
@@ -177,8 +177,8 @@ export default function ExerciseProgressPage() {
                                 key={filter.value}
                                 onClick={() => setTimeFilter(filter.value)}
                                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${timeFilter === filter.value
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                    ? 'bg-lime-400 text-slate-950'
+                                    : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60'
                                     }`}
                             >
                                 {filter.label}
@@ -206,59 +206,59 @@ export default function ExerciseProgressPage() {
                     return (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             {/* Best Weight PR */}
-                            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-6">
+                            <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-purple-400 text-sm font-medium">💪 Best Weight</span>
-                                    <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded">PR</span>
+                                    <span className="text-lime-400 text-sm font-medium">💪 Best Weight</span>
+                                    <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">PR</span>
                                 </div>
                                 <div className="text-4xl font-bold text-white mb-2">{prs.bestWeight.value} kg</div>
-                                <div className="text-gray-400 text-sm">{formatDate(prs.bestWeight.date)}</div>
+                                <div className="text-slate-400 text-sm">{formatDate(prs.bestWeight.date)}</div>
                             </div>
 
                             {/* Best Volume PR */}
-                            <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-500/30 rounded-xl p-6">
+                            <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-pink-400 text-sm font-medium">📊 Best Volume</span>
-                                    <span className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded">PR</span>
+                                    <span className="text-lime-400 text-sm font-medium">📊 Best Volume</span>
+                                    <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">PR</span>
                                 </div>
                                 <div className="text-4xl font-bold text-white mb-2">{Math.round(prs.bestVolume.value)} kg</div>
-                                <div className="text-gray-400 text-sm">{formatDate(prs.bestVolume.date)}</div>
+                                <div className="text-slate-400 text-sm">{formatDate(prs.bestVolume.date)}</div>
                             </div>
 
                             {/* Best e1RM PR */}
-                            <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-xl p-6">
+                            <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-green-400 text-sm font-medium">🎯 Best e1RM</span>
-                                    <span className="text-xs px-2 py-1 bg-green-500/20 text-green-300 rounded">PR</span>
+                                    <span className="text-lime-400 text-sm font-medium">🎯 Best e1RM</span>
+                                    <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">PR</span>
                                 </div>
                                 <div className="text-4xl font-bold text-white mb-2">{prs.beste1RM.value} kg</div>
-                                <div className="text-gray-400 text-sm">{formatDate(prs.beste1RM.date)}</div>
+                                <div className="text-slate-400 text-sm">{formatDate(prs.beste1RM.date)}</div>
                             </div>
                         </div>
                     );
                 })()}
 
                 {filteredData.length === 0 ? (
-                    <div className="text-center text-gray-400 py-12">
+                    <div className="text-center text-slate-400 py-12">
                         <p className="text-xl">No workout data in this time period</p>
                         <p className="mt-2">Try selecting a longer time range</p>
                     </div>
                 ) : (
                     <div className="space-y-8">
                         {/* Max Weight Chart */}
-                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+                        <div className="glass-card p-6">
                             <h2 className="text-2xl font-bold text-white mb-6">💪 Max Weight Progression</h2>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                                    <XAxis dataKey="date" stroke="#9CA3AF" />
-                                    <YAxis stroke="#9CA3AF" />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                                    <XAxis dataKey="date" stroke="#94a3b8" />
+                                    <YAxis stroke="#94a3b8" />
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="maxWeight" stroke="#8B5CF6" strokeWidth={3} name="Max Weight (kg)">
+                                    <Line type="monotone" dataKey="maxWeight" stroke="#a3e635" strokeWidth={3} name="Max Weight (kg)">
                                         <LabelList dataKey="maxWeight" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={5} />
                                     </Line>
                                 </LineChart>
@@ -266,19 +266,19 @@ export default function ExerciseProgressPage() {
                         </div>
 
                         {/* Total Volume Chart */}
-                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+                        <div className="glass-card p-6">
                             <h2 className="text-2xl font-bold text-white mb-6">📊 Total Volume Progression</h2>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                                    <XAxis dataKey="date" stroke="#9CA3AF" />
-                                    <YAxis stroke="#9CA3AF" />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                                    <XAxis dataKey="date" stroke="#94a3b8" />
+                                    <YAxis stroke="#94a3b8" />
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="totalVolume" stroke="#EC4899" strokeWidth={3} name="Volume (kg)">
+                                    <Line type="monotone" dataKey="totalVolume" stroke="#a3e635" strokeWidth={3} name="Volume (kg)">
                                         <LabelList dataKey="totalVolume" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={5} />
                                     </Line>
                                 </LineChart>
@@ -286,19 +286,19 @@ export default function ExerciseProgressPage() {
                         </div>
 
                         {/* e1RM Chart */}
-                        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+                        <div className="glass-card p-6">
                             <h2 className="text-2xl font-bold text-white mb-6">🎯 Estimated 1RM Progression</h2>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                                    <XAxis dataKey="date" stroke="#9CA3AF" />
-                                    <YAxis stroke="#9CA3AF" />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                                    <XAxis dataKey="date" stroke="#94a3b8" />
+                                    <YAxis stroke="#94a3b8" />
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                                         labelStyle={{ color: '#F3F4F6' }}
                                     />
                                     <Legend />
-                                    <Line type="monotone" dataKey="e1RM" stroke="#10B981" strokeWidth={3} name="e1RM (kg)">
+                                    <Line type="monotone" dataKey="e1RM" stroke="#a3e635" strokeWidth={3} name="e1RM (kg)">
                                         <LabelList dataKey="e1RM" position="top" fill="#FFFFFF" fontSize={14} fontWeight="bold" offset={5} />
                                     </Line>
                                 </LineChart>

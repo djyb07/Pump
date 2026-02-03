@@ -33,11 +33,7 @@ export default function Dashboard() {
     } = useDashboard();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
-            {/* Background animated gradient orbs */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl animate-pulse delay-700"></div>
-
+        <div className="min-h-screen bg-slate-950">
             <div className="relative z-10">
                 <DashboardHeader onLogout={handleLogout} />
 
@@ -46,7 +42,7 @@ export default function Dashboard() {
 
                     {loading ? (
                         <div className="text-center py-12">
-                            <div className="text-white text-xl">Loading your dashboard...</div>
+                            <div className="text-slate-200 text-xl">Loading your dashboard...</div>
                         </div>
                     ) : (
                         <>
@@ -79,7 +75,7 @@ export default function Dashboard() {
 
                     {/* Footer */}
                     <div className="mt-8 text-center">
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-slate-600 text-sm">
                             🚀 Powered by Render & Vercel | Built with ❤️
                         </p>
                     </div>

@@ -22,7 +22,7 @@ export function RecentProgressCard({ topPRs, formatDate, onNavigate }: RecentPro
     };
 
     return (
-        <div className="bg-gradient-to-br from-yellow-900/30 to-orange-800/30 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-6 shadow-lg">
+        <div className="glass-card p-6">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                 <span className="mr-2">🏆</span>
                 Recent Progress
@@ -34,11 +34,11 @@ export function RecentProgressCard({ topPRs, formatDate, onNavigate }: RecentPro
                             <div key={idx} className="flex items-center justify-between">
                                 <div className="flex-1">
                                     <div className="text-white font-semibold">{pr.exerciseName}</div>
-                                    <div className="text-gray-400 text-sm">{formatDate(pr.date)}</div>
+                                    <div className="text-slate-400 text-sm">{formatDate(pr.date)}</div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-yellow-400 font-bold">{pr.value}</div>
-                                    <div className="text-gray-400 text-xs">
+                                    <div className="text-lime-400 font-bold">{pr.value}</div>
+                                    <div className="text-slate-500 text-xs">
                                         {getPRIcon(pr.type)}
                                     </div>
                                 </div>
@@ -47,16 +47,16 @@ export function RecentProgressCard({ topPRs, formatDate, onNavigate }: RecentPro
                     </div>
                     <button
                         onClick={() => onNavigate('/personal-records')}
-                        className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 text-sm">
+                        className="w-full bg-lime-400 hover:bg-lime-500 text-slate-950 py-2 px-4 rounded-lg font-semibold transition-all duration-200 text-sm">
                         View All PRs →
                     </button>
                 </>
             ) : (
                 <div className="text-center py-8">
-                    <p className="text-gray-400 mb-4">No PRs yet</p>
+                    <p className="text-slate-400 mb-4">No PRs yet</p>
                     <button
                         onClick={() => onNavigate('/programs')}
-                        className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-semibold transition-all">
+                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all">
                         Start Training
                     </button>
                 </div>

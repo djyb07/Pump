@@ -28,20 +28,20 @@ const ForgotPassword: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-            <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-xl p-8">
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+            <div className="glass-card-lg max-w-md w-full p-8">
                 <h2 className="text-3xl font-bold text-center text-white mb-8">Reset Password</h2>
 
                 {message && (
-                    <div className="bg-green-500 text-white p-3 rounded mb-4 text-center">
+                    <div className="bg-lime-400/20 border border-lime-400/30 text-lime-300 p-3 rounded-lg mb-4 text-center">
                         {message.text}
                         {/* Display link for easy testing */}
                         {message.token && (
-                            <div className="mt-2 pt-2 border-t border-green-400">
+                            <div className="mt-2 pt-2 border-t border-lime-400/30">
                                 <p className="text-sm mb-1">Development Mode:</p>
                                 <Link
                                     to={`/reset-password?token=${message.token}`}
-                                    className="underline font-bold hover:text-green-100"
+                                    className="underline font-bold hover:text-lime-200"
                                 >
                                     Click here to reset password
                                 </Link>
@@ -51,19 +51,19 @@ const ForgotPassword: React.FC = () => {
                 )}
 
                 {error && (
-                    <div className="bg-red-500 text-white p-3 rounded mb-4 text-center">
+                    <div className="bg-red-500/20 border border-red-500/30 text-red-300 p-3 rounded-lg mb-4 text-center">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50"
                             placeholder="john@example.com"
                             required
                         />
@@ -72,15 +72,15 @@ const ForgotPassword: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full bg-lime-400 hover:bg-lime-500 text-slate-950 font-bold py-2 px-4 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {loading ? 'Sending...' : 'Send Reset Link'}
                     </button>
                 </form>
 
-                <p className="mt-6 text-center text-gray-400 text-sm">
+                <p className="mt-6 text-center text-slate-400 text-sm">
                     Remember your password?{' '}
-                    <Link to="/login" className="text-blue-500 hover:text-blue-400">
+                    <Link to="/login" className="text-lime-400 hover:text-lime-300">
                         Log in
                     </Link>
                 </p>

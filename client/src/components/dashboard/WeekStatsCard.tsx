@@ -27,9 +27,9 @@ function StatItem({ label, value, lastValue, currentValue, isVolume = false, isH
 
     return (
         <div>
-            <div className="text-gray-400 text-sm mb-1">{label}</div>
+            <div className="text-slate-400 text-sm mb-1">{label}</div>
             <div className="flex items-center space-x-2">
-                <div className={`${isVolume ? 'text-2xl' : 'text-3xl'} font-bold ${isHighlight ? 'text-yellow-400' : 'text-white'}`}>
+                <div className={`${isVolume ? 'text-2xl' : 'text-3xl'} font-bold ${isHighlight ? 'text-lime-400' : 'text-white'}`}>
                     {value}
                 </div>
                 {showChange && (
@@ -44,7 +44,7 @@ function StatItem({ label, value, lastValue, currentValue, isVolume = false, isH
 
 export function WeekStatsCard({ weekStats, lastWeekStats }: WeekStatsCardProps) {
     return (
-        <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 backdrop-blur-sm border border-blue-500/30 rounded-xl p-6 shadow-lg">
+        <div className="glass-card p-6">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                 <span className="mr-2">📊</span>
                 This Week
@@ -78,8 +78,8 @@ export function WeekStatsCard({ weekStats, lastWeekStats }: WeekStatsCardProps) 
                 />
             </div>
             {weekStats.workouts > 0 && (
-                <div className="mt-4 pt-4 border-t border-blue-500/30 text-center">
-                    <p className="text-blue-300 text-sm">
+                <div className="mt-4 pt-4 border-t border-white/5 text-center">
+                    <p className="text-lime-400 text-sm">
                         {weekStats.workouts >= 4 ? "🔥 Great progress!" : "💪 Keep it up!"}
                     </p>
                 </div>

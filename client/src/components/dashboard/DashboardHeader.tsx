@@ -24,11 +24,9 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <div className="flex items-center space-x-3">
-                        <img src="/logo.png" alt="PUMP" className="h-8 w-8" />
-                        <div className="text-2xl font-bold text-lime-400">
-                            PUMP
-                        </div>
+                    {/* Logo */}
+                    <div className="flex items-center">
+                        <img src="/pump-logo.png" alt="PUMP" className="h-14 w-auto" />
                     </div>
 
                     {/* Navigation Links - Desktop */}
@@ -41,8 +39,8 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
                                     key={link.path}
                                     to={link.path}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                                            ? 'text-lime-400 bg-lime-400/10'
-                                            : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                                        ? 'text-lime-400 bg-lime-400/10'
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                                         }`}
                                 >
                                     <span className="mr-1.5">{link.emoji}</span>
@@ -71,8 +69,8 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
                                 key={link.path}
                                 to={link.path}
                                 className={`flex flex-col items-center px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${isActive
-                                        ? 'text-lime-400'
-                                        : 'text-slate-400 hover:text-white'
+                                    ? 'text-lime-400'
+                                    : 'text-slate-400 hover:text-white'
                                     }`}
                             >
                                 <span className="text-lg mb-0.5">{link.emoji}</span>

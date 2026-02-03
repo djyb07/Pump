@@ -7,7 +7,7 @@
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Technology Stack](#technology-stack)
+2. [Technology Stack](#technology-stack) (includes Design System)
 3. [Production Deployment](#production-deployment)
 4. [Project Structure](#project-structure)
 5. [Database Schema](#database-schema)
@@ -75,6 +75,27 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 |------------|---------|
 | PostgreSQL | Primary database (hosted on Supabase) |
 | Row Level Security (RLS) | Database-level access control |
+
+### Design System: Midnight Pro
+
+The application uses a custom **Midnight Pro** design system featuring:
+
+| Element | Styling |
+|---------|---------|
+| **Background** | `bg-slate-950` with radial lime gradient glow |
+| **Glass Cards** | `bg-slate-900/30 backdrop-blur-xl border-white/10` |
+| **Primary Accent** | `lime-400` (buttons, highlights, active states) |
+| **Text Colors** | `text-white` (primary), `text-slate-400` (secondary) |
+| **Inputs** | `bg-slate-900/30 border-white/10 focus:ring-lime-400` |
+| **Buttons** | `bg-lime-400 text-slate-950 font-bold` |
+
+**CSS Utility Classes (index.css):**
+- `.glass-card` - Standard glassmorphism panel
+- `.glass-card-lg` - Large rounded glass panel
+- `.glass-card-accent` - Glass with lime accent border
+- `.btn-primary` - Primary lime button
+- `.btn-secondary` - Secondary slate button
+- `.btn-hero` - Large hero button with shadow
 
 ---
 
@@ -144,9 +165,9 @@ Pump/
 │   │   │   ├── exerciseService.ts   # Exercise API calls
 │   │   │   ├── programService.ts    # Program API calls
 │   │   │   └── workoutService.ts    # Workout API calls
-│   │   ├── App.tsx                  # Main app with routing
+│   │   ├── App.tsx                  # Main app with routing + AppLayout wrapper
 │   │   ├── main.tsx                 # Entry point
-│   │   └── index.css                # Global TailwindCSS import
+│   │   └── index.css                # Midnight Pro Design System (glassmorphism, utilities)
 │   ├── public/
 │   │   └── logo.png                 # App logo/favicon
 │   ├── package.json

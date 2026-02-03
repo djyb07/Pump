@@ -81,7 +81,7 @@ const ExerciseLibrary: React.FC = () => {
                                 >
                                     ← Back
                                 </button>
-                                <img src="/logo.png" alt="PUMP" className="h-10 w-10" />
+
                                 <div>
                                     <h1 className="text-3xl font-bold text-lime-400">
                                         Exercise Library

@@ -62,17 +62,17 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
-            <div className="max-w-md w-full glass-card p-8">
+        <div className="min-h-screen flex items-center justify-center px-4 py-8">
+            <div className="max-w-md w-full glass-card-lg p-8">
                 <h2 className="text-3xl font-bold text-center text-white mb-8">Create Account</h2>
 
                 {error && (
-                    <div className="bg-red-900/50 border border-red-500/30 text-red-200 p-3 rounded-lg mb-4 text-center">
+                    <div className="bg-red-900/30 border border-red-500/30 text-red-200 p-3 rounded-lg mb-4 text-center backdrop-blur-sm">
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-400 mb-1">First Name</label>
@@ -81,7 +81,7 @@ const Register: React.FC = () => {
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                                className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                                 placeholder="John"
                                 required
                             />
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                                className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                                 placeholder="Doe"
                                 required
                             />
@@ -107,7 +107,7 @@ const Register: React.FC = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                            className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                             placeholder="john@example.com"
                             required
                         />
@@ -120,7 +120,7 @@ const Register: React.FC = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                            className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                             placeholder="••••••••"
                             required
                         />
@@ -133,7 +133,7 @@ const Register: React.FC = () => {
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleChange}
-                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                            className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                             placeholder="••••••••"
                             required
                         />
@@ -142,7 +142,7 @@ const Register: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full bg-lime-400 hover:bg-lime-500 text-slate-950 font-bold py-2 px-4 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full bg-lime-400 hover:bg-lime-500 text-slate-950 font-bold py-3 px-4 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
@@ -154,14 +154,14 @@ const Register: React.FC = () => {
                             <div className="w-full border-t border-white/10"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-slate-900/60 text-slate-400">Or sign up with</span>
+                            <span className="px-2 bg-slate-900/60 backdrop-blur-sm text-slate-400 rounded">Or sign up with</span>
                         </div>
                     </div>
 
                     <div className="mt-6">
                         <a
                             href={`${API_URL}/auth/google`}
-                            className="w-full flex items-center justify-center px-4 py-2 border border-white/10 rounded-lg shadow-sm text-sm font-medium text-slate-200 bg-slate-800/60 hover:bg-slate-700/60 transition duration-200"
+                            className="w-full flex items-center justify-center px-4 py-3 border border-white/10 rounded-lg shadow-sm text-sm font-medium text-slate-200 bg-slate-900/30 hover:bg-slate-800/50 backdrop-blur-sm transition duration-200"
                         >
                             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                                 <path

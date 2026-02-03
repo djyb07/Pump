@@ -62,72 +62,98 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
     const progress = ((initialSeconds - seconds) / initialSeconds) * 100;
 
     return (
-        <div className="glass-card p-6">
-            <h3 className="text-lg font-bold text-white mb-4">⏱️ Rest Timer</h3>
+        <div className="glass-card p-6 sticky top-24">
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                <span className="mr-2">⏱️</span>
+                Rest Timer
+            </h3>
 
             {/* Circular Progress */}
             <div className="flex justify-center mb-6">
-                <div className="relative w-32 h-32">
+                <div className="relative w-36 h-36">
                     <svg className="w-full h-full -rotate-90">
                         <circle
-                            cx="64"
-                            cy="64"
-                            r="56"
+                            cx="72"
+                            cy="72"
+                            r="64"
                             stroke="currentColor"
                             strokeWidth="8"
                             fill="none"
-                            className="text-slate-800"
+                            className="text-slate-800/50"
                         />
                         <circle
-                            cx="64"
-                            cy="64"
-                            r="56"
+                            cx="72"
+                            cy="72"
+                            r="64"
                             stroke="currentColor"
                             strokeWidth="8"
                             fill="none"
-                            strokeDasharray={`${2 * Math.PI * 56}`}
-                            strokeDashoffset={`${2 * Math.PI * 56 * (1 - progress / 100)}`}
+                            strokeDasharray={`${2 * Math.PI * 64}`}
+                            strokeDashoffset={`${2 * Math.PI * 64 * (1 - progress / 100)}`}
                             className="text-lime-400 transition-all duration-1000"
                             strokeLinecap="round"
                         />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white">
+                        <span className={`text-4xl font-bold ${seconds <= 10 && isRunning ? 'text-red-400' : 'text-white'}`}>
                             {formatTime(seconds)}
                         </span>
                     </div>
                 </div>
             </div>
 
-            {/* Controls */}
-            <div className="flex justify-center space-x-2">
+            {/* Controls - Big touch targets */}
+            <div className="grid grid-cols-2 gap-3">
                 {!isRunning ? (
                     <button
                         onClick={startTimer}
-                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
+                        className="col-span-2 px-6 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all active:scale-95 shadow-lg shadow-lime-400/20"
                     >
                         ▶️ Start
                     </button>
                 ) : (
                     <button
                         onClick={pauseTimer}
-                        className="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-lg font-semibold transition-all"
+                        className="col-span-2 px-6 py-4 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-xl font-bold text-lg transition-all active:scale-95"
                     >
                         {isPaused ? '▶️ Resume' : '⏸️ Pause'}
                     </button>
                 )}
                 <button
                     onClick={resetTimer}
-                    className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all"
+                    className="px-4 py-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10 active:scale-95"
                 >
                     🔄 Reset
                 </button>
                 <button
                     onClick={skipTimer}
-                    className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all"
+                    className="px-4 py-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10 active:scale-95"
                 >
                     ⏭️ Skip
                 </button>
+            </div>
+
+            {/* Quick preset buttons */}
+            <div className="mt-4 pt-4 border-t border-white/10">
+                <div className="text-xs text-slate-500 mb-2 text-center">Quick Set</div>
+                <div className="grid grid-cols-4 gap-2">
+                    {[60, 90, 120, 180].map((time) => (
+                        <button
+                            key={time}
+                            onClick={() => {
+                                setSeconds(time);
+                                setIsRunning(false);
+                                setIsPaused(false);
+                            }}
+                            className={`px-2 py-2 rounded-lg text-sm font-medium transition-all ${initialSeconds === time && seconds === time
+                                    ? 'bg-lime-400/20 text-lime-400 border border-lime-400/30'
+                                    : 'bg-slate-900/30 text-slate-400 border border-white/5 hover:text-white'
+                                }`}
+                        >
+                            {time >= 60 ? `${time / 60}m` : `${time}s`}
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );

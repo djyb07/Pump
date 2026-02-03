@@ -84,12 +84,12 @@ const Login: React.FC = () => {
     const API_URL = `${BASE_URL}/api`;
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
-            <div className="max-w-md w-full glass-card p-8">
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="max-w-md w-full glass-card-lg p-8">
                 <h2 className="text-3xl font-bold text-center text-white mb-8">Welcome Back</h2>
 
                 {error && (
-                    <div className="bg-red-900/50 border border-red-500/30 text-red-200 px-4 py-3 rounded-lg mb-4">
+                    <div className="bg-red-900/30 border border-red-500/30 text-red-200 px-4 py-3 rounded-lg mb-4 backdrop-blur-sm">
                         {error}
                     </div>
                 )}
@@ -102,7 +102,7 @@ const Login: React.FC = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                            className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                             placeholder="john@example.com"
                             required
                         />
@@ -115,7 +115,7 @@ const Login: React.FC = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full bg-slate-800/60 border border-white/5 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+                            className="w-full bg-slate-900/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 backdrop-blur-sm"
                             placeholder="••••••••"
                             required
                         />
@@ -130,7 +130,7 @@ const Login: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full bg-lime-400 hover:bg-lime-500 text-slate-950 font-bold py-2 px-4 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full bg-lime-400 hover:bg-lime-500 text-slate-950 font-bold py-3 px-4 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {loading ? 'Logging in...' : 'Log In'}
                     </button>
@@ -140,13 +140,13 @@ const Login: React.FC = () => {
                             <div className="w-full border-t border-white/10"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-slate-900/60 text-slate-400">Or continue with</span>
+                            <span className="px-2 bg-slate-900/60 backdrop-blur-sm text-slate-400 rounded">Or continue with</span>
                         </div>
                     </div>
 
                     <a
                         href={`${API_URL}/auth/google`}
-                        className="w-full flex items-center justify-center px-4 py-2 border border-white/10 rounded-lg shadow-sm text-sm font-medium text-slate-200 bg-slate-800/60 hover:bg-slate-700/60 transition duration-200"
+                        className="w-full flex items-center justify-center px-4 py-3 border border-white/10 rounded-lg shadow-sm text-sm font-medium text-slate-200 bg-slate-900/30 hover:bg-slate-800/50 backdrop-blur-sm transition duration-200"
                     >
                         <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                             <path

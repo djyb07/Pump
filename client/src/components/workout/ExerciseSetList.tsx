@@ -33,12 +33,10 @@ export default function ExerciseSetList({
 }: ExerciseSetListProps) {
     const handleRepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        // Allow empty string for clearing
         if (value === '') {
             onRepsChange('');
             return;
         }
-        // Only allow positive integers
         const numValue = parseInt(value);
         if (!isNaN(numValue) && numValue >= 1) {
             onRepsChange(value);
@@ -47,12 +45,10 @@ export default function ExerciseSetList({
 
     const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        // Allow empty string for clearing
         if (value === '') {
             onWeightChange('');
             return;
         }
-        // Only allow non-negative numbers
         const numValue = parseFloat(value);
         if (!isNaN(numValue) && numValue >= 0) {
             onWeightChange(value);
@@ -67,7 +63,7 @@ export default function ExerciseSetList({
 
     const decrementReps = () => {
         const current = parseInt(reps) || 0;
-        if (current > 1) onRepsChange((current - 1).toString());
+        if (current > 0) onRepsChange((current - 1).toString());
     };
 
     const incrementWeight = () => {
@@ -84,21 +80,21 @@ export default function ExerciseSetList({
         <>
             {/* Set Logger */}
             <div className="glass-card p-6">
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-6">
+                <h3 className="text-lg font-bold text-white mb-4">
                     {isEditing ? `Edit Set #${(editingSetIndex ?? 0) + 1}` : `Log Set #${sets.length + 1}`}
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                    {/* Reps Input with +/- buttons */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    {/* Reps Input */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-3">
+                        <label className="block text-sm font-medium text-slate-400 mb-2">
                             Reps *
                         </label>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-stretch gap-2">
                             <button
                                 type="button"
                                 onClick={decrementReps}
-                                className="w-16 h-16 flex items-center justify-center bg-slate-900/30 hover:bg-slate-800/50 border border-white/10 rounded-xl text-white text-2xl font-bold transition-all active:scale-95"
+                                className="w-12 h-14 flex items-center justify-center bg-slate-800/60 hover:bg-slate-700/60 border border-white/10 rounded-lg text-white text-xl font-bold transition-all active:scale-95"
                             >
                                 −
                             </button>
@@ -108,29 +104,29 @@ export default function ExerciseSetList({
                                 min="1"
                                 value={reps}
                                 onChange={handleRepsChange}
-                                className="flex-1 px-4 py-5 bg-slate-900/30 border border-white/10 rounded-xl text-white text-3xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-lime-400/50 min-h-[64px] backdrop-blur-sm"
+                                className="flex-1 min-w-0 px-3 py-3 bg-slate-900/30 border border-white/10 rounded-lg text-white text-2xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                                 placeholder="0"
                             />
                             <button
                                 type="button"
                                 onClick={incrementReps}
-                                className="w-16 h-16 flex items-center justify-center bg-lime-400 hover:bg-lime-500 rounded-xl text-slate-950 text-2xl font-bold transition-all active:scale-95"
+                                className="w-12 h-14 flex items-center justify-center bg-lime-400 hover:bg-lime-500 rounded-lg text-slate-950 text-xl font-bold transition-all active:scale-95"
                             >
                                 +
                             </button>
                         </div>
                     </div>
 
-                    {/* Weight Input with +/- buttons */}
+                    {/* Weight Input */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-3">
+                        <label className="block text-sm font-medium text-slate-400 mb-2">
                             Weight (kg)
                         </label>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-stretch gap-2">
                             <button
                                 type="button"
                                 onClick={decrementWeight}
-                                className="w-16 h-16 flex items-center justify-center bg-slate-900/30 hover:bg-slate-800/50 border border-white/10 rounded-xl text-white text-2xl font-bold transition-all active:scale-95"
+                                className="w-12 h-14 flex items-center justify-center bg-slate-800/60 hover:bg-slate-700/60 border border-white/10 rounded-lg text-white text-xl font-bold transition-all active:scale-95"
                             >
                                 −
                             </button>
@@ -141,13 +137,13 @@ export default function ExerciseSetList({
                                 min="0"
                                 value={weight}
                                 onChange={handleWeightChange}
-                                className="flex-1 px-4 py-5 bg-slate-900/30 border border-white/10 rounded-xl text-white text-3xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-lime-400/50 min-h-[64px] backdrop-blur-sm"
+                                className="flex-1 min-w-0 px-3 py-3 bg-slate-900/30 border border-white/10 rounded-lg text-white text-2xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                                 placeholder="0"
                             />
                             <button
                                 type="button"
                                 onClick={incrementWeight}
-                                className="w-16 h-16 flex items-center justify-center bg-lime-400 hover:bg-lime-500 rounded-xl text-slate-950 text-2xl font-bold transition-all active:scale-95"
+                                className="w-12 h-14 flex items-center justify-center bg-lime-400 hover:bg-lime-500 rounded-lg text-slate-950 text-xl font-bold transition-all active:scale-95"
                             >
                                 +
                             </button>
@@ -155,18 +151,18 @@ export default function ExerciseSetList({
                     </div>
                 </div>
 
-                {/* Log Set Button - HERO size */}
+                {/* Log Set Button */}
                 <button
                     onClick={isEditing ? onUpdateSet : onLogSet}
                     disabled={!reps}
-                    className="w-full px-6 py-5 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[72px] shadow-lg shadow-lime-400/20 active:scale-98"
+                    className="w-full px-6 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
                 >
                     {isEditing ? '✓ Update Set' : '✓ Log Set'}
                 </button>
                 {isEditing && (
                     <button
                         onClick={onCancelEdit}
-                        className="w-full px-6 py-3 mt-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10"
+                        className="w-full px-6 py-3 mt-2 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg font-semibold transition-all border border-white/10"
                     >
                         Cancel Edit
                     </button>
@@ -177,32 +173,32 @@ export default function ExerciseSetList({
             {sets.length > 0 && (
                 <div className="glass-card p-6">
                     <h3 className="text-lg font-bold text-white mb-4">Completed Sets</h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         {sets.map((set, index) => (
                             <div
                                 key={index}
-                                className="flex items-center justify-between p-4 bg-slate-900/30 rounded-xl gap-3 border border-white/5"
+                                className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg gap-2"
                             >
-                                <span className="text-slate-400 font-medium">Set {set.setNumber}</span>
-                                <span className="text-white font-bold flex-1 text-center text-lg">
+                                <span className="text-slate-400">Set {set.setNumber}</span>
+                                <span className="text-white font-semibold flex-1 text-center">
                                     {set.weight ? `${set.weight}kg × ` : ''}{set.reps} reps
                                 </span>
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => exerciseLogId && onEditSet(exerciseLogId, index, set)}
-                                        className="w-12 h-12 flex items-center justify-center bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl text-lg font-semibold transition-all active:scale-95"
+                                        className="px-3 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg text-sm font-semibold transition-all active:scale-95"
                                         title="Edit set"
                                     >
                                         ✏️
                                     </button>
                                     <button
                                         onClick={() => exerciseLogId && onRequestDelete(exerciseLogId, index)}
-                                        className="w-12 h-12 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-xl text-lg font-semibold transition-all active:scale-95"
+                                        className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all active:scale-95"
                                         title="Delete set"
                                     >
                                         🗑️
                                     </button>
-                                    <span className="text-lime-400 text-xl ml-1">✓</span>
+                                    <span className="text-lime-400">✓</span>
                                 </div>
                             </div>
                         ))}

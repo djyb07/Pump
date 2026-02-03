@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { register, login, forgotPassword, resetPassword, googleCallback } from '../controllers/authController';
 import passport from 'passport';
+import { authLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/forgot-password', forgotPassword);
+// Apply rate limiting to auth routes to prevent brute force attacks
+router.post('/register', authLimiter, register);
+router.post('/login', authLimiter, login);
+router.post('/forgot-password', authLimiter, forgotPassword);
 router.post('/reset-password', resetPassword);
 
 // Google OAuth

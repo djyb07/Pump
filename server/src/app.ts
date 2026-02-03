@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 
 import authRoutes from './routes/authRoutes';
 import exerciseRoutes from './routes/exerciseRoutes';
@@ -11,13 +12,20 @@ import workoutRoutes from './routes/workoutRoutes';
 import prisma from './prisma';
 import './config/passport';
 import passport from 'passport';
+import { validateRequiredEnv } from './config/validateEnv';
 
 // Load .env only in development (Azure uses Configuration settings)
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }
 
+// Validate required environment variables at startup
+validateRequiredEnv();
+
 const app = express();
+
+// Security: Set secure HTTP headers
+app.use(helmet());
 
 // CORS Configuration
 const allowedOrigins = [

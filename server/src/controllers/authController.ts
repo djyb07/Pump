@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../prisma';
 import { sendPasswordResetEmail } from '../services/emailService';
+import { getJwtSecret } from '../config/validateEnv';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -85,7 +86,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         // 4. Generate JWT token
         const token = jwt.sign(
             { userId: user.id },
-            process.env.JWT_SECRET || 'default-secret-key',
+            getJwtSecret(),
             { expiresIn: '24h' }
         );
 
@@ -117,7 +118,7 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
         }
 
         // Generate token
-        const resetToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'default-secret-key', { expiresIn: '1h' });
+        const resetToken = jwt.sign({ userId: user.id }, getJwtSecret(), { expiresIn: '1h' });
         const resetExpires = new Date(Date.now() + 3600000); // 1 hour
 
         await prisma.user.update({
@@ -150,7 +151,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
         // Verify token
         let decoded: any;
         try {
-            decoded = jwt.verify(token, process.env.JWT_SECRET || 'default-secret-key');
+            decoded = jwt.verify(token, getJwtSecret());
         } catch (err) {
             res.status(400).json({ message: 'Invalid or expired token' });
             return;
@@ -199,7 +200,7 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
                 firstName: user.firstName,
                 lastName: user.lastName
             },
-            process.env.JWT_SECRET || 'default-secret-key',
+            getJwtSecret(),
             { expiresIn: '24h' }
         );
 

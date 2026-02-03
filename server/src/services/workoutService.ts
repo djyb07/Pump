@@ -1,4 +1,5 @@
 import prisma from '../prisma';
+import { calculatePRsForExerciseLogs, batchUpdatePRFlags } from './PRService';
 
 export interface StartWorkoutData {
     dayId: string;
@@ -154,7 +155,7 @@ export const workoutService = {
         return exerciseLog;
     },
 
-    // Finish a workout
+    // Finish a workout - OPTIMIZED: Uses batch PR calculation instead of N+1 queries
     async finishWorkout(workoutLogId: string, userId: string, data: FinishWorkoutData) {
         // Verify workout belongs to user
         const workoutLog = await prisma.workoutLog.findUnique({
@@ -210,57 +211,21 @@ export const workoutService = {
             }
         });
 
-        // Calculate PRs for each exercise log
-        for (const exerciseLog of updated.exerciseLogs) {
-            const sets = exerciseLog.sets as any[];
-            if (!sets || sets.length === 0) continue;
+        // OPTIMIZED: Calculate PRs using batch query (was N+1, now 1 query)
+        const exerciseLogsData = updated.exerciseLogs.map(log => ({
+            id: log.id,
+            exerciseId: log.exerciseId,
+            sets: log.sets as any[]
+        }));
 
-            const maxWeight = Math.max(...sets.map((s: any) => s.weight || 0));
-            const totalVolume = sets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
-            const maxReps = Math.max(...sets.map((s: any) => s.reps || 0));
+        const prResults = await calculatePRsForExerciseLogs(
+            exerciseLogsData,
+            userId,
+            workoutLogId
+        );
 
-            // Get previous logs for this exercise (excluding current workout)
-            const previousLogs = await prisma.exerciseLog.findMany({
-                where: {
-                    exerciseId: exerciseLog.exerciseId,
-                    workoutLog: {
-                        userId,
-                        status: 'completed'
-                    },
-                    workoutLogId: {
-                        not: workoutLogId
-                    }
-                }
-            });
-
-            // Determine if PRs were set
-            let isWeightPR = true;
-            let isVolumePR = true;
-            let isRepsPR = true;
-
-            for (const prevLog of previousLogs) {
-                const prevSets = prevLog.sets as any[];
-                if (!prevSets || prevSets.length === 0) continue;
-
-                const prevMaxWeight = Math.max(...prevSets.map((s: any) => s.weight || 0));
-                const prevTotalVolume = prevSets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
-                const prevMaxReps = Math.max(...prevSets.map((s: any) => s.reps || 0));
-
-                if (prevMaxWeight >= maxWeight) isWeightPR = false;
-                if (prevTotalVolume >= totalVolume) isVolumePR = false;
-                if (prevMaxReps >= maxReps) isRepsPR = false;
-            }
-
-            // Update exercise log with PR flags
-            await prisma.exerciseLog.update({
-                where: { id: exerciseLog.id },
-                data: {
-                    isWeightPR: isWeightPR && maxWeight > 0,
-                    isVolumePR: isVolumePR && totalVolume > 0,
-                    isRepsPR: isRepsPR && maxReps > 0
-                }
-            });
-        }
+        // Batch update all PR flags
+        await batchUpdatePRFlags(prResults);
 
         return updated;
     },

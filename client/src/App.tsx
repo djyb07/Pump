@@ -23,96 +23,107 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Global App Layout - ensures consistent dark background across all routes
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="min-h-screen bg-slate-950">
+      {children}
+    </div>
+  );
+};
+
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/exercises"
-          element={
-            <ProtectedRoute>
-              <ExerciseLibrary />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/programs"
-          element={
-            <ProtectedRoute>
-              <ProgramsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/programs/new"
-          element={
-            <ProtectedRoute>
-              <CreateProgramPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/programs/:id"
-          element={
-            <ProtectedRoute>
-              <ProgramDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/workout/active"
-          element={
-            <ProtectedRoute>
-              <ActiveWorkoutPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/workout/history"
-          element={
-            <ProtectedRoute>
-              <WorkoutHistoryPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/workout/:id"
-          element={
-            <ProtectedRoute>
-              <WorkoutDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/exercise/:exerciseId/progress"
-          element={
-            <ProtectedRoute>
-              <ExerciseProgressPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/personal-records"
-          element={
-            <ProtectedRoute>
-              <PersonalRecordsPage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <AppLayout>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/exercises"
+            element={
+              <ProtectedRoute>
+                <ExerciseLibrary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/programs"
+            element={
+              <ProtectedRoute>
+                <ProgramsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/programs/new"
+            element={
+              <ProtectedRoute>
+                <CreateProgramPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/programs/:id"
+            element={
+              <ProtectedRoute>
+                <ProgramDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workout/active"
+            element={
+              <ProtectedRoute>
+                <ActiveWorkoutPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workout/history"
+            element={
+              <ProtectedRoute>
+                <WorkoutHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workout/:id"
+            element={
+              <ProtectedRoute>
+                <WorkoutDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/exercise/:exerciseId/progress"
+            element={
+              <ProtectedRoute>
+                <ExerciseProgressPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/personal-records"
+            element={
+              <ProtectedRoute>
+                <PersonalRecordsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AppLayout>
     </Router>
   );
 }

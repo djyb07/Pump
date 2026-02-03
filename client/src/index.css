@@ -12,6 +12,11 @@
     @apply bg-slate-900/60 backdrop-blur-md border border-white/5 shadow-xl rounded-2xl;
 }
 
+/* Glass Card with lime accent border */
+.glass-card-accent {
+    @apply bg-slate-900/60 backdrop-blur-md border border-lime-400/20 shadow-xl rounded-xl;
+}
+
 /* Primary Button Style */
 .btn-primary {
     @apply bg-lime-400 text-slate-950 font-semibold rounded-lg hover:bg-lime-500 transition-all duration-200;
@@ -19,10 +24,35 @@
 
 /* Secondary Button Style */
 .btn-secondary {
-    @apply bg-slate-800 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition-all duration-200 border border-white/5;
+    @apply bg-slate-800/60 text-slate-200 font-semibold rounded-lg hover:bg-slate-700/60 transition-all duration-200 border border-white/5;
+}
+
+/* Hero Button Style - larger with shadow */
+.btn-hero {
+    @apply bg-lime-400 text-slate-950 font-bold rounded-xl hover:bg-lime-500 transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20;
 }
 
 /* Input Focus Ring */
 .input-midnight {
     @apply bg-slate-800/60 border border-white/5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-lime-400/50 focus:ring-1 focus:ring-lime-400/30 transition-colors;
+}
+
+/* Navigation Link Active State */
+.nav-link-active {
+    @apply text-lime-400 bg-lime-400/10;
+}
+
+/* Stat Number Highlight */
+.stat-highlight {
+    @apply text-lime-400 font-bold;
+}
+
+/* Smooth page transitions */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Prevent flash of white during page load */
+body {
+    @apply bg-slate-950;
 }

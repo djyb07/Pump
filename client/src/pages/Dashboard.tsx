@@ -566,7 +566,7 @@ export default function Dashboard() {
                     {/* Footer */}
                     <div className="mt-8 text-center">
                         <p className="text-gray-600 text-sm">
-                            🚀 Powered by Azure & Vercel | Built with ❤️
+                            🚀 Powered by Render & Vercel | Built with ❤️
                         </p>
                     </div>
                 </main>

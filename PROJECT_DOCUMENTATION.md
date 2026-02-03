@@ -132,13 +132,9 @@ Pump/
 │   └── tsconfig.json
 │
 ├── .github/workflows/           # GitHub Actions
-│   ├── keep-alive.yml           # Server keep-alive ping
-│   └── sync-to-azure-devops.yml # Azure DevOps sync
+│   └── keep-alive.yml           # Server keep-alive ping
 │
-├── README.md
-├── DEPLOYMENT_GUIDE.md
-├── ENVIRONMENT_SETUP.md
-└── GOOGLE_OAUTH_SETUP.md
+└── README.md
 ```
 
 ---

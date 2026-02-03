@@ -14,7 +14,7 @@ import './config/passport';
 import passport from 'passport';
 import { validateRequiredEnv } from './config/validateEnv';
 
-// Load .env only in development (Azure uses Configuration settings)
+// Load .env only in development (Render uses Environment settings)
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }

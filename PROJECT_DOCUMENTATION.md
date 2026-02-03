@@ -99,6 +99,15 @@ Pump/
 ├── client/                          # React Frontend Application
 │   ├── src/
 │   │   ├── components/              # Reusable UI Components
+│   │   │   ├── dashboard/           # Dashboard sub-components
+│   │   │   │   ├── index.ts             # Barrel export
+│   │   │   │   ├── DashboardHeader.tsx  # Header with logo & logout
+│   │   │   │   ├── WelcomeSection.tsx   # User welcome card
+│   │   │   │   ├── ActiveProgramCard.tsx    # Active program display
+│   │   │   │   ├── NextWorkoutCard.tsx      # Next workout card
+│   │   │   │   ├── WeekStatsCard.tsx        # Weekly statistics
+│   │   │   │   ├── RecentProgressCard.tsx   # Recent PRs display
+│   │   │   │   └── QuickActions.tsx         # Quick action buttons
 │   │   │   ├── workout/             # Workout-specific components
 │   │   │   │   ├── WorkoutHeader.tsx
 │   │   │   │   ├── WorkoutControls.tsx
@@ -110,10 +119,14 @@ Pump/
 │   │   │   ├── ExerciseModal.tsx
 │   │   │   ├── RestTimer.tsx
 │   │   │   └── WorkoutSummaryModal.tsx
+│   │   ├── hooks/                   # Custom React Hooks
+│   │   │   └── useDashboard.ts      # Dashboard data & logic
+│   │   ├── types/                   # TypeScript Type Definitions
+│   │   │   └── dashboard.ts         # Dashboard-related types
 │   │   ├── pages/                   # Route Page Components
 │   │   │   ├── ActiveWorkoutPage.tsx    # Real-time workout tracking
 │   │   │   ├── CreateProgramPage.tsx    # Create new program
-│   │   │   ├── Dashboard.tsx            # Main dashboard
+│   │   │   ├── Dashboard.tsx            # Main dashboard (uses hook + components)
 │   │   │   ├── ExerciseLibrary.tsx      # Browse all exercises
 │   │   │   ├── ExerciseProgressPage.tsx # Exercise progress charts
 │   │   │   ├── ForgotPassword.tsx       # Password reset request

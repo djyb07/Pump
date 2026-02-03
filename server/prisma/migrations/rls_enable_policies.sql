@@ -1,3 +1,12 @@
+-- ╔══════════════════════════════════════════════════════════════════════════════╗
+-- ║  ⚠️  ONE-TIME MIGRATION SCRIPT - ALREADY EXECUTED ON PRODUCTION  ⚠️         ║
+-- ║                                                                              ║
+-- ║  This file is kept for REFERENCE ONLY.                                       ║
+-- ║  Status: ✅ ALREADY RUN on Supabase (executed: January 2026)                 ║
+-- ║  DO NOT run this script again - it will cause errors due to existing         ║
+-- ║  policies. If you need to modify RLS, create a new migration file.           ║
+-- ╚══════════════════════════════════════════════════════════════════════════════╝
+--
 -- ==============================================================================
 -- PUMP Application - Row Level Security (RLS) Policies
 -- ==============================================================================

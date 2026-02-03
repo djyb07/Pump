@@ -1,130 +1,61 @@
-# 🏋️ PUMP - Workout Tracker
+# 🏋️ PUMP - Fitness Tracking App
 
-מערכת מתקדמת למעקב אחר אימונים עם תמיכה ב-OAuth, איפוס סיסמה במייל ועוד.
+A full-stack workout tracking application with real-time exercise logging, personal records tracking, and progress visualization.
 
-## 📋 תכונות
+## 🚀 Live Demo
 
-- ✅ רישום והתחברות משתמשים
-- ✅ התחברות דרך Google OAuth
-- ✅ איפוס סיסמה עם שליחת מייל
-- ✅ אבטחה מלאה עם JWT
-- ✅ תמיכה ב-production deployment
-- ✅ CORS מוגדר נכון
+- **Frontend:** [pump-client.vercel.app](https://pump-client.vercel.app)
+- **Backend API:** [pump-api.onrender.com](https://pump-api.onrender.com)
 
-## 🚀 התחלה מהירה
+## ✨ Features
 
-### דרישות מוקדמות
+- 📋 Create custom workout programs (PPL, Upper/Lower, Full Body)
+- 🏃 Real-time workout tracking with rest timer
+- 🏆 Automatic Personal Record (PR) detection
+- 📊 Progress charts and statistics
+- 🔐 Authentication (Email/Password + Google OAuth)
+- 🌙 Dark theme, mobile-responsive UI
 
-- Node.js (v16+)
-- PostgreSQL database
-- חשבון Google Cloud (לOAuth - אופציונלי)
-- חשבון Gmail (למיילים - אופציונלי)
+## 🛠️ Tech Stack
 
-### הגדרה
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 19, TypeScript, Vite, TailwindCSS 4 |
+| **Backend** | Node.js, Express 5, Prisma 7 |
+| **Database** | PostgreSQL (Supabase) with RLS |
+| **Auth** | JWT, Passport.js, bcrypt |
+| **Hosting** | Vercel (client), Render (server) |
 
-**1. שכפול והתקנה:**
+## 🏃 Quick Start
 
 ```bash
-# Clone the repository
-git clone <repository-url>
+# Clone
+git clone https://github.com/djyb07/Pump.git
 cd Pump
 
-# Install dependencies for server
+# Server setup
 cd server
 npm install
-
-# Install dependencies for client
-cd ../client
-npm install
-```
-
-**2. הגדרת משתני סביבה:**
-
-העתק את הקובץ לדוגמה ועדכן את הערכים:
-
-```bash
-cd server
-copy .env.example .env
-```
-
-ערוך את `server/.env` והגדר את הערכים שלך:
-- `DATABASE_URL` - חיבור ל-PostgreSQL
-- `JWT_SECRET` - מפתח סודי לJWT
-- `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - מGoogle Console
-- `EMAIL_*` - הגדרות SMTP (אופציונלי)
-
-**3. הפעלת המערכת:**
-
-```bash
-# Terminal 1: Start server
-cd server
+cp .env.example .env  # Configure DATABASE_URL, JWT_SECRET
+npx prisma generate
 npm run dev
 
-# Terminal 2: Start client
+# Client setup (new terminal)
 cd client
+npm install
 npm run dev
+
+# Open http://localhost:5173
 ```
 
-גש ל-`http://localhost:5173` בדפדפן.
+## 📖 Documentation
 
-## 📚 מדריכים
-
-- **[מדריך Deploy והפעלה גלובלית](./DEPLOYMENT_GUIDE.md)** - הוראות מפורטות להפעלת המערכת באינטרנט
-- **[דוגמת משתני סביבה](./server/.env.example)** - כל המשתנים הנדרשים עם הסברים
-
-## 🏗️ מבנה הפרויקט
-
-```
-Pump/
-├── client/          # Frontend (React + Vite + TailwindCSS)
-│   ├── src/
-│   │   ├── pages/      # דפי האפליקציה
-│   │   ├── services/   # קריאות API
-│   │   └── App.tsx     # נקודת כניסה
-│   └── .env            # משתני סביבה ללקוח
-│
-├── server/          # Backend (Node.js + Express + Prisma)
-│   ├── src/
-│   │   ├── controllers/  # לוגיקה עסקית
-│   │   ├── routes/       # נתיבי API
-│   │   ├── services/     # שירותים (מייל וכו')
-│   │   ├── config/       # הגדרות (passport)
-│   │   └── app.ts        # נקודת כניסה
-│   ├── prisma/
-│   │   └── schema.prisma # סכמת DB
-│   └── .env              # משתני סביבה לשרת
-│
-└── DEPLOYMENT_GUIDE.md   # מדריך הפעלה מלא
-```
-
-## 🔧 טכנולוגיות
-
-### Frontend
-- **React 19** - UI framework
-- **Vite** - Build tool מהיר
-- **TailwindCSS 4** - Styling
-- **React Router** - ניווט
-
-### Backend
-- **Node.js** - Runtime
-- **Express 5** - Web framework
-- **Prisma 7** - ORM
-- **PostgreSQL** - Database
-- **Passport.js** - Authentication
-- **Nodemailer** - Email sending
-- **JWT** - Tokens
-
-## 📧 הגדרת מיילים
-
-ראה את [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md#-הגדרת-שליחת-מיילים-password-reset) להוראות מפורטות.
-
-## 🌍 Deploy ל-Production
-
-ראה את [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md#-הפעלה-גלובלית---גישה-מהאינטרנט) לאפשרויות deploy שונות.
-
-## 🐛 בעיות נפוצות
-
-ראה את [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md#-פתרון-בעיות-נפוצות) לפתרונות.
+See [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) for comprehensive documentation including:
+- Database schema (8 models)
+- Full API reference
+- Authentication flows
+- Security implementation
+- E2E testing guide
 
 ## 📄 License
 

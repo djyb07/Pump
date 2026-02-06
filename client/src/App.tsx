@@ -13,6 +13,7 @@ import WorkoutHistoryPage from './pages/WorkoutHistoryPage';
 import WorkoutDetailsPage from './pages/WorkoutDetailsPage';
 import ExerciseProgressPage from './pages/ExerciseProgressPage';
 import PersonalRecordsPage from './pages/PersonalRecordsPage';
+import { MainLayout } from './components/layout';
 
 // Simple protected route check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -32,6 +33,17 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// Authenticated Layout - includes SmartNavbar
+const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <ProtectedRoute>
+      <MainLayout>
+        {children}
+      </MainLayout>
+    </ProtectedRoute>
+  );
+};
+
 function App() {
   return (
     <Router>
@@ -42,84 +54,86 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Authenticated Routes with MainLayout */}
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <Dashboard />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/exercises"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <ExerciseLibrary />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/programs"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <ProgramsPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/programs/new"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <CreateProgramPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/programs/:id"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <ProgramDetailsPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/workout/active"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <ActiveWorkoutPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/workout/history"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <WorkoutHistoryPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/workout/:id"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <WorkoutDetailsPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/exercise/:exerciseId/progress"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <ExerciseProgressPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
           <Route
             path="/personal-records"
             element={
-              <ProtectedRoute>
+              <AuthenticatedLayout>
                 <PersonalRecordsPage />
-              </ProtectedRoute>
+              </AuthenticatedLayout>
             }
           />
         </Routes>
@@ -129,3 +143,4 @@ function App() {
 }
 
 export default App
+

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import { UnifiedPageHeader } from '../components/layout';
 
 interface ProgressData {
     date: string;
@@ -148,47 +149,35 @@ export default function ExerciseProgressPage() {
     }));
 
     return (
-        <div className="min-h-screen bg-slate-950">
-            {/* Header */}
-            <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-white">{exercise.nameEn}</h1>
-                            <p className="text-slate-400 mt-1">{exercise.nameHe}</p>
-                        </div>
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
-                        >
-                            ← Go Back
-                        </button>
-                    </div>
-
-                    {/* Time Filter */}
-                    <div className="mt-6 flex space-x-2">
-                        {[
-                            { value: '7' as const, label: 'Last 7 Days' },
-                            { value: '30' as const, label: 'Last 30 Days' },
-                            { value: '90' as const, label: 'Last 90 Days' },
-                            { value: 'all' as const, label: 'All Time' }
-                        ].map(filter => (
-                            <button
-                                key={filter.value}
-                                onClick={() => setTimeFilter(filter.value)}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${timeFilter === filter.value
-                                    ? 'bg-lime-400 text-slate-950'
-                                    : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60'
-                                    }`}
-                            >
-                                {filter.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </header>
+        <div className="relative z-10">
+            <UnifiedPageHeader
+                title={exercise.nameEn}
+                subtitle={exercise.nameHe}
+                showBackButton
+                emoji="📊"
+            />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Time Filter */}
+                <div className="mb-8 flex flex-wrap gap-2">
+                    {[
+                        { value: '7' as const, label: 'Last 7 Days' },
+                        { value: '30' as const, label: 'Last 30 Days' },
+                        { value: '90' as const, label: 'Last 90 Days' },
+                        { value: 'all' as const, label: 'All Time' }
+                    ].map(filter => (
+                        <button
+                            key={filter.value}
+                            onClick={() => setTimeFilter(filter.value)}
+                            className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${timeFilter === filter.value
+                                ? 'bg-lime-400 text-slate-950'
+                                : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60'
+                                }`}
+                        >
+                            {filter.label}
+                        </button>
+                    ))}
+                </div>
                 {/* Best PRs Section */}
                 {(() => {
                     const prs = getBestPRs();

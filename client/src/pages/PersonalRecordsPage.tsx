@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
+import { UnifiedPageHeader } from '../components/layout';
 
 interface ExercisePR {
     exerciseId: string;
@@ -107,29 +108,13 @@ export default function PersonalRecordsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950">
-            {/* Header */}
-            <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center">
-                                🏆 Personal Records
-                            </h1>
-                            <p className="text-slate-400 mt-1">
-                                {filteredRecords.length} {filteredRecords.length === 1 ? 'exercise' : 'exercises'}
-                                {hasActiveFilters && ` (filtered from ${records.length})`}
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
-                        >
-                            ← Go Back
-                        </button>
-                    </div>
-                </div>
-            </header>
+        <div className="relative z-10">
+            <UnifiedPageHeader
+                title="Personal Records"
+                subtitle={`${filteredRecords.length} ${filteredRecords.length === 1 ? 'exercise' : 'exercises'}${hasActiveFilters ? ` (filtered from ${records.length})` : ''}`}
+                showBackButton
+                emoji="🏆"
+            />
 
             {/* Filters */}
             <div className="bg-slate-900/60 border-b border-white/5 md:sticky md:top-[89px] z-10 backdrop-blur-md">

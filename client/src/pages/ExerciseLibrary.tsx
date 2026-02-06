@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { exerciseService, type Exercise } from '../services/exerciseService';
 import ExerciseCard from '../components/ExerciseCard';
 import ExerciseModal from '../components/ExerciseModal';
+import { UnifiedPageHeader } from '../components/layout';
 
 const ExerciseLibrary: React.FC = () => {
     const navigate = useNavigate();
@@ -68,139 +69,121 @@ const ExerciseLibrary: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950">
-            <div className="relative z-10">
-                {/* Header */}
-                <header className="border-b border-white/5 backdrop-blur-md bg-slate-900/60">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                                <button
-                                    onClick={() => navigate('/dashboard')}
-                                    className="text-slate-400 hover:text-white transition-colors"
-                                >
-                                    ← Back
-                                </button>
+        <div className="relative z-10">
+            <UnifiedPageHeader
+                title="Exercise Library"
+                subtitle="100 exercises available"
+                showBackButton
+                emoji="📚"
+            />
 
-                                <div>
-                                    <h1 className="text-3xl font-bold text-lime-400">
-                                        Exercise Library
-                                    </h1>
-                                    <p className="text-slate-500 text-sm">100 exercises available</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Main Content */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Search and Filters */}
-                    <div className="mb-8 space-y-4">
-                        {/* Search Bar */}
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="🔍 חפש תרגיל... (עברית או אנגלית)"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-6 py-4 bg-slate-800/60 border border-white/5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-all"
-                            />
-                        </div>
-
-                        {/* Filter Chips */}
-                        <div className="flex flex-wrap gap-3">
-                            {/* Workout Type */}
-                            <select
-                                value={selectedWorkoutType}
-                                onChange={(e) => setSelectedWorkoutType(e.target.value)}
-                                className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
-                            >
-                                <option value="" className="bg-slate-900">All Workout Types</option>
-                                <option value="Push" className="bg-slate-900">💪 Push Day</option>
-                                <option value="Pull" className="bg-slate-900">🔙 Pull Day</option>
-                                <option value="Leg" className="bg-slate-900">🦵 Leg Day</option>
-                                <option value="Upper" className="bg-slate-900">⬆️ Upper Day</option>
-                                <option value="Lower" className="bg-slate-900">⬇️ Lower Day</option>
-                                <option value="Full Body" className="bg-slate-900">🏋️ Full Body</option>
-                                <option value="Core" className="bg-slate-900">💥 Core</option>
-                            </select>
-
-                            {/* Muscle Group */}
-                            <select
-                                value={selectedMuscle}
-                                onChange={(e) => setSelectedMuscle(e.target.value)}
-                                className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
-                            >
-                                <option value="" className="bg-slate-900">All Muscle Groups</option>
-                                <option value="Chest" className="bg-slate-900">Chest</option>
-                                <option value="Back" className="bg-slate-900">Back</option>
-                                <option value="Shoulders" className="bg-slate-900">Shoulders</option>
-                                <option value="Biceps" className="bg-slate-900">Biceps</option>
-                                <option value="Triceps" className="bg-slate-900">Triceps</option>
-                                <option value="Quads" className="bg-slate-900">Quads</option>
-                                <option value="Hamstrings" className="bg-slate-900">Hamstrings</option>
-                                <option value="Glutes" className="bg-slate-900">Glutes</option>
-                                <option value="Calves" className="bg-slate-900">Calves</option>
-                                <option value="Abs" className="bg-slate-900">Abs</option>
-                                <option value="Core" className="bg-slate-900">Core</option>
-                            </select>
-
-                            {/* Difficulty */}
-                            <select
-                                value={selectedDifficulty}
-                                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                                className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
-                            >
-                                <option value="" className="bg-slate-900">All Levels</option>
-                                <option value="Beginner" className="bg-slate-900">🟢 Beginner</option>
-                                <option value="Intermediate" className="bg-slate-900">🟡 Intermediate</option>
-                                <option value="Advanced" className="bg-slate-900">🔴 Advanced</option>
-                            </select>
-
-                            {/* Clear Filters */}
-                            {(searchQuery || selectedMuscle || selectedWorkoutType || selectedDifficulty) && (
-                                <button
-                                    onClick={clearFilters}
-                                    className="px-5 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all font-medium shadow-lg"
-                                >
-                                    ✕ Clear Filters
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Results count */}
-                        <p className="text-slate-400 text-sm font-medium">
-                            Showing {filteredExercises.length} of {exercises.length} exercises
-                        </p>
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Search and Filters */}
+                <div className="mb-8 space-y-4">
+                    {/* Search Bar */}
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="🔍 חפש תרגיל... (עברית או אנגלית)"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full px-6 py-4 bg-slate-800/60 border border-white/5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-all"
+                        />
                     </div>
 
-                    {/* Exercise Grid */}
-                    {loading ? (
-                        <div className="flex items-center justify-center py-20">
-                            <div className="text-center">
-                                <div className="w-16 h-16 border-4 border-lime-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                                <p className="text-slate-400">טוען תרגילים...</p>
-                            </div>
-                        </div>
-                    ) : filteredExercises.length === 0 ? (
-                        <div className="text-center py-20">
-                            <p className="text-2xl text-slate-500 mb-2">😔 לא נמצאו תרגילים</p>
-                            <p className="text-slate-600">נסה לשנות את הפילטרים</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredExercises.map((exercise) => (
-                                <ExerciseCard
-                                    key={exercise.id}
-                                    exercise={exercise}
-                                    onClick={() => setSelectedExercise(exercise)}
-                                    onViewProgress={() => navigate(`/exercise/${exercise.id}/progress`)}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    {/* Filter Chips */}
+                    <div className="flex flex-wrap gap-3">
+                        {/* Workout Type */}
+                        <select
+                            value={selectedWorkoutType}
+                            onChange={(e) => setSelectedWorkoutType(e.target.value)}
+                            className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
+                        >
+                            <option value="" className="bg-slate-900">All Workout Types</option>
+                            <option value="Push" className="bg-slate-900">💪 Push Day</option>
+                            <option value="Pull" className="bg-slate-900">🔙 Pull Day</option>
+                            <option value="Leg" className="bg-slate-900">🦵 Leg Day</option>
+                            <option value="Upper" className="bg-slate-900">⬆️ Upper Day</option>
+                            <option value="Lower" className="bg-slate-900">⬇️ Lower Day</option>
+                            <option value="Full Body" className="bg-slate-900">🏋️ Full Body</option>
+                            <option value="Core" className="bg-slate-900">💥 Core</option>
+                        </select>
+
+                        {/* Muscle Group */}
+                        <select
+                            value={selectedMuscle}
+                            onChange={(e) => setSelectedMuscle(e.target.value)}
+                            className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
+                        >
+                            <option value="" className="bg-slate-900">All Muscle Groups</option>
+                            <option value="Chest" className="bg-slate-900">Chest</option>
+                            <option value="Back" className="bg-slate-900">Back</option>
+                            <option value="Shoulders" className="bg-slate-900">Shoulders</option>
+                            <option value="Biceps" className="bg-slate-900">Biceps</option>
+                            <option value="Triceps" className="bg-slate-900">Triceps</option>
+                            <option value="Quads" className="bg-slate-900">Quads</option>
+                            <option value="Hamstrings" className="bg-slate-900">Hamstrings</option>
+                            <option value="Glutes" className="bg-slate-900">Glutes</option>
+                            <option value="Calves" className="bg-slate-900">Calves</option>
+                            <option value="Abs" className="bg-slate-900">Abs</option>
+                            <option value="Core" className="bg-slate-900">Core</option>
+                        </select>
+
+                        {/* Difficulty */}
+                        <select
+                            value={selectedDifficulty}
+                            onChange={(e) => setSelectedDifficulty(e.target.value)}
+                            className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
+                        >
+                            <option value="" className="bg-slate-900">All Levels</option>
+                            <option value="Beginner" className="bg-slate-900">🟢 Beginner</option>
+                            <option value="Intermediate" className="bg-slate-900">🟡 Intermediate</option>
+                            <option value="Advanced" className="bg-slate-900">🔴 Advanced</option>
+                        </select>
+
+                        {/* Clear Filters */}
+                        {(searchQuery || selectedMuscle || selectedWorkoutType || selectedDifficulty) && (
+                            <button
+                                onClick={clearFilters}
+                                className="px-5 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all font-medium shadow-lg"
+                            >
+                                ✕ Clear Filters
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Results count */}
+                    <p className="text-slate-400 text-sm font-medium">
+                        Showing {filteredExercises.length} of {exercises.length} exercises
+                    </p>
                 </div>
+
+                {/* Exercise Grid */}
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-center">
+                            <div className="w-16 h-16 border-4 border-lime-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-slate-400">טוען תרגילים...</p>
+                        </div>
+                    </div>
+                ) : filteredExercises.length === 0 ? (
+                    <div className="text-center py-20">
+                        <p className="text-2xl text-slate-500 mb-2">😔 לא נמצאו תרגילים</p>
+                        <p className="text-slate-600">נסה לשנות את הפילטרים</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredExercises.map((exercise) => (
+                            <ExerciseCard
+                                key={exercise.id}
+                                exercise={exercise}
+                                onClick={() => setSelectedExercise(exercise)}
+                                onViewProgress={() => navigate(`/exercise/${exercise.id}/progress`)}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Exercise Modal */}
@@ -214,3 +197,4 @@ const ExerciseLibrary: React.FC = () => {
 };
 
 export default ExerciseLibrary;
+

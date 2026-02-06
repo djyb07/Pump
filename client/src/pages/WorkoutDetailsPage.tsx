@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
+import { UnifiedPageHeader } from '../components/layout';
 
 export default function WorkoutDetailsPage() {
     const navigate = useNavigate();
@@ -116,28 +117,13 @@ export default function WorkoutDetailsPage() {
     const totalSets = getTotalSets();
 
     return (
-        <div className="min-h-screen bg-slate-950">
-            {/* Header */}
-            <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-white">
-                                {(workout as any).dayName || 'Workout Details'}
-                            </h1>
-                            <p className="text-slate-400 mt-1">
-                                {formatDate(workout.startTime)} • {formatTime(workout.startTime)}
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => navigate('/workout/history')}
-                            className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
-                        >
-                            ← Back to History
-                        </button>
-                    </div>
-                </div>
-            </header>
+        <div className="relative z-10">
+            <UnifiedPageHeader
+                title={(workout as any).dayName || 'Workout Details'}
+                subtitle={`${formatDate(workout.startTime)} • ${formatTime(workout.startTime)}`}
+                showBackButton
+                emoji="💪"
+            />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Summary Cards */}

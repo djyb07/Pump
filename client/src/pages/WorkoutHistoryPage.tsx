@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
+import { UnifiedPageHeader } from '../components/layout';
 
 export default function WorkoutHistoryPage() {
     const navigate = useNavigate();
@@ -176,33 +177,19 @@ export default function WorkoutHistoryPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950">
-            {/* Header */}
-            <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-white">Workout History</h1>
-                            <p className="text-slate-400 mt-1">
-                                {filteredWorkouts.length} {filteredWorkouts.length === 1 ? 'workout' : 'workouts'}
-                                {hasActiveFilters && ` (filtered from ${workouts.length})`}
-                            </p>
-                        </div>
-                        <div className="flex space-x-3">
-                            <button
-                                onClick={() => navigate('/personal-records')}
-                                className="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-lg font-semibold transition-all">
-                                🏆 Personal Records
-                            </button>
-                            <button
-                                onClick={() => navigate('/dashboard')}
-                                className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all">
-                                ← Back to Dashboard
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <div className="relative z-10">
+            <UnifiedPageHeader
+                title="Workout History"
+                subtitle={`${filteredWorkouts.length} ${filteredWorkouts.length === 1 ? 'workout' : 'workouts'}${hasActiveFilters ? ` (filtered from ${workouts.length})` : ''}`}
+                emoji="📊"
+                rightContent={
+                    <button
+                        onClick={() => navigate('/personal-records')}
+                        className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-lg font-semibold transition-all text-sm">
+                        🏆 Personal Records
+                    </button>
+                }
+            />
 
             {/* Filters */}
             <div className="bg-slate-900/60 border-b border-white/5 md:sticky md:top-[89px] z-10 backdrop-blur-md">

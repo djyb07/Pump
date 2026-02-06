@@ -6,6 +6,7 @@ import EditExerciseModal from '../components/EditExerciseModal';
 import AddDayModal from '../components/AddDayModal';
 import ConfirmModal from '../components/ConfirmModal';
 import ExerciseModal from '../components/ExerciseModal';
+import { UnifiedPageHeader } from '../components/layout';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -155,45 +156,31 @@ export default function ProgramDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+        <div className="relative overflow-hidden">
             {/* Background subtle glow */}
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
 
             <div className="relative z-10">
-                {/* Header */}
-                <header className="border-b border-white/5 backdrop-blur-sm bg-slate-900/60">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <button
-                                    onClick={() => navigate('/programs')}
-                                    className="text-slate-400 hover:text-white transition-colors"
-                                >
-                                    ← Back
-                                </button>
-                                <h1 className="text-xl sm:text-2xl font-bold text-white">{program.name}</h1>
-                                {program.isActive && (
-                                    <span className="px-3 py-1 bg-lime-400/20 text-lime-400 rounded-full text-xs font-medium border border-lime-400/30">
-                                        Active
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-                                <button
-                                    onClick={() => setShowAddDayModal(true)}
-                                    className="w-full sm:w-auto px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all duration-200 min-h-[44px]">
-                                    + Add Day
-                                </button>
-                                <button
-                                    onClick={handleDeleteProgram}
-                                    className="w-full sm:w-auto px-4 py-2 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-lg font-semibold transition-all duration-200 border border-red-700 min-h-[44px]">
-                                    Delete Program
-                                </button>
-                            </div>
+                <UnifiedPageHeader
+                    title={program.name}
+                    subtitle={program.isActive ? '✅ Active Program' : `${program.days?.length || 0} days`}
+                    showBackButton
+                    rightContent={
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                            <button
+                                onClick={() => setShowAddDayModal(true)}
+                                className="px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all duration-200 text-sm">
+                                + Add Day
+                            </button>
+                            <button
+                                onClick={handleDeleteProgram}
+                                className="px-4 py-2 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-lg font-semibold transition-all duration-200 border border-red-700 text-sm">
+                                Delete
+                            </button>
                         </div>
-                    </div>
-                </header>
+                    }
+                />
 
                 {/* Main Content */}
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

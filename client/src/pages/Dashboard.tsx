@@ -7,12 +7,11 @@
 
 import { useDashboard } from '../hooks/useDashboard';
 import {
-    DashboardHeader,
     WelcomeSection,
     ActiveProgramCard,
     WeekStatsCard,
     RecentProgressCard,
-    QuickActions
+    RecentActivityFeed
 } from '../components/dashboard';
 
 export default function Dashboard() {
@@ -26,122 +25,118 @@ export default function Dashboard() {
         userInfo,
         topPRs,
         formatDate,
-        handleLogout,
         startWorkout,
         navigate
     } = useDashboard();
 
     return (
-        <div className="min-h-screen bg-slate-950">
-            <div className="relative z-10">
-                <DashboardHeader onLogout={handleLogout} />
+        <div className="relative z-10">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <WelcomeSection userInfo={userInfo} mounted={mounted} />
 
-                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <WelcomeSection userInfo={userInfo} mounted={mounted} />
-
-                    {loading ? (
-                        <div className="text-center py-12">
-                            <div className="text-slate-200 text-xl">Loading your dashboard...</div>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Hero Start Workout CTA - Full Width */}
-                            <div className={`mb-8 transition-all duration-700 delay-75 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                                <div className="glass-card-lg p-6 sm:p-8 border-lime-400/20">
-                                    {nextWorkout && activeProgram ? (
-                                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <span className="text-3xl">🔥</span>
-                                                    <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                                                        Ready to Train?
-                                                    </h2>
-                                                </div>
-                                                <p className="text-slate-400 text-lg mb-1">
-                                                    Next: <span className="text-white font-semibold">{nextWorkout.name}</span>
-                                                </p>
-                                                <p className="text-slate-500 text-sm">
-                                                    {nextWorkout.exercises?.length || 0} exercises • Day {nextWorkout.dayNumber} of {activeProgram.name}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    if (!nextWorkout.exercises || nextWorkout.exercises.length === 0) {
-                                                        alert('Cannot start workout: This day has no exercises. Please add exercises first.');
-                                                        return;
-                                                    }
-                                                    startWorkout(nextWorkout.id, activeProgram.id);
-                                                }}
-                                                className="w-full lg:w-auto px-8 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20"
-                                            >
-                                                Start Workout →
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                                            <div>
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <span className="text-3xl">💪</span>
-                                                    <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                                                        Let's Get Started
-                                                    </h2>
-                                                </div>
-                                                <p className="text-slate-400">
-                                                    Create or activate a program to begin tracking your workouts
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => navigate('/programs')}
-                                                className="w-full lg:w-auto px-8 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20"
-                                            >
-                                                Browse Programs →
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Bento Grid Layout */}
-                            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                                {/* Weekly Stats - Span 2 columns on large screens */}
-                                <div className="md:col-span-2">
-                                    <WeekStatsCard
-                                        weekStats={weekStats}
-                                        lastWeekStats={lastWeekStats}
-                                    />
-                                </div>
-
-                                {/* Active Program Card */}
-                                <div className="md:col-span-1">
-                                    <ActiveProgramCard
-                                        activeProgram={activeProgram}
-                                        onNavigate={navigate}
-                                    />
-                                </div>
-
-                                {/* Recent Progress Card */}
-                                <div className="md:col-span-1">
-                                    <RecentProgressCard
-                                        topPRs={topPRs}
-                                        formatDate={formatDate}
-                                        onNavigate={navigate}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Quick Actions - Now as compact tiles */}
-                            <QuickActions mounted={mounted} onNavigate={navigate} />
-                        </>
-                    )}
-
-                    {/* Footer */}
-                    <div className="mt-8 text-center">
-                        <p className="text-slate-600 text-sm">
-                            🚀 Powered by Render & Vercel | Built with ❤️
-                        </p>
+                {loading ? (
+                    <div className="text-center py-12">
+                        <div className="text-slate-200 text-xl">Loading your dashboard...</div>
                     </div>
-                </main>
-            </div>
+                ) : (
+                    <>
+                        {/* Hero Start Workout CTA - Full Width */}
+                        <div className={`mb-8 transition-all duration-700 delay-75 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                            <div className="glass-card-lg p-6 sm:p-8 border-lime-400/20">
+                                {nextWorkout && activeProgram ? (
+                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-3xl">🔥</span>
+                                                <h2 className="text-2xl sm:text-3xl font-bold text-white">
+                                                    Ready to Train?
+                                                </h2>
+                                            </div>
+                                            <p className="text-slate-400 text-lg mb-1">
+                                                Next: <span className="text-white font-semibold">{nextWorkout.name}</span>
+                                            </p>
+                                            <p className="text-slate-500 text-sm">
+                                                {nextWorkout.exercises?.length || 0} exercises • Day {nextWorkout.dayNumber} of {activeProgram.name}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                if (!nextWorkout.exercises || nextWorkout.exercises.length === 0) {
+                                                    alert('Cannot start workout: This day has no exercises. Please add exercises first.');
+                                                    return;
+                                                }
+                                                startWorkout(nextWorkout.id, activeProgram.id);
+                                            }}
+                                            className="w-full lg:w-auto px-8 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20"
+                                        >
+                                            Start Workout →
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-3xl">💪</span>
+                                                <h2 className="text-2xl sm:text-3xl font-bold text-white">
+                                                    Let's Get Started
+                                                </h2>
+                                            </div>
+                                            <p className="text-slate-400">
+                                                Create or activate a program to begin tracking your workouts
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => navigate('/programs')}
+                                            className="w-full lg:w-auto px-8 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20"
+                                        >
+                                            Browse Programs →
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Bento Grid Layout */}
+                        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                            {/* Weekly Stats - Span 2 columns on large screens */}
+                            <div className="md:col-span-2">
+                                <WeekStatsCard
+                                    weekStats={weekStats}
+                                    lastWeekStats={lastWeekStats}
+                                />
+                            </div>
+
+                            {/* Active Program Card */}
+                            <div className="md:col-span-1">
+                                <ActiveProgramCard
+                                    activeProgram={activeProgram}
+                                    onNavigate={navigate}
+                                />
+                            </div>
+
+                            {/* Recent Progress Card */}
+                            <div className="md:col-span-1">
+                                <RecentProgressCard
+                                    topPRs={topPRs}
+                                    formatDate={formatDate}
+                                    onNavigate={navigate}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Recent Activity Feed - Replaces QuickActions */}
+                        <RecentActivityFeed mounted={mounted} />
+                    </>
+                )}
+
+                {/* Footer */}
+                <div className="mt-8 text-center">
+                    <p className="text-slate-600 text-sm">
+                        🚀 Powered by Render & Vercel | Built with ❤️
+                    </p>
+                </div>
+            </main>
         </div>
     );
 }
+

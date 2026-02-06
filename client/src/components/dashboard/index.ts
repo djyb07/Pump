@@ -9,4 +9,4 @@ export { ActiveProgramCard } from './ActiveProgramCard';
 export { NextWorkoutCard } from './NextWorkoutCard';
 export { WeekStatsCard } from './WeekStatsCard';
 export { RecentProgressCard } from './RecentProgressCard';
-export { QuickActions } from './QuickActions';
+export { RecentActivityFeed } from './RecentActivityFeed';

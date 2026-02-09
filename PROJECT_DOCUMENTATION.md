@@ -120,15 +120,19 @@ Pump/
 ├── client/                          # React Frontend Application
 │   ├── src/
 │   │   ├── components/              # Reusable UI Components
+│   │   │   ├── layout/              # Layout & Navigation
+│   │   │   │   ├── index.ts             # Barrel export
+│   │   │   │   ├── SmartNavbar.tsx      # Sticky nav with hide-on-scroll
+│   │   │   │   ├── MainLayout.tsx       # Auth wrapper with navbar
+│   │   │   │   └── UnifiedPageHeader.tsx # Consistent page headers
 │   │   │   ├── dashboard/           # Dashboard sub-components
 │   │   │   │   ├── index.ts             # Barrel export
-│   │   │   │   ├── DashboardHeader.tsx  # Header with logo & logout
 │   │   │   │   ├── WelcomeSection.tsx   # User welcome card
 │   │   │   │   ├── ActiveProgramCard.tsx    # Active program display
 │   │   │   │   ├── NextWorkoutCard.tsx      # Next workout card
 │   │   │   │   ├── WeekStatsCard.tsx        # Weekly statistics
 │   │   │   │   ├── RecentProgressCard.tsx   # Recent PRs display
-│   │   │   │   └── QuickActions.tsx         # Quick action buttons
+│   │   │   │   └── RecentActivityFeed.tsx   # Last 3 workouts feed
 │   │   │   ├── workout/             # Workout-specific components
 │   │   │   │   ├── WorkoutHeader.tsx
 │   │   │   │   ├── WorkoutControls.tsx
@@ -165,7 +169,7 @@ Pump/
 │   │   │   ├── exerciseService.ts   # Exercise API calls
 │   │   │   ├── programService.ts    # Program API calls
 │   │   │   └── workoutService.ts    # Workout API calls
-│   │   ├── App.tsx                  # Main app with routing + AppLayout wrapper
+│   │   ├── App.tsx                  # Main app with routing + AuthenticatedLayout
 │   │   ├── main.tsx                 # Entry point
 │   │   └── index.css                # Midnight Pro Design System (glassmorphism, utilities)
 │   ├── public/

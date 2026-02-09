@@ -120,7 +120,41 @@ These utility classes are defined in `index.css` and should be used for consiste
 
 ---
 
-## 6. Layout Patterns
+## 6. Navigation Components
+
+### SmartNavbar
+The global navigation component with hide-on-scroll behavior:
+- **Desktop**: Sticky top navigation (`fixed top-0`) with glassmorphism
+- **Mobile**: Fixed bottom navigation bar
+- **Hide-on-scroll**: Uses `transform: translateY(-100%)` transition on scroll down
+
+```tsx
+// Navigation Links
+const navLinks = [
+    { path: '/dashboard', label: 'Dashboard', icon: HomeIcon },
+    { path: '/programs', label: 'Programs', icon: DumbbellIcon },
+    { path: '/workout/history', label: 'History', icon: ChartIcon },
+    { path: '/exercises', label: 'Exercises', icon: BookIcon },
+    { path: '/personal-records', label: 'PRs', icon: TrophyIcon },
+];
+```
+
+### UnifiedPageHeader
+Consistent page header for all pages:
+- **Props**: `title`, `subtitle?`, `showBackButton?`, `emoji?`, `rightContent?`
+- **Back Button**: Uses `navigate(-1)` for browser-like back navigation
+- **Root Pages** (no back button): Dashboard, Programs, History
+- **Nested Pages** (with back button): All detail/create pages
+
+---
+
+## 7. Layout Patterns
+
+### MainLayout (AuthenticatedLayout)
+Wrapper for all authenticated routes:
+- Includes `SmartNavbar` persistently
+- Handles logout functionality
+- Manages padding for fixed navbars (desktop top, mobile bottom)
 
 ### Bento Grid (Dashboard)
 - A modular grid layout using `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`.
@@ -132,3 +166,4 @@ These utility classes are defined in `index.css` and should be used for consiste
 ### Rest Timer
 - **Sticky Positioning**: `sticky top-24` ensures the timer is always visible during a workout without blocking content.
 - **Circular Progress**: SVG-based visualization for intuitive time tracking.
+

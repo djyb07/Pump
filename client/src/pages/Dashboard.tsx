@@ -6,6 +6,7 @@
  */
 
 import { useDashboard } from '../hooks/useDashboard';
+import { Flame, Dumbbell, Rocket, Heart } from 'lucide-react';
 import {
     WelcomeSection,
     ActiveProgramCard,
@@ -47,7 +48,7 @@ export default function Dashboard() {
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-3xl">🔥</span>
+                                                <Flame className="w-8 h-8 text-orange-500" />
                                                 <h2 className="text-2xl sm:text-3xl font-bold text-white">
                                                     Ready to Train?
                                                 </h2>
@@ -63,8 +64,8 @@ export default function Dashboard() {
                                             onClick={() => startWorkout(nextWorkout.id, activeProgram.id)}
                                             disabled={!nextWorkout.exercises || nextWorkout.exercises.length === 0}
                                             className={`w-full lg:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-all duration-200 shadow-lg ${!nextWorkout.exercises || nextWorkout.exercises.length === 0
-                                                    ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                                                    : 'bg-lime-400 hover:bg-lime-500 text-slate-950 transform hover:scale-105 shadow-lime-400/20'
+                                                ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                                                : 'bg-lime-400 hover:bg-lime-500 text-slate-950 transform hover:scale-105 shadow-lime-400/20'
                                                 }`}
                                         >
                                             {!nextWorkout.exercises || nextWorkout.exercises.length === 0
@@ -77,7 +78,7 @@ export default function Dashboard() {
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                                         <div>
                                             <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-3xl">💪</span>
+                                                <Dumbbell className="w-8 h-8 text-lime-400" />
                                                 <h2 className="text-2xl sm:text-3xl font-bold text-white">
                                                     Let's Get Started
                                                 </h2>
@@ -132,8 +133,8 @@ export default function Dashboard() {
 
                 {/* Footer */}
                 <div className="mt-8 text-center">
-                    <p className="text-slate-600 text-sm">
-                        🚀 Powered by Render & Vercel | Built with ❤️
+                    <p className="text-slate-600 text-sm flex items-center justify-center gap-1">
+                        <Rocket className="w-4 h-4" /> Powered by Render & Vercel | Built with <Heart className="w-4 h-4 text-red-400" />
                     </p>
                 </div>
             </main>

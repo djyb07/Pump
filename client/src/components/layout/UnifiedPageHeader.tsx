@@ -3,19 +3,20 @@
  * 
  * Provides a unified header for all pages with:
  * - Optional back button (navigate(-1))
- * - Page title with optional subtitle
+ * - Page title with optional icon (lucide-react)
  * - Optional right-side content (action buttons)
  * - Midnight Pro glassmorphism styling
  */
 
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, type LucideIcon } from 'lucide-react';
 
 interface UnifiedPageHeaderProps {
     title: string;
     subtitle?: string;
     showBackButton?: boolean;
     rightContent?: React.ReactNode;
-    emoji?: string;
+    icon?: LucideIcon;
 }
 
 export function UnifiedPageHeader({
@@ -23,7 +24,7 @@ export function UnifiedPageHeader({
     subtitle,
     showBackButton = false,
     rightContent,
-    emoji
+    icon: Icon
 }: UnifiedPageHeaderProps) {
     const navigate = useNavigate();
 
@@ -35,14 +36,15 @@ export function UnifiedPageHeader({
                         {showBackButton && (
                             <button
                                 onClick={() => navigate(-1)}
-                                className="text-slate-400 hover:text-white transition-colors text-sm font-medium"
+                                className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors text-sm font-medium"
                             >
-                                ← Back
+                                <ChevronLeft className="w-4 h-4" />
+                                Back
                             </button>
                         )}
                         <div>
-                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white flex items-center">
-                                {emoji && <span className="mr-2">{emoji}</span>}
+                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white flex items-center gap-3">
+                                {Icon && <Icon className="w-8 h-8 text-lime-400" />}
                                 {title}
                             </h1>
                             {subtitle && (

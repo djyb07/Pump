@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
 import { UnifiedPageHeader } from '../components/layout';
+import { Dumbbell, Trophy, BarChart3, Check, ChevronLeft } from 'lucide-react';
 
 export default function WorkoutDetailsPage() {
     const navigate = useNavigate();
@@ -103,9 +104,9 @@ export default function WorkoutDetailsPage() {
                     <div className="text-red-400 text-xl mb-4">{error || 'Workout not found'}</div>
                     <button
                         onClick={() => navigate('/workout/history')}
-                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
+                        className="flex items-center gap-2 px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                     >
-                        ← Back to History
+                        <ChevronLeft className="w-4 h-4" /> Back to History
                     </button>
                 </div>
             </div>
@@ -122,7 +123,7 @@ export default function WorkoutDetailsPage() {
                 title={(workout as any).dayName || 'Workout Details'}
                 subtitle={`${formatDate(workout.startTime)} • ${formatTime(workout.startTime)}`}
                 showBackButton
-                emoji="💪"
+                icon={Dumbbell}
             />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -155,8 +156,8 @@ export default function WorkoutDetailsPage() {
                 {/* PRs Banner */}
                 {prCount > 0 && (
                     <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6 mb-8">
-                        <div className="flex items-center space-x-3">
-                            <span className="text-4xl">🏆</span>
+                        <div className="flex items-center gap-4">
+                            <Trophy className="w-10 h-10 text-lime-400" />
                             <div>
                                 <h2 className="text-2xl font-bold text-lime-400">
                                     {prCount} Personal Record{prCount > 1 ? 's' : ''} Achieved!
@@ -201,13 +202,13 @@ export default function WorkoutDetailsPage() {
                                                     navigate(`/exercise/${exerciseId}/progress`);
                                                 }
                                             }}
-                                            className="text-xl font-bold text-white mb-1 hover:text-lime-400 transition-colors text-left"
+                                            className="flex items-center gap-2 text-xl font-bold text-white mb-1 hover:text-lime-400 transition-colors text-left"
                                         >
-                                            {index + 1}. {(exerciseLog as any).exerciseName || 'Unknown Exercise'} 📊
+                                            {index + 1}. {(exerciseLog as any).exerciseName || 'Unknown Exercise'} <BarChart3 className="w-5 h-5 text-slate-400" />
                                         </button>
                                         {hasPR && (
-                                            <div className="flex items-center space-x-2 mt-2">
-                                                <span className="text-lime-400 text-lg">🏆</span>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <Trophy className="w-5 h-5 text-lime-400" />
                                                 <span className="text-lime-400 font-semibold text-sm">
                                                     PR: {prTypes.join(', ')}
                                                 </span>
@@ -247,7 +248,7 @@ export default function WorkoutDetailsPage() {
                                                     </td>
                                                     <td className="text-center py-3 px-3">
                                                         {set.completed !== false ? (
-                                                            <span className="text-lime-400">✓</span>
+                                                            <Check className="w-4 h-4 text-lime-400 mx-auto" />
                                                         ) : (
                                                             <span className="text-slate-500">-</span>
                                                         )}

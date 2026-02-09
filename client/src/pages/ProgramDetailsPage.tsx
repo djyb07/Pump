@@ -7,6 +7,7 @@ import AddDayModal from '../components/AddDayModal';
 import ConfirmModal from '../components/ConfirmModal';
 import ExerciseModal from '../components/ExerciseModal';
 import { UnifiedPageHeader } from '../components/layout';
+import { Dumbbell, CheckCircle, Play, Pause, Trash2, Info, BarChart3, Pencil } from 'lucide-react';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -164,8 +165,9 @@ export default function ProgramDetailsPage() {
             <div className="relative z-10">
                 <UnifiedPageHeader
                     title={program.name}
-                    subtitle={program.isActive ? '✅ Active Program' : `${program.days?.length || 0} days`}
+                    subtitle={program.isActive ? 'Active Program' : `${program.days?.length || 0} days`}
                     showBackButton
+                    icon={program.isActive ? CheckCircle : Dumbbell}
                     rightContent={
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                             <button
@@ -207,12 +209,12 @@ export default function ProgramDetailsPage() {
                                         <button
                                             onClick={() => navigate(`/workout/active?dayId=${day.id}`)}
                                             disabled={!day.exercises || day.exercises.length === 0}
-                                            className={`px-6 py-2 rounded-lg font-bold transition-all duration-200 ${!day.exercises || day.exercises.length === 0
-                                                    ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                                                    : 'bg-lime-400 hover:bg-lime-500 text-slate-950 transform hover:scale-105'
+                                            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all duration-200 ${!day.exercises || day.exercises.length === 0
+                                                ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                                                : 'bg-lime-400 hover:bg-lime-500 text-slate-950 transform hover:scale-105'
                                                 }`}
                                         >
-                                            {!day.exercises || day.exercises.length === 0 ? '⏸️ No Exercises' : '▶️ Start Workout'}
+                                            {!day.exercises || day.exercises.length === 0 ? <><Pause className="w-4 h-4" /> No Exercises</> : <><Play className="w-4 h-4" /> Start Workout</>}
                                         </button>
                                         <button
                                             onClick={() => handleAddExercise(day.id)}
@@ -224,7 +226,7 @@ export default function ProgramDetailsPage() {
                                             onClick={() => handleDeleteDay(day.id)}
                                             className="px-3 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg font-semibold transition-all duration-200"
                                         >
-                                            🗑️
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -253,26 +255,26 @@ export default function ProgramDetailsPage() {
                                                         className="text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
                                                         title="Exercise Info"
                                                     >
-                                                        ℹ️
+                                                        <Info className="w-4 h-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => navigate(`/exercise/${dayEx.exerciseId}/progress`)}
                                                         className="text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
                                                         title="View Progress"
                                                     >
-                                                        📊
+                                                        <BarChart3 className="w-4 h-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEditExercise(dayEx)}
-                                                        className="text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
+                                                        className="flex items-center gap-1 text-lime-400 hover:text-lime-300 transition-colors px-2 py-1 rounded hover:bg-lime-500/10"
                                                     >
-                                                        ✏️ Edit
+                                                        <Pencil className="w-4 h-4" /> Edit
                                                     </button>
                                                     <button
                                                         onClick={() => handleRemoveExercise(dayEx.id)}
                                                         className="text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
                                                     >
-                                                        🗑️
+                                                        <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -344,18 +346,18 @@ export default function ProgramDetailsPage() {
                                                         e.stopPropagation();
                                                         setSelectedExerciseInfo(exercise);
                                                     }}
-                                                    className="flex-1 px-3 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all text-sm"
+                                                    className="flex items-center justify-center gap-1 flex-1 px-3 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all text-sm"
                                                 >
-                                                    ℹ️ Info
+                                                    <Info className="w-4 h-4" /> Info
                                                 </button>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         navigate(`/exercise/${exercise.id}/progress`);
                                                     }}
-                                                    className="flex-1 px-3 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all text-sm"
+                                                    className="flex items-center justify-center gap-1 flex-1 px-3 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all text-sm"
                                                 >
-                                                    📊 Progress
+                                                    <BarChart3 className="w-4 h-4" /> Progress
                                                 </button>
                                             </div>
                                         </div>

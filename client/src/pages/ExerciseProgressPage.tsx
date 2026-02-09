@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 import { UnifiedPageHeader } from '../components/layout';
+import { BarChart3, Dumbbell, Target, TrendingUp } from 'lucide-react';
 
 interface ProgressData {
     date: string;
@@ -154,7 +155,7 @@ export default function ExerciseProgressPage() {
                 title={exercise.nameEn}
                 subtitle={exercise.nameHe}
                 showBackButton
-                emoji="📊"
+                icon={BarChart3}
             />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -197,7 +198,7 @@ export default function ExerciseProgressPage() {
                             {/* Best Weight PR */}
                             <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-lime-400 text-sm font-medium">💪 Best Weight</span>
+                                    <span className="flex items-center gap-1.5 text-lime-400 text-sm font-medium"><Dumbbell className="w-4 h-4" /> Best Weight</span>
                                     <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">PR</span>
                                 </div>
                                 <div className="text-4xl font-bold text-white mb-2">{prs.bestWeight.value} kg</div>
@@ -207,7 +208,7 @@ export default function ExerciseProgressPage() {
                             {/* Best Volume PR */}
                             <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-lime-400 text-sm font-medium">📊 Best Volume</span>
+                                    <span className="flex items-center gap-1.5 text-lime-400 text-sm font-medium"><BarChart3 className="w-4 h-4" /> Best Volume</span>
                                     <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">PR</span>
                                 </div>
                                 <div className="text-4xl font-bold text-white mb-2">{Math.round(prs.bestVolume.value)} kg</div>
@@ -217,7 +218,7 @@ export default function ExerciseProgressPage() {
                             {/* Best e1RM PR */}
                             <div className="bg-lime-400/10 border border-lime-400/30 rounded-xl p-6">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-lime-400 text-sm font-medium">🎯 Best e1RM</span>
+                                    <span className="flex items-center gap-1.5 text-lime-400 text-sm font-medium"><Target className="w-4 h-4" /> Best e1RM</span>
                                     <span className="text-xs px-2 py-1 bg-lime-400/20 text-lime-400 rounded">PR</span>
                                 </div>
                                 <div className="text-4xl font-bold text-white mb-2">{prs.beste1RM.value} kg</div>
@@ -236,7 +237,7 @@ export default function ExerciseProgressPage() {
                     <div className="space-y-8">
                         {/* Max Weight Chart */}
                         <div className="glass-card p-6">
-                            <h2 className="text-2xl font-bold text-white mb-6">💪 Max Weight Progression</h2>
+                            <h2 className="flex items-center gap-2 text-2xl font-bold text-white mb-6"><Dumbbell className="w-6 h-6 text-lime-400" /> Max Weight Progression</h2>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -256,7 +257,7 @@ export default function ExerciseProgressPage() {
 
                         {/* Total Volume Chart */}
                         <div className="glass-card p-6">
-                            <h2 className="text-2xl font-bold text-white mb-6">📊 Total Volume Progression</h2>
+                            <h2 className="flex items-center gap-2 text-2xl font-bold text-white mb-6"><TrendingUp className="w-6 h-6 text-lime-400" /> Total Volume Progression</h2>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -276,7 +277,7 @@ export default function ExerciseProgressPage() {
 
                         {/* e1RM Chart */}
                         <div className="glass-card p-6">
-                            <h2 className="text-2xl font-bold text-white mb-6">🎯 Estimated 1RM Progression</h2>
+                            <h2 className="flex items-center gap-2 text-2xl font-bold text-white mb-6"><Target className="w-6 h-6 text-lime-400" /> Estimated 1RM Progression</h2>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />

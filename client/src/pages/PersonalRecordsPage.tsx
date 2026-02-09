@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
 import { UnifiedPageHeader } from '../components/layout';
+import { Trophy, Calendar, Dumbbell, BarChart3, Flame, X } from 'lucide-react';
 
 interface ExercisePR {
     exerciseId: string;
@@ -112,7 +113,7 @@ export default function PersonalRecordsPage() {
             <UnifiedPageHeader
                 title="Personal Records"
                 subtitle={`${filteredRecords.length} ${filteredRecords.length === 1 ? 'exercise' : 'exercises'}${hasActiveFilters ? ` (filtered from ${records.length})` : ''}`}
-                emoji="🏆"
+                icon={Trophy}
             />
 
             {/* Filters */}
@@ -121,7 +122,9 @@ export default function PersonalRecordsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Date Range Filter */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">📅 Date Range</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2">
+                                <Calendar className="w-4 h-4" /> Date Range
+                            </label>
                             <select
                                 value={dateRange}
                                 onChange={(e) => setDateRange(e.target.value as any)}
@@ -136,7 +139,9 @@ export default function PersonalRecordsPage() {
 
                         {/* Exercise Search */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">💪 Exercise Search</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2">
+                                <Dumbbell className="w-4 h-4" /> Exercise Search
+                            </label>
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -148,7 +153,9 @@ export default function PersonalRecordsPage() {
 
                         {/* PR Type Filter */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">🏆 PR Type</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2">
+                                <Trophy className="w-4 h-4" /> PR Type
+                            </label>
                             <select
                                 value={prType}
                                 onChange={(e) => setPrType(e.target.value as any)}
@@ -169,8 +176,8 @@ export default function PersonalRecordsPage() {
                             </span>
                             <button
                                 onClick={clearFilters}
-                                className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-slate-300 rounded-lg text-sm font-semibold transition-all">
-                                ✕ Clear Filters
+                                className="flex items-center gap-1.5 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-slate-300 rounded-lg text-sm font-semibold transition-all">
+                                <X className="w-4 h-4" /> Clear Filters
                             </button>
                         </div>
                     )}
@@ -186,7 +193,7 @@ export default function PersonalRecordsPage() {
 
                 {filteredRecords.length === 0 ? (
                     <div className="text-center text-slate-400 py-12">
-                        <div className="text-6xl mb-4">🏆</div>
+                        <Trophy className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                         <p className="text-xl mb-2">
                             {hasActiveFilters ? 'No PRs match your filters' : 'No personal records yet'}
                         </p>
@@ -218,7 +225,9 @@ export default function PersonalRecordsPage() {
                                 >
                                     <h2 className="text-2xl font-bold text-white flex items-center justify-between">
                                         {record.exerciseName}
-                                        <span className="text-sm text-slate-400">📊 View Progress</span>
+                                        <span className="flex items-center gap-1.5 text-sm text-slate-400">
+                                            <BarChart3 className="w-4 h-4" /> View Progress
+                                        </span>
                                     </h2>
                                 </button>
 
@@ -227,7 +236,9 @@ export default function PersonalRecordsPage() {
                                     {/* Weight PR */}
                                     {record.bestWeight > 0 && (prType === 'all' || prType === 'weight') && (
                                         <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4">
-                                            <div className="text-lime-400 text-sm font-medium mb-1">💪 Weight PR</div>
+                                            <div className="flex items-center gap-1.5 text-lime-400 text-sm font-medium mb-1">
+                                                <Dumbbell className="w-4 h-4" /> Weight PR
+                                            </div>
                                             <div className="text-3xl font-bold text-white">{record.bestWeight} kg</div>
                                             <div className="text-slate-400 text-xs mt-1">{formatDate(record.bestWeightDate)}</div>
                                         </div>
@@ -236,7 +247,9 @@ export default function PersonalRecordsPage() {
                                     {/* Volume PR */}
                                     {record.bestVolume > 0 && (prType === 'all' || prType === 'volume') && (
                                         <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4">
-                                            <div className="text-lime-400 text-sm font-medium mb-1">📊 Volume PR</div>
+                                            <div className="flex items-center gap-1.5 text-lime-400 text-sm font-medium mb-1">
+                                                <BarChart3 className="w-4 h-4" /> Volume PR
+                                            </div>
                                             <div className="text-3xl font-bold text-white">{Math.round(record.bestVolume)} kg</div>
                                             <div className="text-slate-400 text-xs mt-1">{formatDate(record.bestVolumeDate)}</div>
                                         </div>
@@ -245,7 +258,9 @@ export default function PersonalRecordsPage() {
                                     {/* Reps PR */}
                                     {record.bestReps > 0 && (prType === 'all' || prType === 'reps') && (
                                         <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4">
-                                            <div className="text-lime-400 text-sm font-medium mb-1">🔥 Reps PR</div>
+                                            <div className="flex items-center gap-1.5 text-lime-400 text-sm font-medium mb-1">
+                                                <Flame className="w-4 h-4" /> Reps PR
+                                            </div>
                                             <div className="text-3xl font-bold text-white">{record.bestReps}</div>
                                             <div className="text-slate-400 text-xs mt-1">{formatDate(record.bestRepsDate)}</div>
                                         </div>

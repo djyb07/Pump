@@ -11,6 +11,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../../services/workoutService';
+import { TrendingUp, Dumbbell, ChevronRight } from 'lucide-react';
 
 interface RecentActivityFeedProps {
     mounted: boolean;
@@ -74,8 +75,8 @@ export function RecentActivityFeed({ mounted }: RecentActivityFeedProps) {
     if (loading) {
         return (
             <div className={`transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                    <span className="mr-2">📈</span>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-lime-400" />
                     Recent Activity
                 </h3>
                 <div className="glass-card p-6">
@@ -88,13 +89,13 @@ export function RecentActivityFeed({ mounted }: RecentActivityFeedProps) {
     if (recentWorkouts.length === 0) {
         return (
             <div className={`transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                    <span className="mr-2">📈</span>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-lime-400" />
                     Recent Activity
                 </h3>
                 <div className="glass-card p-6">
                     <div className="text-center py-4">
-                        <span className="text-4xl mb-3 block">💪</span>
+                        <Dumbbell className="w-12 h-12 text-slate-600 mx-auto mb-3" />
                         <p className="text-slate-400">No workouts yet</p>
                         <p className="text-slate-500 text-sm mt-1">Start your first workout to see it here!</p>
                     </div>
@@ -106,15 +107,15 @@ export function RecentActivityFeed({ mounted }: RecentActivityFeedProps) {
     return (
         <div className={`transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white flex items-center">
-                    <span className="mr-2">📈</span>
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-lime-400" />
                     Recent Activity
                 </h3>
                 <button
                     onClick={() => navigate('/workout/history')}
-                    className="text-slate-400 hover:text-lime-400 text-sm font-medium transition-colors"
+                    className="flex items-center gap-1 text-slate-400 hover:text-lime-400 text-sm font-medium transition-colors"
                 >
-                    View All →
+                    View All <ChevronRight className="w-4 h-4" />
                 </button>
             </div>
 

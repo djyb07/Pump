@@ -2,14 +2,22 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { programService } from '../services/programService';
 import { UnifiedPageHeader } from '../components/layout';
+import { PlusCircle, RefreshCw, ArrowUpDown, Activity, ArrowLeftRight, Calendar, Settings, Check, type LucideIcon } from 'lucide-react';
 
-const SPLIT_TYPES = [
-    { value: 'PPL', label: 'Push/Pull/Legs', icon: '🔄', description: '3-day split focusing on movement patterns' },
-    { value: 'UPPER_LOWER', label: 'Upper/Lower', icon: '⬆️⬇️', description: '2-day split alternating upper and lower body' },
-    { value: 'FULL_BODY', label: 'Full Body', icon: '🏃', description: 'Train all muscle groups each session' },
-    { value: 'PUSH_PULL', label: 'Push/Pull', icon: '↔️', description: '2-day split by pushing and pulling movements' },
-    { value: 'FIVE_DAY', label: '5-Day Split', icon: '5️⃣', description: 'Each day targets specific muscle groups' },
-    { value: 'CUSTOM', label: 'Custom', icon: '⚙️', description: 'Build your own program from scratch' }
+interface SplitType {
+    value: string;
+    label: string;
+    Icon: LucideIcon;
+    description: string;
+}
+
+const SPLIT_TYPES: SplitType[] = [
+    { value: 'PPL', label: 'Push/Pull/Legs', Icon: RefreshCw, description: '3-day split focusing on movement patterns' },
+    { value: 'UPPER_LOWER', label: 'Upper/Lower', Icon: ArrowUpDown, description: '2-day split alternating upper and lower body' },
+    { value: 'FULL_BODY', label: 'Full Body', Icon: Activity, description: 'Train all muscle groups each session' },
+    { value: 'PUSH_PULL', label: 'Push/Pull', Icon: ArrowLeftRight, description: '2-day split by pushing and pulling movements' },
+    { value: 'FIVE_DAY', label: '5-Day Split', Icon: Calendar, description: 'Each day targets specific muscle groups' },
+    { value: 'CUSTOM', label: 'Custom', Icon: Settings, description: 'Build your own program from scratch' }
 ];
 
 export default function CreateProgramPage() {
@@ -54,7 +62,7 @@ export default function CreateProgramPage() {
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl"></div>
 
             <div className="relative z-10">
-                <UnifiedPageHeader title="Create New Program" showBackButton emoji="➕" />
+                <UnifiedPageHeader title="Create New Program" showBackButton icon={PlusCircle} />
 
                 {/* Main Content */}
                 <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -88,8 +96,8 @@ export default function CreateProgramPage() {
                                             : 'bg-slate-900/50 border-2 border-white/5 hover:border-lime-400/30 hover:scale-102'
                                             }`}
                                     >
-                                        <div className="flex items-start space-x-4">
-                                            <div className="text-4xl">{split.icon}</div>
+                                        <div className="flex items-start gap-4">
+                                            <split.Icon className={`w-10 h-10 ${selectedSplit === split.value ? 'text-lime-400' : 'text-slate-400 group-hover:text-lime-400'}`} />
                                             <div className="flex-1">
                                                 <h3 className={`font-bold mb-1 ${selectedSplit === split.value ? 'text-white' : 'text-slate-300 group-hover:text-white'
                                                     }`}>
@@ -98,7 +106,7 @@ export default function CreateProgramPage() {
                                                 <p className="text-slate-400 text-sm">{split.description}</p>
                                             </div>
                                             {selectedSplit === split.value && (
-                                                <div className="text-lime-400 text-2xl">✓</div>
+                                                <Check className="w-6 h-6 text-lime-400" />
                                             )}
                                         </div>
                                     </div>

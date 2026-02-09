@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
 import { UnifiedPageHeader } from '../components/layout';
+import { History, Trophy, Calendar, Dumbbell, Check, X, Trash2 } from 'lucide-react';
 
 export default function WorkoutHistoryPage() {
     const navigate = useNavigate();
@@ -181,12 +182,12 @@ export default function WorkoutHistoryPage() {
             <UnifiedPageHeader
                 title="Workout History"
                 subtitle={`${filteredWorkouts.length} ${filteredWorkouts.length === 1 ? 'workout' : 'workouts'}${hasActiveFilters ? ` (filtered from ${workouts.length})` : ''}`}
-                emoji="📊"
+                icon={History}
                 rightContent={
                     <button
                         onClick={() => navigate('/personal-records')}
-                        className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-lg font-semibold transition-all text-sm">
-                        🏆 Personal Records
+                        className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-lg font-semibold transition-all text-sm">
+                        <Trophy className="w-4 h-4" /> Personal Records
                     </button>
                 }
             />
@@ -197,7 +198,7 @@ export default function WorkoutHistoryPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         {/* Date Range Filter */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">📅 Date Range</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2"><Calendar className="w-4 h-4" /> Date Range</label>
                             <select
                                 value={dateRange}
                                 onChange={(e) => setDateRange(e.target.value as any)}
@@ -211,7 +212,7 @@ export default function WorkoutHistoryPage() {
 
                         {/* Program Filter */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">🏋️ Program</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2"><Dumbbell className="w-4 h-4" /> Program</label>
                             <select
                                 value={selectedProgram}
                                 onChange={(e) => setSelectedProgram(e.target.value)}
@@ -225,7 +226,7 @@ export default function WorkoutHistoryPage() {
 
                         {/* Exercise Filter */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">💪 Exercise</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2"><Dumbbell className="w-4 h-4" /> Exercise</label>
                             <select
                                 value={selectedExercise}
                                 onChange={(e) => setSelectedExercise(e.target.value)}
@@ -239,14 +240,14 @@ export default function WorkoutHistoryPage() {
 
                         {/* PR Filter */}
                         <div>
-                            <label className="block text-slate-400 text-sm mb-2">🏆 PRs Only</label>
+                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2"><Trophy className="w-4 h-4" /> PRs Only</label>
                             <button
                                 onClick={() => setShowOnlyPRs(!showOnlyPRs)}
-                                className={`w-full px-4 py-2 rounded-lg font-semibold transition-all ${showOnlyPRs
+                                className={`flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg font-semibold transition-all ${showOnlyPRs
                                     ? 'bg-yellow-500 hover:bg-yellow-600 text-slate-950'
                                     : 'bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 border border-white/5'
                                     }`}>
-                                {showOnlyPRs ? '✓ PRs Only' : 'Show All'}
+                                {showOnlyPRs ? <><Check className="w-4 h-4" /> PRs Only</> : 'Show All'}
                             </button>
                         </div>
                     </div>
@@ -259,8 +260,8 @@ export default function WorkoutHistoryPage() {
                             </span>
                             <button
                                 onClick={clearFilters}
-                                className="px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-slate-300 rounded-lg text-sm font-semibold transition-all">
-                                ✕ Clear Filters
+                                className="flex items-center gap-1.5 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-slate-300 rounded-lg text-sm font-semibold transition-all">
+                                <X className="w-4 h-4" /> Clear Filters
                             </button>
                         </div>
                     )}
@@ -276,7 +277,7 @@ export default function WorkoutHistoryPage() {
 
                 {filteredWorkouts.length === 0 ? (
                     <div className="text-center py-12">
-                        <div className="text-6xl mb-4">💪</div>
+                        <Dumbbell className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-white mb-2">
                             {hasActiveFilters ? 'No workouts match your filters' : 'No workouts yet!'}
                         </h2>
@@ -338,7 +339,7 @@ export default function WorkoutHistoryPage() {
                                                 className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
                                                 title="Delete workout"
                                             >
-                                                🗑️
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
 
@@ -364,8 +365,8 @@ export default function WorkoutHistoryPage() {
                                     </div>
 
                                     {prCount > 0 && (
-                                        <div className="mt-4 flex items-center space-x-2">
-                                            <span className="text-yellow-500 text-xl">🏆</span>
+                                        <div className="mt-4 flex items-center gap-2">
+                                            <Trophy className="w-5 h-5 text-yellow-500" />
                                             <span className="text-yellow-400 font-semibold">
                                                 {prCount} Personal Record{prCount > 1 ? 's' : ''}!
                                             </span>

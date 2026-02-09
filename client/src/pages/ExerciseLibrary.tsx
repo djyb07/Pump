@@ -4,6 +4,7 @@ import { exerciseService, type Exercise } from '../services/exerciseService';
 import ExerciseCard from '../components/ExerciseCard';
 import ExerciseModal from '../components/ExerciseModal';
 import { UnifiedPageHeader } from '../components/layout';
+import { Library, Search, SearchX, X } from 'lucide-react';
 
 const ExerciseLibrary: React.FC = () => {
     const navigate = useNavigate();
@@ -73,7 +74,7 @@ const ExerciseLibrary: React.FC = () => {
             <UnifiedPageHeader
                 title="Exercise Library"
                 subtitle="100 exercises available"
-                emoji="📚"
+                icon={Library}
             />
 
             {/* Main Content */}
@@ -82,12 +83,13 @@ const ExerciseLibrary: React.FC = () => {
                 <div className="mb-8 space-y-4">
                     {/* Search Bar */}
                     <div className="relative">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500" />
                         <input
                             type="text"
-                            placeholder="🔍 חפש תרגיל... (עברית או אנגלית)"
+                            placeholder="Search exercises... (Hebrew or English)"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-6 py-4 bg-slate-800/60 border border-white/5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-all"
+                            className="w-full pl-12 pr-6 py-4 bg-slate-800/60 border border-white/5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-all"
                         />
                     </div>
 
@@ -100,13 +102,13 @@ const ExerciseLibrary: React.FC = () => {
                             className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
                         >
                             <option value="" className="bg-slate-900">All Workout Types</option>
-                            <option value="Push" className="bg-slate-900">💪 Push Day</option>
-                            <option value="Pull" className="bg-slate-900">🔙 Pull Day</option>
-                            <option value="Leg" className="bg-slate-900">🦵 Leg Day</option>
-                            <option value="Upper" className="bg-slate-900">⬆️ Upper Day</option>
-                            <option value="Lower" className="bg-slate-900">⬇️ Lower Day</option>
-                            <option value="Full Body" className="bg-slate-900">🏋️ Full Body</option>
-                            <option value="Core" className="bg-slate-900">💥 Core</option>
+                            <option value="Push" className="bg-slate-900">Push Day</option>
+                            <option value="Pull" className="bg-slate-900">Pull Day</option>
+                            <option value="Leg" className="bg-slate-900">Leg Day</option>
+                            <option value="Upper" className="bg-slate-900">Upper Day</option>
+                            <option value="Lower" className="bg-slate-900">Lower Day</option>
+                            <option value="Full Body" className="bg-slate-900">Full Body</option>
+                            <option value="Core" className="bg-slate-900">Core</option>
                         </select>
 
                         {/* Muscle Group */}
@@ -136,18 +138,18 @@ const ExerciseLibrary: React.FC = () => {
                             className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
                         >
                             <option value="" className="bg-slate-900">All Levels</option>
-                            <option value="Beginner" className="bg-slate-900">🟢 Beginner</option>
-                            <option value="Intermediate" className="bg-slate-900">🟡 Intermediate</option>
-                            <option value="Advanced" className="bg-slate-900">🔴 Advanced</option>
+                            <option value="Beginner" className="bg-slate-900">Beginner</option>
+                            <option value="Intermediate" className="bg-slate-900">Intermediate</option>
+                            <option value="Advanced" className="bg-slate-900">Advanced</option>
                         </select>
 
                         {/* Clear Filters */}
                         {(searchQuery || selectedMuscle || selectedWorkoutType || selectedDifficulty) && (
                             <button
                                 onClick={clearFilters}
-                                className="px-5 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all font-medium shadow-lg"
+                                className="flex items-center gap-1.5 px-5 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all font-medium shadow-lg"
                             >
-                                ✕ Clear Filters
+                                <X className="w-4 h-4" /> Clear Filters
                             </button>
                         )}
                     </div>
@@ -168,8 +170,9 @@ const ExerciseLibrary: React.FC = () => {
                     </div>
                 ) : filteredExercises.length === 0 ? (
                     <div className="text-center py-20">
-                        <p className="text-2xl text-slate-500 mb-2">😔 לא נמצאו תרגילים</p>
-                        <p className="text-slate-600">נסה לשנות את הפילטרים</p>
+                        <SearchX className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                        <p className="text-xl text-slate-400 mb-2">No exercises found</p>
+                        <p className="text-slate-500">Try changing your filters</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -4,6 +4,7 @@
  */
 
 import type { UserInfo } from '../../types/dashboard';
+import { Hand } from 'lucide-react';
 
 interface WelcomeSectionProps {
     userInfo: UserInfo;
@@ -19,8 +20,8 @@ export function WelcomeSection({ userInfo, mounted }: WelcomeSectionProps) {
                         {userInfo.initials}
                     </div>
                     <div className="flex-1">
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
-                            Welcome Back, {userInfo.name}! 👋
+                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
+                            Welcome Back, {userInfo.name}! <Hand className="w-8 h-8 text-lime-400" />
                         </h1>
                         {userInfo.email && (
                             <p className="text-slate-400 text-xs sm:text-sm">{userInfo.email}</p>

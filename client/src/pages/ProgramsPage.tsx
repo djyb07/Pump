@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { programService, type WorkoutProgram } from '../services/programService';
 import { UnifiedPageHeader } from '../components/layout';
+import { Dumbbell, RefreshCw, ArrowUpDown, Activity, ArrowLeftRight, Calendar, Settings, type LucideIcon } from 'lucide-react';
 
 export default function ProgramsPage() {
     const navigate = useNavigate();
@@ -37,16 +38,16 @@ export default function ProgramsPage() {
         return labels[splitType] || splitType;
     };
 
-    const getSplitTypeIcon = (splitType: string) => {
-        const icons: Record<string, string> = {
-            'PPL': '🔄',
-            'UPPER_LOWER': '⬆️⬇️',
-            'FULL_BODY': '🏃',
-            'PUSH_PULL': '↔️',
-            'FIVE_DAY': '5️⃣',
-            'CUSTOM': '⚙️'
+    const getSplitTypeIcon = (splitType: string): LucideIcon => {
+        const icons: Record<string, LucideIcon> = {
+            'PPL': RefreshCw,
+            'UPPER_LOWER': ArrowUpDown,
+            'FULL_BODY': Activity,
+            'PUSH_PULL': ArrowLeftRight,
+            'FIVE_DAY': Calendar,
+            'CUSTOM': Settings
         };
-        return icons[splitType] || '💪';
+        return icons[splitType] || Dumbbell;
     };
 
     if (loading) {
@@ -62,7 +63,7 @@ export default function ProgramsPage() {
             <UnifiedPageHeader
                 title="My Programs"
                 subtitle={`${programs.length} program${programs.length !== 1 ? 's' : ''}`}
-                emoji="🏋️"
+                icon={Dumbbell}
                 rightContent={
                     <button
                         onClick={() => navigate('/programs/new')}
@@ -82,7 +83,7 @@ export default function ProgramsPage() {
 
                 {programs.length === 0 ? (
                     <div className="text-center py-12">
-                        <div className="text-6xl mb-4">🏋️</div>
+                        <Dumbbell className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-white mb-2">No Programs Yet</h2>
                         <p className="text-slate-400 mb-6">Create your first workout program to get started</p>
                         <button
@@ -93,51 +94,54 @@ export default function ProgramsPage() {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">                            {programs.map((program) => (
-                        <div
-                            key={program.id}
-                            onClick={() => navigate(`/programs/${program.id}`)}
-                            className="group glass-card p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-lime-400/30"
-                        >
-                            {/* Header */}
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="text-4xl">{getSplitTypeIcon(program.splitType)}</div>
-                                {program.isActive && (
-                                    <span className="px-3 py-1 bg-lime-400/20 text-lime-400 rounded-full text-xs font-medium border border-lime-400/30">
-                                        Active
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">                            {programs.map((program) => {
+                        const SplitIcon = getSplitTypeIcon(program.splitType);
+                        return (
+                            <div
+                                key={program.id}
+                                onClick={() => navigate(`/programs/${program.id}`)}
+                                className="group glass-card p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-lime-400/30"
+                            >
+                                {/* Header */}
+                                <div className="flex items-start justify-between mb-4">
+                                    <SplitIcon className="w-10 h-10 text-lime-400" />
+                                    {program.isActive && (
+                                        <span className="px-3 py-1 bg-lime-400/20 text-lime-400 rounded-full text-xs font-medium border border-lime-400/30">
+                                            Active
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Program Name */}
+                                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-lime-400 transition-colors">
+                                    {program.name}
+                                </h3>
+
+                                {/* Split Type */}
+                                <p className="text-slate-400 text-sm mb-4">
+                                    {getSplitTypeLabel(program.splitType)}
+                                </p>
+
+                                {/* Stats */}
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-slate-500">
+                                        {program.days?.length || 0} Days
                                     </span>
-                                )}
+                                    <span className="text-slate-500">
+                                        {program.days?.reduce((sum, day) => sum + (day.exercises?.length || 0), 0) || 0} Exercises
+                                    </span>
+                                </div>
+
+                                {/* Progress Bar */}
+                                <div className="mt-4 h-2 bg-slate-800 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-lime-400 transition-all duration-1000"
+                                        style={{ width: program.isActive ? '100%' : '50%' }}
+                                    ></div>
+                                </div>
                             </div>
-
-                            {/* Program Name */}
-                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-lime-400 transition-colors">
-                                {program.name}
-                            </h3>
-
-                            {/* Split Type */}
-                            <p className="text-slate-400 text-sm mb-4">
-                                {getSplitTypeLabel(program.splitType)}
-                            </p>
-
-                            {/* Stats */}
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-500">
-                                    {program.days?.length || 0} Days
-                                </span>
-                                <span className="text-slate-500">
-                                    {program.days?.reduce((sum, day) => sum + (day.exercises?.length || 0), 0) || 0} Exercises
-                                </span>
-                            </div>
-
-                            {/* Progress Bar */}
-                            <div className="mt-4 h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-lime-400 transition-all duration-1000"
-                                    style={{ width: program.isActive ? '100%' : '50%' }}
-                                ></div>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     </div>
                 )}
             </main>

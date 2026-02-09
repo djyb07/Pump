@@ -73,7 +73,6 @@ const ExerciseLibrary: React.FC = () => {
             <UnifiedPageHeader
                 title="Exercise Library"
                 subtitle="100 exercises available"
-                showBackButton
                 emoji="📚"
             />
 

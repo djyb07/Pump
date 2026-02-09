@@ -60,16 +60,17 @@ export default function Dashboard() {
                                             </p>
                                         </div>
                                         <button
-                                            onClick={() => {
-                                                if (!nextWorkout.exercises || nextWorkout.exercises.length === 0) {
-                                                    alert('Cannot start workout: This day has no exercises. Please add exercises first.');
-                                                    return;
-                                                }
-                                                startWorkout(nextWorkout.id, activeProgram.id);
-                                            }}
-                                            className="w-full lg:w-auto px-8 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20"
+                                            onClick={() => startWorkout(nextWorkout.id, activeProgram.id)}
+                                            disabled={!nextWorkout.exercises || nextWorkout.exercises.length === 0}
+                                            className={`w-full lg:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-all duration-200 shadow-lg ${!nextWorkout.exercises || nextWorkout.exercises.length === 0
+                                                    ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                                                    : 'bg-lime-400 hover:bg-lime-500 text-slate-950 transform hover:scale-105 shadow-lime-400/20'
+                                                }`}
                                         >
-                                            Start Workout →
+                                            {!nextWorkout.exercises || nextWorkout.exercises.length === 0
+                                                ? 'No Exercises Added'
+                                                : 'Start Workout →'
+                                            }
                                         </button>
                                     </div>
                                 ) : (

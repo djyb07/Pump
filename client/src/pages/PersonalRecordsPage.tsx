@@ -112,7 +112,6 @@ export default function PersonalRecordsPage() {
             <UnifiedPageHeader
                 title="Personal Records"
                 subtitle={`${filteredRecords.length} ${filteredRecords.length === 1 ? 'exercise' : 'exercises'}${hasActiveFilters ? ` (filtered from ${records.length})` : ''}`}
-                showBackButton
                 emoji="🏆"
             />
 

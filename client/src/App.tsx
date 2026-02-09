@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -15,12 +16,52 @@ import ExerciseProgressPage from './pages/ExerciseProgressPage';
 import PersonalRecordsPage from './pages/PersonalRecordsPage';
 import { MainLayout } from './components/layout';
 
-// Simple protected route check
+// Check if JWT is expired (client-side, no API call)
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true; // Parse failure = treat as expired
+  }
+};
+
+// Protected route with loading guard - prevents flash of content before auth check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token || isTokenExpired(token)) {
+      if (token) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+      setIsLoading(false);
+      return;
+    }
+
+    setIsAuthenticated(true);
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-lime-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+
   return <>{children}</>;
 };
 

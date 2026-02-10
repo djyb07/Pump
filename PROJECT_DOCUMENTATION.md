@@ -53,6 +53,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 | React Router DOM | 7.x | Client-side routing |
 | Axios | 1.x | HTTP client with interceptors |
 | Recharts | 3.x | Progress visualization charts |
+| lucide-react | latest | Icon library (replaces all emoji usage) |
 
 ### Backend (Server)
 
@@ -88,6 +89,16 @@ The application uses a custom **Midnight Pro** design system featuring:
 | **Text Colors** | `text-white` (primary), `text-slate-400` (secondary) |
 | **Inputs** | `bg-slate-900/30 border-white/10 focus:ring-lime-400` |
 | **Buttons** | `bg-lime-400 text-slate-950 font-bold` |
+| **Icons** | `lucide-react` components throughout (no emojis) |
+
+**Icon Sizing Convention:**
+| Context | Size | Example |
+|---------|------|---------|
+| Page headers | `w-8 h-8` | `<Trophy className="w-8 h-8 text-lime-400" />` |
+| Inline / buttons | `w-4 h-4` | `<Check className="w-4 h-4" />` |
+| Navigation (desktop) | `w-4 h-4` | `<LayoutDashboard className="w-4 h-4" />` |
+| Navigation (mobile) | `w-5 h-5` | `<Dumbbell className="w-5 h-5" />` |
+| Empty states | `w-12 h-12` to `w-16 h-16` | `<Dumbbell className="w-16 h-16 text-slate-600" />` |
 
 **CSS Utility Classes (index.css):**
 - `.glass-card` - Standard glassmorphism panel
@@ -127,11 +138,13 @@ Pump/
 │   │   │   │   └── UnifiedPageHeader.tsx # Consistent page headers
 │   │   │   ├── dashboard/           # Dashboard sub-components
 │   │   │   │   ├── index.ts             # Barrel export
+│   │   │   │   ├── DashboardHeader.tsx  # Legacy header (icons)
 │   │   │   │   ├── WelcomeSection.tsx   # User welcome card
 │   │   │   │   ├── ActiveProgramCard.tsx    # Active program display
 │   │   │   │   ├── NextWorkoutCard.tsx      # Next workout card
 │   │   │   │   ├── WeekStatsCard.tsx        # Weekly statistics
 │   │   │   │   ├── RecentProgressCard.tsx   # Recent PRs display
+│   │   │   │   ├── QuickActions.tsx         # Quick action tiles
 │   │   │   │   └── RecentActivityFeed.tsx   # Last 3 workouts feed
 │   │   │   ├── workout/             # Workout-specific components
 │   │   │   │   ├── WorkoutHeader.tsx

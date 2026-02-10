@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
-import { UnifiedPageHeader } from '../components/layout';
-import { Trophy, Calendar, Dumbbell, BarChart3, Flame, X } from 'lucide-react';
+import { UnifiedPageHeader, SmartFilterBar } from '../components/layout';
+import type { FilterConfig } from '../components/layout';
+import { Trophy, Calendar, Dumbbell, BarChart3, Flame } from 'lucide-react';
 
 interface ExercisePR {
     exerciseId: string;
@@ -100,6 +101,35 @@ export default function PersonalRecordsPage() {
         setPrType('all');
     };
 
+    // Build SmartFilterBar config
+    const filters: FilterConfig[] = [
+        {
+            label: 'Date Range',
+            icon: Calendar,
+            value: dateRange,
+            onChange: (val) => setDateRange(val as any),
+            options: [
+                { value: 'all', label: 'All Time' },
+                { value: '30', label: 'Last 30 Days' },
+                { value: '90', label: 'Last 90 Days' },
+                { value: '180', label: 'Last 6 Months' },
+                { value: '365', label: 'Last Year' },
+            ],
+        },
+        {
+            label: 'PR Type',
+            icon: Trophy,
+            value: prType,
+            onChange: (val) => setPrType(val as any),
+            options: [
+                { value: 'all', label: 'All PRs' },
+                { value: 'weight', label: 'Weight PRs' },
+                { value: 'volume', label: 'Volume PRs' },
+                { value: 'reps', label: 'Reps PRs' },
+            ],
+        },
+    ];
+
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -116,73 +146,20 @@ export default function PersonalRecordsPage() {
                 icon={Trophy}
             />
 
-            {/* Filters */}
-            <div className="bg-slate-900/60 border-b border-white/5 md:sticky md:top-[89px] z-10 backdrop-blur-md">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Date Range Filter */}
-                        <div>
-                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2">
-                                <Calendar className="w-4 h-4" /> Date Range
-                            </label>
-                            <select
-                                value={dateRange}
-                                onChange={(e) => setDateRange(e.target.value as any)}
-                                className="w-full px-4 py-2 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50">
-                                <option value="all">All Time</option>
-                                <option value="30">Last 30 Days</option>
-                                <option value="90">Last 90 Days</option>
-                                <option value="180">Last 6 Months</option>
-                                <option value="365">Last Year</option>
-                            </select>
-                        </div>
+            {/* SmartFilterBar (fixed, below navbar) */}
+            <SmartFilterBar
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search exercises..."
+                filters={filters}
+                resultCount={filteredRecords.length}
+                totalCount={records.length}
+                hasActiveFilters={hasActiveFilters}
+                onClearFilters={clearFilters}
+            />
 
-                        {/* Exercise Search */}
-                        <div>
-                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2">
-                                <Dumbbell className="w-4 h-4" /> Exercise Search
-                            </label>
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search exercises..."
-                                className="w-full px-4 py-2 bg-slate-800/60 border border-white/5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
-                            />
-                        </div>
-
-                        {/* PR Type Filter */}
-                        <div>
-                            <label className="flex items-center gap-1.5 text-slate-400 text-sm mb-2">
-                                <Trophy className="w-4 h-4" /> PR Type
-                            </label>
-                            <select
-                                value={prType}
-                                onChange={(e) => setPrType(e.target.value as any)}
-                                className="w-full px-4 py-2 bg-slate-800/60 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50">
-                                <option value="all">All PRs</option>
-                                <option value="weight">Weight PRs</option>
-                                <option value="volume">Volume PRs</option>
-                                <option value="reps">Reps PRs</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Clear Filters Button */}
-                    {hasActiveFilters && (
-                        <div className="mt-4 flex items-center justify-between">
-                            <span className="text-slate-400 text-sm">
-                                {filteredRecords.length} result{filteredRecords.length !== 1 ? 's' : ''} found
-                            </span>
-                            <button
-                                onClick={clearFilters}
-                                className="flex items-center gap-1.5 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-slate-300 rounded-lg text-sm font-semibold transition-all">
-                                <X className="w-4 h-4" /> Clear Filters
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
+            {/* Spacer for fixed filter bar */}
+            <div className="h-16" />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {error && (

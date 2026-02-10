@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { exerciseService, type Exercise } from '../services/exerciseService';
 import ExerciseCard from '../components/ExerciseCard';
 import ExerciseModal from '../components/ExerciseModal';
-import { UnifiedPageHeader } from '../components/layout';
-import { Library, Search, SearchX, X } from 'lucide-react';
+import { UnifiedPageHeader, SmartFilterBar } from '../components/layout';
+import type { FilterConfig } from '../components/layout';
+import { Library, SearchX, Dumbbell, BarChart3, Gauge } from 'lucide-react';
 
 const ExerciseLibrary: React.FC = () => {
     const navigate = useNavigate();
     const [exercises, setExercises] = useState<Exercise[]>([]);
-    const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -27,7 +27,6 @@ const ExerciseLibrary: React.FC = () => {
             setLoading(true);
             const data = await exerciseService.getAll();
             setExercises(data);
-            setFilteredExercises(data);
         } catch (error) {
             console.error('Error loading exercises:', error);
         } finally {
@@ -36,7 +35,7 @@ const ExerciseLibrary: React.FC = () => {
     };
 
     // Apply filters
-    useEffect(() => {
+    const filteredExercises = useMemo(() => {
         let filtered = [...exercises];
 
         if (searchQuery) {
@@ -59,8 +58,10 @@ const ExerciseLibrary: React.FC = () => {
             filtered = filtered.filter((ex) => ex.difficulty === selectedDifficulty);
         }
 
-        setFilteredExercises(filtered);
-    }, [searchQuery, selectedMuscle, selectedWorkoutType, selectedDifficulty, exercises]);
+        return filtered;
+    }, [exercises, searchQuery, selectedMuscle, selectedWorkoutType, selectedDifficulty]);
+
+    const hasActiveFilters = !!(searchQuery || selectedMuscle || selectedWorkoutType || selectedDifficulty);
 
     const clearFilters = () => {
         setSearchQuery('');
@@ -69,103 +70,88 @@ const ExerciseLibrary: React.FC = () => {
         setSelectedDifficulty('');
     };
 
+    const filters: FilterConfig[] = [
+        {
+            label: 'Workout Type',
+            icon: Dumbbell,
+            value: selectedWorkoutType,
+            onChange: setSelectedWorkoutType,
+            options: [
+                { value: '', label: 'All Workout Types' },
+                { value: 'Push', label: 'Push Day' },
+                { value: 'Pull', label: 'Pull Day' },
+                { value: 'Leg', label: 'Leg Day' },
+                { value: 'Upper', label: 'Upper Day' },
+                { value: 'Lower', label: 'Lower Day' },
+                { value: 'Full Body', label: 'Full Body' },
+                { value: 'Core', label: 'Core' },
+            ],
+        },
+        {
+            label: 'Muscle Group',
+            icon: BarChart3,
+            value: selectedMuscle,
+            onChange: setSelectedMuscle,
+            options: [
+                { value: '', label: 'All Muscle Groups' },
+                { value: 'Chest', label: 'Chest' },
+                { value: 'Back', label: 'Back' },
+                { value: 'Shoulders', label: 'Shoulders' },
+                { value: 'Biceps', label: 'Biceps' },
+                { value: 'Triceps', label: 'Triceps' },
+                { value: 'Quads', label: 'Quads' },
+                { value: 'Hamstrings', label: 'Hamstrings' },
+                { value: 'Glutes', label: 'Glutes' },
+                { value: 'Calves', label: 'Calves' },
+                { value: 'Abs', label: 'Abs' },
+                { value: 'Core', label: 'Core' },
+            ],
+        },
+        {
+            label: 'Difficulty',
+            icon: Gauge,
+            value: selectedDifficulty,
+            onChange: setSelectedDifficulty,
+            options: [
+                { value: '', label: 'All Levels' },
+                { value: 'Beginner', label: 'Beginner' },
+                { value: 'Intermediate', label: 'Intermediate' },
+                { value: 'Advanced', label: 'Advanced' },
+            ],
+        },
+    ];
+
     return (
         <div className="relative z-10">
             <UnifiedPageHeader
                 title="Exercise Library"
-                subtitle="100 exercises available"
+                subtitle={`${exercises.length} exercises available`}
                 icon={Library}
             />
 
+            {/* SmartFilterBar (fixed, below navbar) */}
+            <SmartFilterBar
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search exercises... (Hebrew or English)"
+                filters={filters}
+                resultCount={filteredExercises.length}
+                totalCount={exercises.length}
+                hasActiveFilters={hasActiveFilters}
+                onClearFilters={clearFilters}
+            />
+
+            {/* Spacer for fixed filter bar */}
+            <div className="h-16" />
+
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Search and Filters */}
-                <div className="mb-8 space-y-4">
-                    {/* Search Bar */}
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500" />
-                        <input
-                            type="text"
-                            placeholder="Search exercises... (Hebrew or English)"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-6 py-4 bg-slate-800/60 border border-white/5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-all"
-                        />
-                    </div>
-
-                    {/* Filter Chips */}
-                    <div className="flex flex-wrap gap-3">
-                        {/* Workout Type */}
-                        <select
-                            value={selectedWorkoutType}
-                            onChange={(e) => setSelectedWorkoutType(e.target.value)}
-                            className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
-                        >
-                            <option value="" className="bg-slate-900">All Workout Types</option>
-                            <option value="Push" className="bg-slate-900">Push Day</option>
-                            <option value="Pull" className="bg-slate-900">Pull Day</option>
-                            <option value="Leg" className="bg-slate-900">Leg Day</option>
-                            <option value="Upper" className="bg-slate-900">Upper Day</option>
-                            <option value="Lower" className="bg-slate-900">Lower Day</option>
-                            <option value="Full Body" className="bg-slate-900">Full Body</option>
-                            <option value="Core" className="bg-slate-900">Core</option>
-                        </select>
-
-                        {/* Muscle Group */}
-                        <select
-                            value={selectedMuscle}
-                            onChange={(e) => setSelectedMuscle(e.target.value)}
-                            className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
-                        >
-                            <option value="" className="bg-slate-900">All Muscle Groups</option>
-                            <option value="Chest" className="bg-slate-900">Chest</option>
-                            <option value="Back" className="bg-slate-900">Back</option>
-                            <option value="Shoulders" className="bg-slate-900">Shoulders</option>
-                            <option value="Biceps" className="bg-slate-900">Biceps</option>
-                            <option value="Triceps" className="bg-slate-900">Triceps</option>
-                            <option value="Quads" className="bg-slate-900">Quads</option>
-                            <option value="Hamstrings" className="bg-slate-900">Hamstrings</option>
-                            <option value="Glutes" className="bg-slate-900">Glutes</option>
-                            <option value="Calves" className="bg-slate-900">Calves</option>
-                            <option value="Abs" className="bg-slate-900">Abs</option>
-                            <option value="Core" className="bg-slate-900">Core</option>
-                        </select>
-
-                        {/* Difficulty */}
-                        <select
-                            value={selectedDifficulty}
-                            onChange={(e) => setSelectedDifficulty(e.target.value)}
-                            className="px-5 py-3 bg-slate-800/60 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 hover:border-white/20 transition-all cursor-pointer shadow-lg"
-                        >
-                            <option value="" className="bg-slate-900">All Levels</option>
-                            <option value="Beginner" className="bg-slate-900">Beginner</option>
-                            <option value="Intermediate" className="bg-slate-900">Intermediate</option>
-                            <option value="Advanced" className="bg-slate-900">Advanced</option>
-                        </select>
-
-                        {/* Clear Filters */}
-                        {(searchQuery || selectedMuscle || selectedWorkoutType || selectedDifficulty) && (
-                            <button
-                                onClick={clearFilters}
-                                className="flex items-center gap-1.5 px-5 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all font-medium shadow-lg"
-                            >
-                                <X className="w-4 h-4" /> Clear Filters
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Results count */}
-                    <p className="text-slate-400 text-sm font-medium">
-                        Showing {filteredExercises.length} of {exercises.length} exercises
-                    </p>
-                </div>
-
                 {/* Exercise Grid */}
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <div className="text-center">
                             <div className="w-16 h-16 border-4 border-lime-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-slate-400">טוען תרגילים...</p>
+                            <p className="text-slate-400">Loading exercises...</p>
                         </div>
                     </div>
                 ) : filteredExercises.length === 0 ? (

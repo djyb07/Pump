@@ -8,9 +8,9 @@
  * - Active state highlighting with lime-400 accent
  */
 
-import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Dumbbell, History, Library, Trophy, LogOut, type LucideIcon } from 'lucide-react';
+import { useScrollDirection } from '../../hooks/useScrollDirection';
 
 interface SmartNavbarProps {
     onLogout: () => void;
@@ -33,27 +33,7 @@ const navLinks: NavLink[] = [
 export function SmartNavbar({ onLogout }: SmartNavbarProps) {
     const location = useLocation();
     const navigate = useNavigate();
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            // Show navbar when scrolling up or at top
-            if (currentScrollY < lastScrollY || currentScrollY < 50) {
-                setIsVisible(true);
-            } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                // Hide navbar when scrolling down (after 100px)
-                setIsVisible(false);
-            }
-
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    const isVisible = useScrollDirection();
 
     const isActive = (path: string) => {
         if (path === '/dashboard') {

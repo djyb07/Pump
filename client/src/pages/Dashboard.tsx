@@ -6,7 +6,7 @@
  */
 
 import { useDashboard } from '../hooks/useDashboard';
-import { Flame, Dumbbell, Rocket, Heart } from 'lucide-react';
+import { Flame, Dumbbell, Rocket, Heart, ChevronRight } from 'lucide-react';
 import {
     WelcomeSection,
     ActiveProgramCard,
@@ -70,7 +70,7 @@ export default function Dashboard() {
                                         >
                                             {!nextWorkout.exercises || nextWorkout.exercises.length === 0
                                                 ? 'No Exercises Added'
-                                                : 'Start Workout →'
+                                                : <><span>Start Workout</span><ChevronRight className="w-5 h-5 inline" /></>
                                             }
                                         </button>
                                     </div>
@@ -91,7 +91,7 @@ export default function Dashboard() {
                                             onClick={() => navigate('/programs')}
                                             className="w-full lg:w-auto px-8 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-lime-400/20"
                                         >
-                                            Browse Programs →
+                                            Browse Programs <ChevronRight className="w-5 h-5 inline" />
                                         </button>
                                     </div>
                                 )}

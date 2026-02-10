@@ -4,6 +4,7 @@
  */
 
 import type { Program, WorkoutDay } from '../../types/dashboard';
+import { Calendar, Play } from 'lucide-react';
 
 interface NextWorkoutCardProps {
     nextWorkout: WorkoutDay | null;
@@ -25,8 +26,8 @@ export function NextWorkoutCard({ nextWorkout, activeProgram, onStartWorkout, on
 
     return (
         <div className="glass-card p-6">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                <span className="mr-2">📅</span>
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-lime-400" />
                 Next Workout
             </h3>
             {nextWorkout && activeProgram ? (
@@ -53,8 +54,8 @@ export function NextWorkoutCard({ nextWorkout, activeProgram, onStartWorkout, on
                     )}
                     <button
                         onClick={handleStartWorkout}
-                        className="w-full bg-lime-400 hover:bg-lime-500 text-slate-950 py-3 px-4 rounded-lg font-semibold transition-all duration-200">
-                        Start Workout →
+                        className="w-full flex items-center justify-center gap-2 bg-lime-400 hover:bg-lime-500 text-slate-950 py-3 px-4 rounded-lg font-semibold transition-all duration-200">
+                        <Play className="w-4 h-4" /> Start Workout
                     </button>
                 </>
             ) : (

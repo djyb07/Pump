@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Exercise } from '../services/exerciseService';
+import { Dumbbell, Wrench, Info, BarChart3 } from 'lucide-react';
 
 interface ExerciseCardProps {
     exercise: Exercise;
@@ -28,7 +29,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                     </div>
                 ) : (
                     <div className="mb-4 h-40 bg-slate-800/60 rounded-lg flex items-center justify-center">
-                        <span className="text-6xl">💪</span>
+                        <Dumbbell className="w-16 h-16 text-slate-600" />
                     </div>
                 )}
 
@@ -76,8 +77,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
 
                 {/* Equipment */}
                 <div className="pt-3 border-t border-white/5 mb-3">
-                    <p className="text-xs text-slate-500">
-                        🔧 {exercise.equipment.join(', ')}
+                    <p className="text-xs text-slate-500 flex items-center gap-1">
+                        <Wrench className="w-3 h-3" /> {exercise.equipment.join(', ')}
                     </p>
                 </div>
 
@@ -88,9 +89,9 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                             e.stopPropagation();
                             onClick();
                         }}
-                        className="flex-1 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all text-sm"
+                        className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-700/60 hover:bg-slate-600/60 text-white rounded-lg font-semibold transition-all text-sm"
                     >
-                        ℹ️ Info
+                        <Info className="w-4 h-4" /> Info
                     </button>
                     {onViewProgress && (
                         <button
@@ -98,9 +99,9 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick, onViewPr
                                 e.stopPropagation();
                                 onViewProgress();
                             }}
-                            className="flex-1 px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all text-sm"
+                            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all text-sm"
                         >
-                            📊 Progress
+                            <BarChart3 className="w-4 h-4" /> Progress
                         </button>
                     )}
                 </div>

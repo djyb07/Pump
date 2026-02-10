@@ -1,32 +1,32 @@
-# 🏋️ PUMP - Fitness Tracking App
+# PUMP - Fitness Tracking App
 
 A full-stack workout tracking application with real-time exercise logging, personal records tracking, and progress visualization.
 
-## 🚀 Live Demo
+## Live Demo
 
 - **Frontend:** [pump-client.vercel.app](https://pump-client.vercel.app)
 - **Backend API:** [pump-api.onrender.com](https://pump-api.onrender.com)
 
-## ✨ Features
+## Features
 
-- 📋 Create custom workout programs (PPL, Upper/Lower, Full Body)
-- 🏃 Real-time workout tracking with rest timer
-- 🏆 Automatic Personal Record (PR) detection
-- 📊 Progress charts and statistics
-- 🔐 Authentication (Email/Password + Google OAuth)
-- 🌙 Dark theme, mobile-responsive UI
+- Create custom workout programs (PPL, Upper/Lower, Full Body)
+- Real-time workout tracking with rest timer
+- Automatic Personal Record (PR) detection
+- Progress charts and statistics
+- Authentication (Email/Password + Google OAuth)
+- Dark theme, mobile-responsive UI
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technologies |
 |-------|-------------|
-| **Frontend** | React 19, TypeScript, Vite, TailwindCSS 4 |
+| **Frontend** | React 19, TypeScript, Vite, TailwindCSS 4, lucide-react |
 | **Backend** | Node.js, Express 5, Prisma 7 |
 | **Database** | PostgreSQL (Supabase) with RLS |
 | **Auth** | JWT, Passport.js, bcrypt |
 | **Hosting** | Vercel (client), Render (server) |
 
-## 🏃 Quick Start
+## Quick Start
 
 ```bash
 # Clone
@@ -48,7 +48,7 @@ npm run dev
 # Open http://localhost:5173
 ```
 
-## 📖 Documentation
+## Documentation
 
 See [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) for comprehensive documentation including:
 - Database schema (8 models)
@@ -57,6 +57,6 @@ See [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) for comprehensive doc
 - Security implementation
 - E2E testing guide
 
-## 📄 License
+## License
 
 MIT

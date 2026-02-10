@@ -5,6 +5,7 @@
  */
 
 import type { WeekStats } from '../../types/dashboard';
+import { BarChart3, Flame, Dumbbell, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface WeekStatsCardProps {
     weekStats: WeekStats;
@@ -34,8 +35,8 @@ function StatItem({ label, value, lastValue, currentValue, isVolume = false, isH
                     {value}
                 </div>
                 {showChange && (
-                    <span className={`text-sm ${isPositive ? 'text-lime-400' : 'text-red-400'}`}>
-                        {isPositive ? '↑' : '↓'}{displayDiff}
+                    <span className={`flex items-center gap-0.5 text-sm ${isPositive ? 'text-lime-400' : 'text-red-400'}`}>
+                        {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}{displayDiff}
                     </span>
                 )}
             </div>
@@ -46,8 +47,8 @@ function StatItem({ label, value, lastValue, currentValue, isVolume = false, isH
 export function WeekStatsCard({ weekStats, lastWeekStats }: WeekStatsCardProps) {
     return (
         <div className="glass-card p-6 h-full">
-            <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <span className="mr-2">📊</span>
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-lime-400" />
                 This Week's Progress
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -81,8 +82,8 @@ export function WeekStatsCard({ weekStats, lastWeekStats }: WeekStatsCardProps) 
             </div>
             {weekStats.workouts > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/5 text-center">
-                    <p className="text-lime-400 text-sm font-medium">
-                        {weekStats.workouts >= 4 ? "🔥 Great progress this week!" : "💪 Keep pushing!"}
+                    <p className="text-lime-400 text-sm font-medium flex items-center justify-center gap-1.5">
+                        {weekStats.workouts >= 4 ? <><Flame className="w-4 h-4" /> Great progress this week!</> : <><Dumbbell className="w-4 h-4" /> Keep pushing!</>}
                     </p>
                 </div>
             )}

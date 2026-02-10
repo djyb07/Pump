@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 import { UnifiedPageHeader } from '../components/layout';
-import { BarChart3, Dumbbell, Target, TrendingUp } from 'lucide-react';
+import { BarChart3, Dumbbell, Target, TrendingUp, ChevronLeft } from 'lucide-react';
 
 interface ProgressData {
     date: string;
@@ -133,9 +133,9 @@ export default function ExerciseProgressPage() {
                     <div className="text-red-400 text-xl mb-4">{error || 'Exercise not found'}</div>
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
+                        className="flex items-center gap-1 px-6 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-semibold transition-all"
                     >
-                        ← Go Back
+                        <ChevronLeft className="w-4 h-4" /> Go Back
                     </button>
                 </div>
             </div>

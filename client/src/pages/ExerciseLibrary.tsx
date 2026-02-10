@@ -129,7 +129,7 @@ const ExerciseLibrary: React.FC = () => {
                 icon={Library}
             />
 
-            {/* SmartFilterBar (fixed, below navbar) */}
+            {/* SmartFilterBar (sticky, sticks on scroll) */}
             <SmartFilterBar
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}

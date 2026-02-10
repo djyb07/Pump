@@ -239,7 +239,7 @@ export default function WorkoutHistoryPage() {
                 }
             />
 
-            {/* SmartFilterBar (fixed, below navbar) */}
+            {/* SmartFilterBar (sticky, sticks on scroll) */}
             <SmartFilterBar
                 searchValue=""
                 onSearchChange={() => { }}

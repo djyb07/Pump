@@ -3,19 +3,16 @@ import { Check } from 'lucide-react';
 
 interface WorkoutHeaderProps {
     workout: WorkoutLog;
-    elapsedMinutes: number;
+    /** Pre-formatted elapsed time string (MM:SS). */
+    formattedTime: string;
     onFinishWorkout: () => void;
 }
 
 export default function WorkoutHeader({
     workout,
-    elapsedMinutes,
+    formattedTime,
     onFinishWorkout
 }: WorkoutHeaderProps) {
-    const getElapsedTime = () => {
-        return `${elapsedMinutes} min`;
-    };
-
     return (
         <header className="bg-slate-900/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -25,7 +22,7 @@ export default function WorkoutHeader({
                             {workout.day?.name || 'Active Workout'}
                         </h1>
                         <p className="text-slate-400 text-xs sm:text-sm">
-                            {workout.day?.program?.name} • {getElapsedTime()} elapsed
+                            {workout.day?.program?.name} • {formattedTime} elapsed
                         </p>
                     </div>
                     <button
@@ -39,4 +36,3 @@ export default function WorkoutHeader({
         </header>
     );
 }
-

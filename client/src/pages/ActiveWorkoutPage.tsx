@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useWorkoutTimer } from '../hooks/useWorkoutTimer';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { workoutService, type WorkoutLog, type SetLog } from '../services/workoutService';
 import { exerciseService, type Exercise } from '../services/exerciseService';
@@ -21,11 +22,14 @@ export default function ActiveWorkoutPage() {
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [reps, setReps] = useState('');
     const [weight, setWeight] = useState('');
-    const [startTime] = useState(new Date());
-    const [elapsedMinutes, setElapsedMinutes] = useState(0);
     const [showSummary, setShowSummary] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
     const [finishedWorkout, setFinishedWorkout] = useState<WorkoutLog | null>(null);
+
+    // Delta-time workout timer — survives page refreshes via server startTime
+    const { formattedTime } = useWorkoutTimer({
+        initialStartTime: workout?.startTime,
+    });
 
     // Edit/Delete state
     const [editingSet, setEditingSet] = useState<{ exerciseLogId: string, setIndex: number } | null>(null);
@@ -36,17 +40,6 @@ export default function ActiveWorkoutPage() {
     useEffect(() => {
         initWorkout();
     }, [dayId]);
-
-    // Update elapsed time every minute
-    useEffect(() => {
-        const interval = window.setInterval(() => {
-            const now = new Date();
-            const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 60000);
-            setElapsedMinutes(elapsed);
-        }, 1000); // Update every second
-
-        return () => clearInterval(interval);
-    }, [startTime]);
 
     const initWorkout = async () => {
         try {
@@ -250,7 +243,7 @@ export default function ActiveWorkoutPage() {
             {/* Header - Extracted Component */}
             <WorkoutHeader
                 workout={workout}
-                elapsedMinutes={elapsedMinutes}
+                formattedTime={formattedTime}
                 onFinishWorkout={handleFinishWorkout}
             />
 

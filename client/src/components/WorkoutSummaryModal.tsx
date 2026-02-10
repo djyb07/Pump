@@ -1,3 +1,5 @@
+import { Check, Trophy, Flame, Dumbbell } from 'lucide-react';
+
 interface WorkoutSummaryModalProps {
     workout: {
         id: string;
@@ -42,9 +44,9 @@ export default function WorkoutSummaryModal({ workout, onClose }: WorkoutSummary
             if (log.isWeightPR || log.isVolumePR || log.isRepsPR) {
                 const exerciseName = log.dayExercise?.exercise?.nameHe || 'Unknown';
                 const prTypes = [];
-                if (log.isWeightPR) prTypes.push('משקל');
-                if (log.isVolumePR) prTypes.push('נפח');
-                if (log.isRepsPR) prTypes.push('חזרות');
+                if (log.isWeightPR) prTypes.push('Weight');
+                if (log.isVolumePR) prTypes.push('Volume');
+                if (log.isRepsPR) prTypes.push('Reps');
                 prs.push(`${exerciseName} (${prTypes.join(', ')})`);
             }
         });
@@ -69,7 +71,7 @@ export default function WorkoutSummaryModal({ workout, onClose }: WorkoutSummary
                 {/* Success Icon */}
                 <div className="text-center mb-6">
                     <div className="inline-block p-4 bg-lime-400/20 rounded-full mb-4">
-                        <span className="text-6xl">✓</span>
+                        <Check className="w-12 h-12 text-lime-400" />
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-2">Workout Complete!</h2>
                     <p className="text-slate-400">
@@ -107,9 +109,9 @@ export default function WorkoutSummaryModal({ workout, onClose }: WorkoutSummary
                 {prs.length > 0 && (
                     <div className="bg-lime-400/10 border border-lime-400/30 rounded-lg p-4 mb-6">
                         <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-2xl">🏆</span>
+                            <Trophy className="w-6 h-6 text-yellow-500" />
                             <h3 className="text-lg font-bold text-lime-400">
-                                {prs.length} שיא{prs.length > 1 ? 'ים' : ''} אישי{prs.length > 1 ? 'ים' : ''}!
+                                {prs.length} Personal Record{prs.length > 1 ? 's' : ''}!
                             </h3>
                         </div>
                         <ul className="space-y-1">
@@ -124,11 +126,11 @@ export default function WorkoutSummaryModal({ workout, onClose }: WorkoutSummary
 
                 {/* Motivational Message */}
                 <div className="text-center mb-6">
-                    <p className="text-slate-300 text-lg font-semibold">
-                        {prs.length > 0 ? '🔥 שברת שיאים היום!' : '💪 עבודה מצוינת!'}
+                    <p className="flex items-center justify-center gap-2 text-slate-300 text-lg font-semibold">
+                        {prs.length > 0 ? <><Flame className="w-5 h-5 text-orange-500" /> You broke records today!</> : <><Dumbbell className="w-5 h-5 text-lime-400" /> Great work!</>}
                     </p>
                     <p className="text-slate-500 text-sm mt-1">
-                        תמשיך ככה ותראה תוצאות מדהימות
+                        Keep it up and you'll see amazing results
                     </p>
                 </div>
 
@@ -138,7 +140,7 @@ export default function WorkoutSummaryModal({ workout, onClose }: WorkoutSummary
                         onClick={onClose}
                         className="w-full px-6 py-3 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold transition-all"
                     >
-                        סגור
+                        Close
                     </button>
                 </div>
             </div>

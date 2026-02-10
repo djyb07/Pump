@@ -1,4 +1,5 @@
 import { type SetLog } from '../../services/workoutService';
+import { Check, Pencil, Trash2 } from 'lucide-react';
 
 interface ExerciseSetListProps {
     sets: SetLog[];
@@ -155,9 +156,9 @@ export default function ExerciseSetList({
                 <button
                     onClick={isEditing ? onUpdateSet : onLogSet}
                     disabled={!reps}
-                    className="w-full px-6 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
                 >
-                    {isEditing ? '✓ Update Set' : '✓ Log Set'}
+                    <Check className="w-5 h-5" /> {isEditing ? 'Update Set' : 'Log Set'}
                 </button>
                 {isEditing && (
                     <button
@@ -189,16 +190,16 @@ export default function ExerciseSetList({
                                         className="px-3 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg text-sm font-semibold transition-all active:scale-95"
                                         title="Edit set"
                                     >
-                                        ✏️
+                                        <Pencil className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => exerciseLogId && onRequestDelete(exerciseLogId, index)}
                                         className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all active:scale-95"
                                         title="Delete set"
                                     >
-                                        🗑️
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
-                                    <span className="text-lime-400">✓</span>
+                                    <Check className="w-4 h-4 text-lime-400" />
                                 </div>
                             </div>
                         ))}

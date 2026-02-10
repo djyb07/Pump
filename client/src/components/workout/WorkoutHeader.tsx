@@ -1,4 +1,5 @@
 import type { WorkoutLog } from '../../services/workoutService';
+import { Check } from 'lucide-react';
 
 interface WorkoutHeaderProps {
     workout: WorkoutLog;
@@ -29,12 +30,13 @@ export default function WorkoutHeader({
                     </div>
                     <button
                         onClick={onFinishWorkout}
-                        className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold transition-all text-base sm:text-sm min-h-[44px]"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-lg font-bold transition-all text-base sm:text-sm min-h-[44px]"
                     >
-                        ✓ Finish Workout
+                        <Check className="w-5 h-5" /> Finish Workout
                     </button>
                 </div>
             </div>
         </header>
     );
 }
+

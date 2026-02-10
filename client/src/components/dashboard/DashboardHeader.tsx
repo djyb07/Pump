@@ -4,16 +4,23 @@
  */
 
 import { useLocation, Link } from 'react-router-dom';
+import { Home, Dumbbell, History, Trophy, LogOut, type LucideIcon } from 'lucide-react';
 
 interface DashboardHeaderProps {
     onLogout: () => void;
 }
 
-const navLinks = [
-    { path: '/dashboard', label: 'Dashboard', emoji: '🏠' },
-    { path: '/programs', label: 'Programs', emoji: '🏋️' },
-    { path: '/workout/history', label: 'History', emoji: '📊' },
-    { path: '/personal-records', label: 'PRs', emoji: '🏆' },
+interface NavLinkType {
+    path: string;
+    label: string;
+    Icon: LucideIcon;
+}
+
+const navLinks: NavLinkType[] = [
+    { path: '/dashboard', label: 'Dashboard', Icon: Home },
+    { path: '/programs', label: 'Programs', Icon: Dumbbell },
+    { path: '/workout/history', label: 'History', Icon: History },
+    { path: '/personal-records', label: 'PRs', Icon: Trophy },
 ];
 
 export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
@@ -38,12 +45,12 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
                                 <Link
                                     key={link.path}
                                     to={link.path}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
+                                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
                                         ? 'text-lime-400 bg-lime-400/10'
                                         : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                                         }`}
                                 >
-                                    <span className="mr-1.5">{link.emoji}</span>
+                                    <link.Icon className="w-4 h-4" />
                                     {link.label}
                                 </Link>
                             );
@@ -53,9 +60,9 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
                     {/* Logout Button */}
                     <button
                         onClick={onLogout}
-                        className="px-4 py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/60 border border-white/5 text-slate-300 hover:text-white transition-all duration-200 text-sm font-medium"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/60 border border-white/5 text-slate-300 hover:text-white transition-all duration-200 text-sm font-medium"
                     >
-                        🚪 Logout
+                        <LogOut className="w-4 h-4" /> Logout
                     </button>
                 </div>
 
@@ -73,7 +80,7 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
                                     : 'text-slate-400 hover:text-white'
                                     }`}
                             >
-                                <span className="text-lg mb-0.5">{link.emoji}</span>
+                                <link.Icon className="w-5 h-5 mb-0.5" />
                                 {link.label}
                             </Link>
                         );

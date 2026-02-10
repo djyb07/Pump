@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Timer, Play, Pause, RotateCcw, SkipForward } from 'lucide-react';
 
 interface RestTimerProps {
     initialSeconds?: number;
@@ -63,8 +64,8 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
 
     return (
         <div className="glass-card p-6 sticky top-24">
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center">
-                <span className="mr-2">⏱️</span>
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <Timer className="w-5 h-5 text-lime-400" />
                 Rest Timer
             </h3>
 
@@ -107,29 +108,29 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
                 {!isRunning ? (
                     <button
                         onClick={startTimer}
-                        className="col-span-2 px-6 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all active:scale-95 shadow-lg shadow-lime-400/20"
+                        className="col-span-2 flex items-center justify-center gap-2 px-6 py-4 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-xl font-bold text-lg transition-all active:scale-95 shadow-lg shadow-lime-400/20"
                     >
-                        ▶️ Start
+                        <Play className="w-5 h-5" /> Start
                     </button>
                 ) : (
                     <button
                         onClick={pauseTimer}
-                        className="col-span-2 px-6 py-4 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-xl font-bold text-lg transition-all active:scale-95"
+                        className="col-span-2 flex items-center justify-center gap-2 px-6 py-4 bg-yellow-500 hover:bg-yellow-600 text-slate-950 rounded-xl font-bold text-lg transition-all active:scale-95"
                     >
-                        {isPaused ? '▶️ Resume' : '⏸️ Pause'}
+                        {isPaused ? <><Play className="w-5 h-5" /> Resume</> : <><Pause className="w-5 h-5" /> Pause</>}
                     </button>
                 )}
                 <button
                     onClick={resetTimer}
-                    className="px-4 py-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10 active:scale-95"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10 active:scale-95"
                 >
-                    🔄 Reset
+                    <RotateCcw className="w-4 h-4" /> Reset
                 </button>
                 <button
                     onClick={skipTimer}
-                    className="px-4 py-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10 active:scale-95"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-900/30 hover:bg-slate-800/50 text-white rounded-xl font-semibold transition-all border border-white/10 active:scale-95"
                 >
-                    ⏭️ Skip
+                    <SkipForward className="w-4 h-4" /> Skip
                 </button>
             </div>
 
@@ -146,8 +147,8 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
                                 setIsPaused(false);
                             }}
                             className={`px-2 py-2 rounded-lg text-sm font-medium transition-all ${initialSeconds === time && seconds === time
-                                    ? 'bg-lime-400/20 text-lime-400 border border-lime-400/30'
-                                    : 'bg-slate-900/30 text-slate-400 border border-white/5 hover:text-white'
+                                ? 'bg-lime-400/20 text-lime-400 border border-lime-400/30'
+                                : 'bg-slate-900/30 text-slate-400 border border-white/5 hover:text-white'
                                 }`}
                         >
                             {time >= 60 ? `${time / 60}m` : `${time}s`}
@@ -158,3 +159,4 @@ export default function RestTimer({ initialSeconds = 120, onComplete }: RestTime
         </div>
     );
 }
+

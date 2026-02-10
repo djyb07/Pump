@@ -1,5 +1,6 @@
 import { type WorkoutLog } from '../../services/workoutService';
 import { type Exercise } from '../../services/exerciseService';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 
 interface DayExercise {
     id: string;
@@ -33,9 +34,9 @@ export default function WorkoutControls({
                 <button
                     onClick={onNavigatePrevious}
                     disabled={currentExerciseIndex === 0}
-                    className="w-full sm:w-auto px-6 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[44px] border border-white/5"
+                    className="w-full sm:w-auto flex items-center justify-center gap-1 px-6 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[44px] border border-white/5"
                 >
-                    ← Previous
+                    <ChevronLeft className="w-5 h-5" /> Previous
                 </button>
                 <span className="text-slate-400 text-sm">
                     Exercise {currentExerciseIndex + 1} of {totalExercises}
@@ -43,9 +44,9 @@ export default function WorkoutControls({
                 <button
                     onClick={onNavigateNext}
                     disabled={currentExerciseIndex >= totalExercises - 1}
-                    className="w-full sm:w-auto px-6 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[44px] border border-white/5"
+                    className="w-full sm:w-auto flex items-center justify-center gap-1 px-6 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[44px] border border-white/5"
                 >
-                    Next →
+                    Next <ChevronRight className="w-5 h-5" />
                 </button>
             </div>
 
@@ -54,9 +55,9 @@ export default function WorkoutControls({
                 <div className="text-center">
                     <button
                         onClick={() => onShowExerciseInfo(currentExercise.exercise?.id)}
-                        className="text-3xl font-bold text-white mb-2 hover:text-lime-400 transition-colors"
+                        className="inline-flex items-center gap-2 text-3xl font-bold text-white mb-2 hover:text-lime-400 transition-colors"
                     >
-                        {currentExercise.exercise.nameEn} ℹ️
+                        {currentExercise.exercise.nameEn} <Info className="w-6 h-6 text-lime-400" />
                     </button>
                     <p className="text-slate-400">
                         Target: {currentExercise.targetSets} sets × {currentExercise.targetReps} reps
@@ -67,3 +68,4 @@ export default function WorkoutControls({
         </div>
     );
 }
+

@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { register, login, forgotPassword, resetPassword, googleCallback } from '../controllers/authController';
+import { register, login, forgotPassword, resetPassword, googleCallback, getMe } from '../controllers/authController';
 import passport from 'passport';
 import { authLimiter } from '../middleware/rateLimiter';
+import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -10,6 +11,9 @@ router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
 router.post('/forgot-password', authLimiter, forgotPassword);
 router.post('/reset-password', resetPassword);
+
+// Authenticated user profile (live stats)
+router.get('/me', authenticateToken, getMe);
 
 // Google OAuth
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

@@ -227,6 +227,38 @@ export const workoutService = {
         // Batch update all PR flags
         await batchUpdatePRFlags(prResults);
 
+        // --- Gamification: Update streak & totalWorkouts ---
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { lastWorkoutDate: true, currentStreak: true }
+        });
+
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        let newStreak = 1; // Default: first workout or streak reset
+        if (user?.lastWorkoutDate) {
+            const lastDate = new Date(user.lastWorkoutDate);
+            const lastDay = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
+            const diffDays = Math.round((today.getTime() - lastDay.getTime()) / 86400000);
+
+            if (diffDays === 0) {
+                newStreak = user.currentStreak; // Same day — keep streak as-is
+            } else if (diffDays === 1) {
+                newStreak = user.currentStreak + 1; // Consecutive day — increment
+            }
+            // else: gap > 1 day → reset to 1 (default)
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                totalWorkouts: { increment: 1 },
+                currentStreak: newStreak,
+                lastWorkoutDate: now,
+            }
+        });
+
         return updated;
     },
 

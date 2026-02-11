@@ -14,6 +14,7 @@ import WorkoutHistoryPage from './pages/WorkoutHistoryPage';
 import WorkoutDetailsPage from './pages/WorkoutDetailsPage';
 import ExerciseProgressPage from './pages/ExerciseProgressPage';
 import PersonalRecordsPage from './pages/PersonalRecordsPage';
+import ProfilePage from './pages/ProfilePage';
 import { MainLayout } from './components/layout';
 
 // Check if JWT is expired (client-side, no API call)
@@ -174,6 +175,14 @@ function App() {
             element={
               <AuthenticatedLayout>
                 <PersonalRecordsPage />
+              </AuthenticatedLayout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <AuthenticatedLayout>
+                <ProfilePage />
               </AuthenticatedLayout>
             }
           />

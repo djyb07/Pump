@@ -32,6 +32,12 @@ export function useDashboard() {
     const [weekStats, setWeekStats] = useState<WeekStats>(DEFAULT_STATS);
     const [lastWeekStats, setLastWeekStats] = useState<WeekStats>(DEFAULT_STATS);
 
+    const [liveUserStats, setLiveUserStats] = useState<{
+        avatarUrl?: string;
+        totalWorkouts: number;
+        currentStreak: number;
+    }>({ totalWorkouts: 0, currentStreak: 0 });
+
     useEffect(() => {
         setMounted(true);
         loadDashboardData();
@@ -41,15 +47,24 @@ export function useDashboard() {
 
     const loadDashboardData = async () => {
         try {
-            const [programsData, workoutsData, prsData] = await Promise.all([
+            const [programsData, workoutsData, prsData, meData] = await Promise.all([
                 apiClient.get('/api/programs'),
                 apiClient.get('/api/workouts?limit=50'),
-                apiClient.get('/api/analytics/personal-records')
+                apiClient.get('/api/analytics/personal-records'),
+                apiClient.get('/api/auth/me').catch(() => null)
             ]);
 
             setRecentPRs(prsData.data);
             processActiveProgram(programsData.data, workoutsData.data);
             processWeekStats(workoutsData.data);
+
+            if (meData?.data?.user) {
+                setLiveUserStats({
+                    avatarUrl: meData.data.user.avatarUrl || undefined,
+                    totalWorkouts: meData.data.user.totalWorkouts ?? 0,
+                    currentStreak: meData.data.user.currentStreak ?? 0,
+                });
+            }
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
         } finally {
@@ -158,7 +173,7 @@ export function useDashboard() {
         const token = localStorage.getItem('token');
         const userStr = localStorage.getItem('user');
 
-        if (!token) return { name: 'User', email: '', initials: 'U' };
+        if (!token) return { name: 'User', email: '', initials: 'U', currentStreak: 0, totalWorkouts: 0 };
 
         try {
             if (userStr) {
@@ -182,13 +197,16 @@ export function useDashboard() {
                 return {
                     name: displayName || user.email || 'User',
                     email: user.email || '',
-                    initials: initials.toUpperCase()
+                    initials: initials.toUpperCase(),
+                    avatarUrl: liveUserStats.avatarUrl || user.avatarUrl || undefined,
+                    currentStreak: liveUserStats.currentStreak,
+                    totalWorkouts: liveUserStats.totalWorkouts,
                 };
             }
 
-            return { name: 'User', email: '', initials: 'U' };
+            return { name: 'User', email: '', initials: 'U', currentStreak: 0, totalWorkouts: 0 };
         } catch {
-            return { name: 'User', email: '', initials: 'U' };
+            return { name: 'User', email: '', initials: 'U', currentStreak: 0, totalWorkouts: 0 };
         }
     };
 

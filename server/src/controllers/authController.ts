@@ -47,6 +47,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                avatarUrl: user.avatarUrl,
+                totalWorkouts: user.totalWorkouts,
+                currentStreak: user.currentStreak,
             },
         });
     } catch (error) {
@@ -99,6 +102,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                avatarUrl: user.avatarUrl,
+                totalWorkouts: user.totalWorkouts,
+                currentStreak: user.currentStreak,
             },
         });
     } catch (error) {
@@ -211,5 +217,35 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
         console.error('Google callback error:', error);
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
         res.redirect(`${clientUrl}/login?error=auth_failed`);
+    }
+};
+
+// Get current user profile (live stats)
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user!.id;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                avatarUrl: true,
+                totalWorkouts: true,
+                currentStreak: true,
+            }
+        });
+
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error('Get me error:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 };

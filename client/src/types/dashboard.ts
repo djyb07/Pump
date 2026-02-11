@@ -68,6 +68,9 @@ export interface UserInfo {
     name: string;
     email: string;
     initials: string;
+    avatarUrl?: string;
+    currentStreak: number;
+    totalWorkouts: number;
 }
 
 export interface ProcessedPR {

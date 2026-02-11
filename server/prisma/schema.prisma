@@ -19,6 +19,12 @@ model User {
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 
+  // Profile & Gamification
+  avatarUrl       String?
+  totalWorkouts   Int       @default(0)
+  currentStreak   Int       @default(0)
+  lastWorkoutDate DateTime?
+
   // Workout program relations
   workoutPrograms WorkoutProgram[]
   workoutLogs     WorkoutLog[]

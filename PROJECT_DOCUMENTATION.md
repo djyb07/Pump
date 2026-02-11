@@ -30,12 +30,14 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 - **Track workouts in real-time** with set/rep/weight logging
 - **Monitor progress** through charts and statistics
 - **Track Personal Records (PRs)** for weight, volume, and reps
+- **Gamification** — workout streaks, level progression (Novice → Regular → Pro → Elite)
 - **Authenticate** via email/password or Google OAuth
 
 **Key differentiators:**
 - Hebrew + English exercise database (100+ exercises)
 - Real-time workout tracking with rest timer
 - Personal record detection and celebration
+- Gamified dashboard with streak tracking and level badges
 - Mobile-responsive dark theme UI
 
 ---
@@ -139,7 +141,7 @@ Pump/
 │   │   │   ├── dashboard/           # Dashboard sub-components
 │   │   │   │   ├── index.ts             # Barrel export
 │   │   │   │   ├── DashboardHeader.tsx  # Legacy header (icons)
-│   │   │   │   ├── WelcomeSection.tsx   # User welcome card
+│   │   │   │   ├── WelcomeSection.tsx   # User welcome with avatar, streak & level badges
 │   │   │   │   ├── ActiveProgramCard.tsx    # Active program display
 │   │   │   │   ├── NextWorkoutCard.tsx      # Next workout card
 │   │   │   │   ├── WeekStatsCard.tsx        # Weekly statistics
@@ -170,6 +172,7 @@ Pump/
 │   │   │   ├── ForgotPassword.tsx       # Password reset request
 │   │   │   ├── Login.tsx                # Login page
 │   │   │   ├── PersonalRecordsPage.tsx  # All PRs display
+│   │   │   ├── ProfilePage.tsx          # Profile & settings placeholder
 │   │   │   ├── ProgramDetailsPage.tsx   # View/edit program
 │   │   │   ├── ProgramsPage.tsx         # List user's programs
 │   │   │   ├── Register.tsx             # Registration page
@@ -194,7 +197,7 @@ Pump/
 ├── server/                          # Express Backend Application
 │   ├── src/
 │   │   ├── controllers/             # Request Handlers
-│   │   │   ├── authController.ts        # Auth: register, login, OAuth, reset
+│   │   │   ├── authController.ts        # Auth: register, login, OAuth, reset, getMe
 │   │   │   ├── dayController.ts         # CRUD for workout days
 │   │   │   ├── exerciseController.ts    # Exercise library queries
 │   │   │   ├── migrationController.ts   # Data migration utilities
@@ -223,7 +226,8 @@ Pump/
 │   │   ├── schema.prisma            # Database schema (8 models)
 │   │   ├── seed.sql                 # 100+ exercises seed data
 │   │   └── migrations/
-│   │       └── rls_enable_policies.sql  # Supabase RLS policies
+│   │       ├── rls_enable_policies.sql  # Supabase RLS policies
+│   │       └── add_user_profile_fields.sql  # Gamification fields migration
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -280,10 +284,19 @@ model User {
   googleId             String?   @unique  // For Google OAuth users
   resetPasswordToken   String?   // JWT for password reset
   resetPasswordExpires DateTime?
+  avatarUrl            String?   // Profile picture URL
+  totalWorkouts        Int       @default(0)  // Lifetime workout count
+  currentStreak        Int       @default(0)  // Consecutive workout days
+  lastWorkoutDate      DateTime? // For streak calculation
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
 ```
+
+**Gamification Logic:**
+- `totalWorkouts` increments on each completed workout
+- `currentStreak`: same day = keep, consecutive day = +1, gap > 1 day = reset to 1
+- Level thresholds: 0–9 Novice, 10–49 Regular, 50–99 Pro, 100+ Elite
 
 #### 2. Exercise (Reference Data)
 ```prisma
@@ -417,6 +430,7 @@ model ExerciseStats {
 | POST | `/login` | Login with email/password | ❌ | 5/15min |
 | POST | `/forgot-password` | Request password reset email | ❌ | 5/15min |
 | POST | `/reset-password` | Reset password with token | ❌ | - |
+| GET | `/me` | Get current user profile (live stats) | ✅ | - |
 | GET | `/google` | Initiate Google OAuth flow | ❌ | - |
 | GET | `/google/callback` | Google OAuth callback | ❌ | - |
 
@@ -429,7 +443,10 @@ Response: { message: "User registered successfully" }
 
 // POST /api/auth/login
 Request: { email, password }
-Response: { token: "eyJhbG...", user: { id, email, firstName, lastName } }
+Response: { token: "eyJhbG...", user: { id, email, firstName, lastName, avatarUrl, totalWorkouts, currentStreak } }
+
+// GET /api/auth/me (requires Bearer token)
+Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, currentStreak } }
 ```
 
 ### Exercises (`/api/exercises`)
@@ -513,6 +530,7 @@ Response: { token: "eyJhbG...", user: { id, email, firstName, lastName } }
 | `/workout/:id` | WorkoutDetailsPage | View workout details | ✅ |
 | `/exercise/:id/progress` | ExerciseProgressPage | Progress charts | ✅ |
 | `/personal-records` | PersonalRecordsPage | All PRs display | ✅ |
+| `/profile` | ProfilePage | Profile & settings (placeholder) | ✅ |
 
 ---
 

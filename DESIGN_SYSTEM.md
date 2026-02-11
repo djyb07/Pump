@@ -94,6 +94,21 @@ These utility classes are defined in `index.css` and should be used for consiste
 }
 ```
 
+### Gamification (WelcomeSection)
+| Element | Tailwind Classes |
+|---------|-----------------|
+| **Glass Badge** | `inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/60 backdrop-blur-sm border border-white/10 text-sm` |
+| **Smart Avatar (fallback)** | `w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 ring-2 ring-lime-400/50 text-lime-400 font-bold` |
+| **Gradient Name** | `text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400` |
+
+**Level Colors:**
+| Level | Color |
+|-------|-------|
+| Novice (0–9) | `text-slate-400` |
+| Regular (10–49) | `text-sky-400` |
+| Pro (50–99) | `text-purple-400` |
+| Elite (100+) | `text-amber-400` |
+
 ---
 
 ## 4. Typography Hierarchy
@@ -198,12 +213,13 @@ All UI icons use the `lucide-react` library. **No emojis are used anywhere in th
 | `Trophy` | lucide-react | Personal records, PR badges |
 | `LogOut` | lucide-react | Logout button |
 | `Home` | lucide-react | Dashboard (legacy header) |
-| `Flame` | lucide-react | Fire/intensity |
+| `Flame` | lucide-react | Streak badge, fire/intensity |
 | `Rocket` | lucide-react | Footer branding |
 | `Heart` | lucide-react | Footer branding |
 | `Hand` | lucide-react | Welcome wave |
 | `Zap` | lucide-react | Quick actions header |
 | `TrendingUp` | lucide-react | Recent activity header |
+| `User` | lucide-react | Profile page icon |
 | `ChevronRight` | lucide-react | "View All" arrows |
 | `ChevronLeft` | lucide-react | Back / Previous buttons |
 | `Check` | lucide-react | Finish, Log Set, completion |

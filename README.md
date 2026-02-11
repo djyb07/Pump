@@ -13,6 +13,7 @@ A full-stack workout tracking application with real-time exercise logging, perso
 - Real-time workout tracking with rest timer
 - Automatic Personal Record (PR) detection
 - Progress charts and statistics
+- Gamified dashboard — workout streaks & level progression
 - Authentication (Email/Password + Google OAuth)
 - Dark theme, mobile-responsive UI
 

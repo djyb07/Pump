@@ -81,7 +81,7 @@ export const workoutService = {
     async finishWorkout(workoutLogId: string, notes?: string): Promise<WorkoutLog> {
         const response = await apiClient.patch(
             `${API_URL}/workouts/${workoutLogId}/finish`,
-            { notes }
+            { notes, localEndTime: new Date().toISOString() }
         );
         return response.data;
     },

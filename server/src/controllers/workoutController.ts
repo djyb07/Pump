@@ -52,9 +52,9 @@ export const finishWorkout = async (req: Request, res: Response) => {
     try {
         const userId = req.user!.id;
         const { id: workoutLogId } = req.params;
-        const { notes } = req.body;
+        const { notes, localEndTime } = req.body;
 
-        const workout = await workoutService.finishWorkout(workoutLogId, userId, { notes });
+        const workout = await workoutService.finishWorkout(workoutLogId, userId, { notes, localEndTime });
         res.json(workout);
     } catch (error: any) {
         console.error('Error finishing workout:', error);

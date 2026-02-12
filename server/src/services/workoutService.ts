@@ -15,6 +15,7 @@ export interface LogSetData {
 
 export interface FinishWorkoutData {
     notes?: string;
+    localEndTime?: string;
 }
 
 export const workoutService = {
@@ -174,8 +175,8 @@ export const workoutService = {
             throw new Error('Workout is not in progress');
         }
 
-        // Calculate duration
-        const endTime = new Date();
+        // Calculate duration — use client's local time if provided (avoids UTC timezone mismatch)
+        const endTime = data.localEndTime ? new Date(data.localEndTime) : new Date();
         const startTime = new Date(workoutLog.startTime); // Ensure it's a Date object
         const duration = Math.round((endTime.getTime() - startTime.getTime()) / 60000); // minutes
 
@@ -233,7 +234,8 @@ export const workoutService = {
             select: { lastWorkoutDate: true, currentStreak: true }
         });
 
-        const now = new Date();
+        // Use client-provided local time for streak week calculation to avoid UTC offset issues
+        const now = data.localEndTime ? new Date(data.localEndTime) : new Date();
 
         /**
          * Get ISO week number (Mon=start). Handles year transitions correctly.

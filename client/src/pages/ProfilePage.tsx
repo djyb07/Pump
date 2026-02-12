@@ -84,125 +84,124 @@ export default function ProfilePage() {
 
     return (
         <div className="relative z-10">
-            {/* Header spans full width with proper vertical spacing */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <UnifiedPageHeader
-                    title="Profile & Settings"
-                    showBackButton={true}
-                    icon={User}
-                />
-            </div>
+            <UnifiedPageHeader
+                title="Profile & Settings"
+                showBackButton={true}
+                icon={User}
+            />
 
-            {/* Content wrapper — centered & width-restricted */}
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-                {/* Success Toast */}
-                {success && (
-                    <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm font-medium">
-                        <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                        Profile updated successfully!
-                    </div>
-                )}
+            {/* Content — centered & width-restricted */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+                <div className="max-w-2xl mx-auto">
+                    {/* Success Toast */}
+                    {success && (
+                        <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm font-medium">
+                            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                            Profile updated successfully!
+                        </div>
+                    )}
 
-                {/* Error Toast */}
-                {error && (
-                    <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
-                        {error}
-                    </div>
-                )}
+                    {/* Error Toast */}
+                    {error && (
+                        <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
+                            {error}
+                        </div>
+                    )}
 
-                <div className="glass-card p-6 sm:p-8">
-                    {/* Avatar Preview */}
-                    <div className="flex flex-col items-center mb-8">
-                        {form.avatarUrl ? (
-                            <img
-                                src={form.avatarUrl}
-                                alt="Avatar preview"
-                                className="w-24 h-24 rounded-full object-cover ring-2 ring-lime-400/50 shadow-lg shadow-lime-400/10"
-                                onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                            />
-                        ) : (
-                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center ring-2 ring-lime-400/50 shadow-lg shadow-lime-400/10">
-                                <span className="text-lime-400 font-bold text-2xl">
-                                    {initials}
-                                </span>
-                            </div>
-                        )}
-                        <p className="text-sm text-slate-500 mt-3">Your profile photo</p>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* First & Last Name — side by side on md+ */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label htmlFor="firstName" className="block text-sm font-medium text-slate-400 mb-2">
-                                    First Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="firstName"
-                                    name="firstName"
-                                    dir="auto"
-                                    value={form.firstName}
-                                    onChange={handleChange}
-                                    placeholder="Enter your first name"
-                                    className="input-midnight w-full px-4 py-3"
-                                    required
+                    <div className="glass-card p-6 sm:p-8">
+                        {/* Avatar Preview */}
+                        <div className="flex flex-col items-center mb-8">
+                            {form.avatarUrl ? (
+                                <img
+                                    src={form.avatarUrl}
+                                    alt="Avatar preview"
+                                    className="w-24 h-24 rounded-full object-cover ring-2 ring-lime-400/50 shadow-lg shadow-lime-400/10"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
                                 />
-                            </div>
-
-                            <div>
-                                <label htmlFor="lastName" className="block text-sm font-medium text-slate-400 mb-2">
-                                    Last Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="lastName"
-                                    name="lastName"
-                                    dir="auto"
-                                    value={form.lastName}
-                                    onChange={handleChange}
-                                    placeholder="Enter your last name"
-                                    className="input-midnight w-full px-4 py-3"
-                                    required
-                                />
-                            </div>
+                            ) : (
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center ring-2 ring-lime-400/50 shadow-lg shadow-lime-400/10">
+                                    <span className="text-lime-400 font-bold text-2xl">
+                                        {initials}
+                                    </span>
+                                </div>
+                            )}
+                            <p className="text-sm text-slate-500 mt-3">Your profile photo</p>
                         </div>
 
-                        {/* Avatar URL */}
-                        <div>
-                            <label htmlFor="avatarUrl" className="flex items-center gap-2 text-sm font-medium text-slate-400 mb-2">
-                                <LinkIcon className="w-3.5 h-3.5" />
-                                Avatar URL
-                            </label>
-                            <input
-                                type="url"
-                                id="avatarUrl"
-                                name="avatarUrl"
-                                dir="auto"
-                                value={form.avatarUrl}
-                                onChange={handleChange}
-                                placeholder="https://example.com/avatar.jpg"
-                                className="input-midnight w-full px-4 py-3"
-                            />
-                            <p className="text-xs text-slate-500 mt-1.5">
-                                Paste an image URL from the web
-                            </p>
-                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* First & Last Name — side by side on md+ */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label htmlFor="firstName" className="block text-sm font-medium text-slate-400 mb-2">
+                                        First Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        name="firstName"
+                                        dir="auto"
+                                        value={form.firstName}
+                                        onChange={handleChange}
+                                        placeholder="Enter your first name"
+                                        className="input-midnight w-full px-4 py-3"
+                                        required
+                                    />
+                                </div>
 
-                        {/* Submit */}
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="btn-primary w-full flex items-center justify-center gap-2 mt-8"
-                        >
-                            <Save className="w-4 h-4" />
-                            {saving ? 'Saving...' : 'Save Changes'}
-                        </button>
-                    </form>
+                                <div>
+                                    <label htmlFor="lastName" className="block text-sm font-medium text-slate-400 mb-2">
+                                        Last Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        name="lastName"
+                                        dir="auto"
+                                        value={form.lastName}
+                                        onChange={handleChange}
+                                        placeholder="Enter your last name"
+                                        className="input-midnight w-full px-4 py-3"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Avatar URL */}
+                            <div>
+                                <label htmlFor="avatarUrl" className="flex items-center gap-2 text-sm font-medium text-slate-400 mb-2">
+                                    <LinkIcon className="w-3.5 h-3.5" />
+                                    Avatar URL
+                                </label>
+                                <input
+                                    type="url"
+                                    id="avatarUrl"
+                                    name="avatarUrl"
+                                    dir="auto"
+                                    value={form.avatarUrl}
+                                    onChange={handleChange}
+                                    placeholder="https://example.com/avatar.jpg"
+                                    className="input-midnight w-full px-4 py-3"
+                                />
+                                <p className="text-xs text-slate-500 mt-1.5">
+                                    Paste an image URL from the web
+                                </p>
+                            </div>
+
+                            {/* Submit */}
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                className="btn-primary w-full flex items-center justify-center gap-2 mt-8"
+                            >
+                                <Save className="w-4 h-4" />
+                                {saving ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

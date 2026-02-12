@@ -249,3 +249,63 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// Update user profile
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user!.id;
+        const { firstName, lastName, avatarUrl } = req.body;
+
+        // Validate fields are strings if provided
+        const updateData: Record<string, string> = {};
+
+        if (firstName !== undefined) {
+            if (typeof firstName !== 'string') {
+                res.status(400).json({ message: 'firstName must be a string' });
+                return;
+            }
+            updateData.firstName = firstName.trim();
+        }
+
+        if (lastName !== undefined) {
+            if (typeof lastName !== 'string') {
+                res.status(400).json({ message: 'lastName must be a string' });
+                return;
+            }
+            updateData.lastName = lastName.trim();
+        }
+
+        if (avatarUrl !== undefined) {
+            if (avatarUrl !== null && typeof avatarUrl !== 'string') {
+                res.status(400).json({ message: 'avatarUrl must be a string or null' });
+                return;
+            }
+            updateData.avatarUrl = avatarUrl ? avatarUrl.trim() : '';
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            res.status(400).json({ message: 'No valid fields to update' });
+            return;
+        }
+
+        const user = await prisma.user.update({
+            where: { id: userId },
+            data: updateData,
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                avatarUrl: true,
+                totalWorkouts: true,
+                currentStreak: true,
+            }
+        });
+
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+

@@ -22,8 +22,17 @@ function getUserLevel(totalWorkouts: number): { label: string; color: string } {
     return { label: 'Novice', color: 'text-slate-400' };
 }
 
+/** Time-based greeting */
+function getGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+}
+
 export function WelcomeSection({ userInfo, mounted }: WelcomeSectionProps) {
     const level = getUserLevel(userInfo.totalWorkouts);
+    const greeting = getGreeting();
 
     return (
         <div className={`mb-8 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
@@ -51,7 +60,7 @@ export function WelcomeSection({ userInfo, mounted }: WelcomeSectionProps) {
                     <div className="flex-1 min-w-0">
                         <h1 className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
-                                Welcome Back, {userInfo.name}!
+                                {greeting}, {userInfo.name}!
                             </span>
                             <Hand className="w-7 h-7 sm:w-8 sm:h-8 text-lime-400 flex-shrink-0" />
                         </h1>

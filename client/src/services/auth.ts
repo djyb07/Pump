@@ -80,3 +80,29 @@ export const resetPassword = async (token: string, newPassword: string) => {
 
     return data;
 };
+
+export const updateProfile = async (profileData: {
+    firstName?: string;
+    lastName?: string;
+    avatarUrl?: string;
+}) => {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`${AUTH_API_URL}/profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to update profile');
+    }
+
+    return data;
+};
+

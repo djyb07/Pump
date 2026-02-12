@@ -84,12 +84,14 @@ export default function ProfilePage() {
 
     return (
         <div className="relative z-10">
-            {/* Header spans full width — outside any max-w container */}
-            <UnifiedPageHeader
-                title="Profile & Settings"
-                showBackButton={true}
-                icon={User}
-            />
+            {/* Header spans full width with proper vertical spacing */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <UnifiedPageHeader
+                    title="Profile & Settings"
+                    showBackButton={true}
+                    icon={User}
+                />
+            </div>
 
             {/* Content wrapper — centered & width-restricted */}
             <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
@@ -134,33 +136,35 @@ export default function ProfilePage() {
                         {/* First & Last Name — side by side on md+ */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="firstName" className="block text-sm font-medium text-slate-400 mb-1.5">
+                                <label htmlFor="firstName" className="block text-sm font-medium text-slate-400 mb-2">
                                     First Name
                                 </label>
                                 <input
                                     type="text"
                                     id="firstName"
                                     name="firstName"
+                                    dir="auto"
                                     value={form.firstName}
                                     onChange={handleChange}
                                     placeholder="Enter your first name"
-                                    className="input-midnight w-full"
+                                    className="input-midnight w-full px-4 py-3"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="lastName" className="block text-sm font-medium text-slate-400 mb-1.5">
+                                <label htmlFor="lastName" className="block text-sm font-medium text-slate-400 mb-2">
                                     Last Name
                                 </label>
                                 <input
                                     type="text"
                                     id="lastName"
                                     name="lastName"
+                                    dir="auto"
                                     value={form.lastName}
                                     onChange={handleChange}
                                     placeholder="Enter your last name"
-                                    className="input-midnight w-full"
+                                    className="input-midnight w-full px-4 py-3"
                                     required
                                 />
                             </div>
@@ -168,7 +172,7 @@ export default function ProfilePage() {
 
                         {/* Avatar URL */}
                         <div>
-                            <label htmlFor="avatarUrl" className="flex items-center gap-2 text-sm font-medium text-slate-400 mb-1.5">
+                            <label htmlFor="avatarUrl" className="flex items-center gap-2 text-sm font-medium text-slate-400 mb-2">
                                 <LinkIcon className="w-3.5 h-3.5" />
                                 Avatar URL
                             </label>
@@ -176,10 +180,11 @@ export default function ProfilePage() {
                                 type="url"
                                 id="avatarUrl"
                                 name="avatarUrl"
+                                dir="auto"
                                 value={form.avatarUrl}
                                 onChange={handleChange}
                                 placeholder="https://example.com/avatar.jpg"
-                                className="input-midnight w-full"
+                                className="input-midnight w-full px-4 py-3"
                             />
                             <p className="text-xs text-slate-500 mt-1.5">
                                 Paste an image URL from the web

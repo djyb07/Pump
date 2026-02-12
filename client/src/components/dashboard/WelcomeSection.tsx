@@ -58,7 +58,7 @@ export function WelcomeSection({ userInfo, mounted }: WelcomeSectionProps) {
 
                     {/* Name + Badges */}
                     <div className="flex-1 min-w-0">
-                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
+                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-bold mb-2 leading-normal pb-1">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
                                 {greeting}, {userInfo.name}!
                             </span>

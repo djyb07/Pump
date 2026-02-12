@@ -84,16 +84,18 @@ export default function ProfilePage() {
 
     return (
         <div className="relative z-10">
+            {/* Header spans full width — outside any max-w container */}
             <UnifiedPageHeader
                 title="Profile & Settings"
                 showBackButton={true}
                 icon={User}
             />
 
-            <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Content wrapper — centered & width-restricted */}
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
                 {/* Success Toast */}
                 {success && (
-                    <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm font-medium animate-fade-in">
+                    <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm font-medium">
                         <CheckCircle className="w-5 h-5 flex-shrink-0" />
                         Profile updated successfully!
                     </div>
@@ -108,7 +110,7 @@ export default function ProfilePage() {
 
                 <div className="glass-card p-6 sm:p-8">
                     {/* Avatar Preview */}
-                    <div className="flex justify-center mb-8">
+                    <div className="flex flex-col items-center mb-8">
                         {form.avatarUrl ? (
                             <img
                                 src={form.avatarUrl}
@@ -125,49 +127,49 @@ export default function ProfilePage() {
                                 </span>
                             </div>
                         )}
+                        <p className="text-sm text-slate-500 mt-3">Your profile photo</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* First Name */}
-                        <div>
-                            <label htmlFor="firstName" className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
-                                <User className="w-4 h-4 text-lime-400" />
-                                First Name
-                            </label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                name="firstName"
-                                value={form.firstName}
-                                onChange={handleChange}
-                                placeholder="Enter your first name"
-                                className="input-midnight w-full"
-                                required
-                            />
-                        </div>
+                        {/* First & Last Name — side by side on md+ */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label htmlFor="firstName" className="block text-sm font-medium text-slate-400 mb-1.5">
+                                    First Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="firstName"
+                                    name="firstName"
+                                    value={form.firstName}
+                                    onChange={handleChange}
+                                    placeholder="Enter your first name"
+                                    className="input-midnight w-full"
+                                    required
+                                />
+                            </div>
 
-                        {/* Last Name */}
-                        <div>
-                            <label htmlFor="lastName" className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
-                                <User className="w-4 h-4 text-lime-400" />
-                                Last Name
-                            </label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                name="lastName"
-                                value={form.lastName}
-                                onChange={handleChange}
-                                placeholder="Enter your last name"
-                                className="input-midnight w-full"
-                                required
-                            />
+                            <div>
+                                <label htmlFor="lastName" className="block text-sm font-medium text-slate-400 mb-1.5">
+                                    Last Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="lastName"
+                                    name="lastName"
+                                    value={form.lastName}
+                                    onChange={handleChange}
+                                    placeholder="Enter your last name"
+                                    className="input-midnight w-full"
+                                    required
+                                />
+                            </div>
                         </div>
 
                         {/* Avatar URL */}
                         <div>
-                            <label htmlFor="avatarUrl" className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
-                                <LinkIcon className="w-4 h-4 text-lime-400" />
+                            <label htmlFor="avatarUrl" className="flex items-center gap-2 text-sm font-medium text-slate-400 mb-1.5">
+                                <LinkIcon className="w-3.5 h-3.5" />
                                 Avatar URL
                             </label>
                             <input
@@ -188,14 +190,14 @@ export default function ProfilePage() {
                         <button
                             type="submit"
                             disabled={saving}
-                            className="btn-primary w-full flex items-center justify-center gap-2"
+                            className="btn-primary w-full flex items-center justify-center gap-2 mt-8"
                         >
                             <Save className="w-4 h-4" />
                             {saving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </form>
                 </div>
-            </main>
+            </div>
         </div>
     );
 }

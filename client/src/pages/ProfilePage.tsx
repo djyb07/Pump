@@ -91,7 +91,7 @@ export default function ProfilePage() {
             />
 
             {/* Content — centered & width-restricted */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
                 <div className="max-w-2xl mx-auto">
                     {/* Success Toast */}
                     {success && (

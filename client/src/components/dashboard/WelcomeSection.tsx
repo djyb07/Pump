@@ -70,7 +70,7 @@ export function WelcomeSection({ userInfo, mounted }: WelcomeSectionProps) {
                             {/* Streak Badge */}
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/60 backdrop-blur-sm border border-white/10 text-sm font-medium text-slate-200">
                                 <Flame className="w-3.5 h-3.5 text-orange-400" />
-                                {userInfo.currentStreak} Day Streak
+                                {userInfo.currentStreak} Week Streak
                             </span>
 
                             {/* Level Badge */}

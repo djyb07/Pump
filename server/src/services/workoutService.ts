@@ -227,27 +227,42 @@ export const workoutService = {
         // Batch update all PR flags
         await batchUpdatePRFlags(prResults);
 
-        // --- Gamification: Update streak & totalWorkouts ---
+        // --- Gamification: Update weekly streak & totalWorkouts ---
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: { lastWorkoutDate: true, currentStreak: true }
         });
 
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+        /**
+         * Get ISO week number (Mon=start). Handles year transitions correctly.
+         * Returns { year, week } so Week 1 of 2027 !== Week 1 of 2026.
+         */
+        const getISOWeek = (date: Date): { year: number; week: number } => {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7)); // Adjust to Thursday
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+            return { year: d.getUTCFullYear(), week: weekNo };
+        };
+
+        /** Convert { year, week } to a single comparable number */
+        const weekKey = (yw: { year: number; week: number }) => yw.year * 100 + yw.week;
+
+        const currentWeek = getISOWeek(now);
         let newStreak = 1; // Default: first workout or streak reset
-        if (user?.lastWorkoutDate) {
-            const lastDate = new Date(user.lastWorkoutDate);
-            const lastDay = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
-            const diffDays = Math.round((today.getTime() - lastDay.getTime()) / 86400000);
 
-            if (diffDays === 0) {
-                newStreak = user.currentStreak; // Same day — keep streak as-is
-            } else if (diffDays === 1) {
-                newStreak = user.currentStreak + 1; // Consecutive day — increment
+        if (user?.lastWorkoutDate) {
+            const lastWeek = getISOWeek(new Date(user.lastWorkoutDate));
+            const diff = weekKey(currentWeek) - weekKey(lastWeek);
+
+            if (diff === 0) {
+                newStreak = user.currentStreak; // Same week — keep streak as-is
+            } else if (diff === 1) {
+                newStreak = user.currentStreak + 1; // Consecutive week — increment
             }
-            // else: gap > 1 day → reset to 1 (default)
+            // else: gap > 1 week → reset to 1 (default)
         }
 
         await prisma.user.update({

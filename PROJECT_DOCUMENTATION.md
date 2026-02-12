@@ -172,7 +172,7 @@ Pump/
 │   │   │   ├── ForgotPassword.tsx       # Password reset request
 │   │   │   ├── Login.tsx                # Login page
 │   │   │   ├── PersonalRecordsPage.tsx  # All PRs display
-│   │   │   ├── ProfilePage.tsx          # Profile & settings placeholder
+│   │   │   ├── ProfilePage.tsx          # Profile editor with avatar presets & custom URL
 │   │   │   ├── ProgramDetailsPage.tsx   # View/edit program
 │   │   │   ├── ProgramsPage.tsx         # List user's programs
 │   │   │   ├── Register.tsx             # Registration page
@@ -284,10 +284,10 @@ model User {
   googleId             String?   @unique  // For Google OAuth users
   resetPasswordToken   String?   // JWT for password reset
   resetPasswordExpires DateTime?
-  avatarUrl            String?   // Profile picture URL
+  avatarUrl            String?   // Profile picture URL (preset or custom)
   totalWorkouts        Int       @default(0)  // Lifetime workout count
-  currentStreak        Int       @default(0)  // Consecutive workout days
-  lastWorkoutDate      DateTime? // For streak calculation
+  currentStreak        Int       @default(0)  // Consecutive workout weeks (ISO week-based)
+  lastWorkoutDate      DateTime? // For streak calculation (client local time)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
@@ -295,8 +295,10 @@ model User {
 
 **Gamification Logic:**
 - `totalWorkouts` increments on each completed workout
-- `currentStreak`: same day = keep, consecutive day = +1, gap > 1 day = reset to 1
+- `currentStreak` uses **ISO week** numbers: same week = keep, consecutive week = +1, gap > 1 week = reset to 1
+- The week calculation uses the **client's local time** (`localEndTime`) to avoid UTC timezone mismatches
 - Level thresholds: 0–9 Novice, 10–49 Regular, 50–99 Pro, 100+ Elite
+- `avatarUrl` can be set via 6 built-in avatar presets (Initials, Gym, Runner, Weights, Yoga, Boxing) or a custom URL
 
 #### 2. Exercise (Reference Data)
 ```prisma
@@ -493,14 +495,14 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 | POST | `/:id/sets` | Log a set | ✅ |
 | PATCH | `/:id/sets/:logId/:setIndex` | Update a set | ✅ |
 | DELETE | `/:id/sets/:logId/:setIndex` | Delete a set | ✅ |
-| PATCH | `/:id/finish` | Complete workout (calculates PRs) | ✅ |
+| PATCH | `/:id/finish` | Complete workout (calculates PRs, updates streak) | ✅ |
 | GET | `/` | Get workout history | ✅ |
 | DELETE | `/:id` | Delete workout | ✅ |
 
 **Workout Flow:**
 1. `POST /start` with `{ dayId }` → returns `workoutLog` with session ID
 2. `POST /:id/sets` with `{ dayExerciseId, reps, weight }` → logs each set
-3. `PATCH /:id/finish` → calculates PRs, returns summary
+3. `PATCH /:id/finish` with `{ notes?, localEndTime }` → calculates PRs, updates streak using client's local time
 
 ### Analytics (`/api/analytics`)
 
@@ -530,7 +532,7 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 | `/workout/:id` | WorkoutDetailsPage | View workout details | ✅ |
 | `/exercise/:id/progress` | ExerciseProgressPage | Progress charts | ✅ |
 | `/personal-records` | PersonalRecordsPage | All PRs display | ✅ |
-| `/profile` | ProfilePage | Profile & settings (placeholder) | ✅ |
+| `/profile` | ProfilePage | Profile editor with avatar presets | ✅ |
 
 ---
 

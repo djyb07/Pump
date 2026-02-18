@@ -79,8 +79,8 @@ function SetOptionsMenu({
                 type="button"
                 onClick={() => setOpen(!open)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all text-sm font-medium ${setType === 'NORMAL'
-                        ? 'bg-slate-800/60 border-white/10 text-slate-400 hover:bg-slate-700/60'
-                        : `bg-slate-800/60 ${activeConfig.borderColor} ${activeConfig.color}`
+                    ? 'bg-slate-800/60 border-white/10 text-slate-400 hover:bg-slate-700/60'
+                    : `bg-slate-800/60 ${activeConfig.borderColor} ${activeConfig.color}`
                     }`}
                 title="Set options"
             >
@@ -92,14 +92,14 @@ function SetOptionsMenu({
             {open && (
                 <div
                     ref={menuRef}
-                    className="absolute left-0 top-full mt-2 z-50 w-56 glass-card p-3 space-y-3"
+                    className="absolute right-0 top-full mt-2 z-50 w-72 bg-slate-950 border border-white/10 rounded-xl shadow-2xl p-4"
                 >
                     {/* Set Type selector */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">
+                        <label className="block text-xs text-slate-400 uppercase tracking-wider mb-2">
                             Set Type
                         </label>
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-2 gap-2">
                             {(Object.keys(SET_TYPE_CONFIG) as SetType[]).map((typeKey) => {
                                 const cfg = SET_TYPE_CONFIG[typeKey];
                                 const Icon = cfg.icon;
@@ -111,9 +111,9 @@ function SetOptionsMenu({
                                         onClick={() => {
                                             onSetTypeChange(typeKey);
                                         }}
-                                        className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
-                                                ? `${cfg.color} ${cfg.borderColor} border bg-white/5`
-                                                : 'text-slate-400 border border-white/5 hover:bg-white/5'
+                                        className={`flex items-center justify-center gap-1.5 h-10 rounded-lg text-xs font-semibold transition-all border ${isActive
+                                                ? `${cfg.borderColor} bg-lime-400/10 ${cfg.color}`
+                                                : 'border-transparent bg-slate-800/50 text-slate-400 hover:bg-slate-800'
                                             }`}
                                     >
                                         <Icon className="w-3.5 h-3.5" />
@@ -125,8 +125,8 @@ function SetOptionsMenu({
                     </div>
 
                     {/* RPE Input */}
-                    <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">
+                    <div className="mt-4">
+                        <label className="block text-xs text-slate-400 uppercase tracking-wider mb-2">
                             RPE (1–10)
                         </label>
                         <input
@@ -136,7 +136,7 @@ function SetOptionsMenu({
                             max="10"
                             value={rpe}
                             onChange={handleRpeChange}
-                            className="w-full px-3 py-2 bg-slate-900/30 border border-white/10 rounded-lg text-white text-sm text-center font-semibold focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+                            className="w-full px-3 py-2 bg-slate-900/60 border border-white/10 rounded-lg text-white text-sm text-center font-semibold focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                             placeholder="—"
                         />
                     </div>

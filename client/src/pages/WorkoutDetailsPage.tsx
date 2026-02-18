@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { workoutService, type WorkoutLog } from '../services/workoutService';
 import { UnifiedPageHeader } from '../components/layout';
-import { Dumbbell, Trophy, BarChart3, Check, ChevronLeft } from 'lucide-react';
+import { Dumbbell, Trophy, BarChart3, Check, ChevronLeft, ThermometerSun, Layers, AlertCircle } from 'lucide-react';
 
 export default function WorkoutDetailsPage() {
     const navigate = useNavigate();
@@ -230,31 +230,66 @@ export default function WorkoutDetailsPage() {
                                                 <th className="text-right text-slate-400 text-sm font-medium py-2 px-3">Weight (kg)</th>
                                                 <th className="text-right text-slate-400 text-sm font-medium py-2 px-3">Reps</th>
                                                 <th className="text-right text-slate-400 text-sm font-medium py-2 px-3">Volume</th>
+                                                <th className="text-right text-slate-400 text-sm font-medium py-2 px-3">RPE</th>
                                                 <th className="text-center text-slate-400 text-sm font-medium py-2 px-3">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {sets.map((set: any, setIndex: number) => (
-                                                <tr key={setIndex} className="border-b border-white/5">
-                                                    <td className="text-slate-300 py-3 px-3">{set.setNumber || setIndex + 1}</td>
-                                                    <td className="text-white font-semibold text-right py-3 px-3">
-                                                        {set.weight || '-'}
-                                                    </td>
-                                                    <td className="text-white font-semibold text-right py-3 px-3">
-                                                        {set.reps}
-                                                    </td>
-                                                    <td className="text-slate-300 text-right py-3 px-3">
-                                                        {set.weight && set.reps ? `${(set.weight * set.reps).toFixed(0)} kg` : '-'}
-                                                    </td>
-                                                    <td className="text-center py-3 px-3">
-                                                        {set.completed !== false ? (
-                                                            <Check className="w-4 h-4 text-lime-400 mx-auto" />
-                                                        ) : (
-                                                            <span className="text-slate-500">-</span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {sets.map((set: any, setIndex: number) => {
+                                                const setTypeBadge = () => {
+                                                    const t = set.type || 'NORMAL';
+                                                    if (t === 'WARMUP') return (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20 ml-2">
+                                                            <ThermometerSun className="w-3 h-3" />Warmup
+                                                        </span>
+                                                    );
+                                                    if (t === 'DROP') return (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider font-medium bg-purple-500/10 text-purple-500 border border-purple-500/20 ml-2">
+                                                            <Layers className="w-3 h-3" />Drop
+                                                        </span>
+                                                    );
+                                                    if (t === 'FAILURE') return (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider font-medium bg-red-500/10 text-red-500 border border-red-500/20 ml-2">
+                                                            <AlertCircle className="w-3 h-3" />Failure
+                                                        </span>
+                                                    );
+                                                    return null;
+                                                };
+
+                                                return (
+                                                    <tr key={setIndex} className="border-b border-white/5">
+                                                        <td className="text-slate-300 py-3 px-3">
+                                                            <span className="inline-flex items-center">
+                                                                {set.setNumber || setIndex + 1}
+                                                                {setTypeBadge()}
+                                                            </span>
+                                                        </td>
+                                                        <td className="text-white font-semibold text-right py-3 px-3">
+                                                            {set.weight || '-'}
+                                                        </td>
+                                                        <td className="text-white font-semibold text-right py-3 px-3">
+                                                            {set.reps}
+                                                        </td>
+                                                        <td className="text-slate-300 text-right py-3 px-3">
+                                                            {set.weight && set.reps ? `${(set.weight * set.reps).toFixed(0)} kg` : '-'}
+                                                        </td>
+                                                        <td className="text-right py-3 px-3">
+                                                            {set.rpe ? (
+                                                                <span className="text-xs text-slate-500 font-mono tracking-tighter">RPE {set.rpe}</span>
+                                                            ) : (
+                                                                <span className="text-slate-600">—</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="text-center py-3 px-3">
+                                                            {set.completed !== false ? (
+                                                                <Check className="w-4 h-4 text-lime-400 mx-auto" />
+                                                            ) : (
+                                                                <span className="text-slate-500">-</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>

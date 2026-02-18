@@ -192,6 +192,7 @@ The global navigation component with hide-on-scroll behavior:
 - **Mobile**: Fixed bottom navigation bar
 - **Hide-on-scroll**: Uses `transform: translateY(-100%)` transition on scroll down
 - **Icons**: All navigation links use `lucide-react` icons (`LayoutDashboard`, `Dumbbell`, `History`, `Library`, `Trophy`)
+- **Offline Indicator**: Pulsing `WifiOff` icon (`text-red-400 animate-pulse`) appears next to logo when offline
 
 ```tsx
 // Navigation Links (lucide-react icons)
@@ -203,6 +204,15 @@ const navLinks = [
     { path: '/personal-records', label: 'PRs', icon: Trophy },
 ];
 ```
+
+### PWA Indicators
+
+| Element | Styling |
+|---------|---------|
+| **Offline Badge (desktop)** | `flex items-center gap-1 px-2 py-1 rounded-md bg-red-500/10 border border-red-500/20` |
+| **Offline Badge (mobile)** | `flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/20` |
+| **Offline Icon** | `WifiOff` — `w-3.5 h-3.5 text-red-400 animate-pulse` (desktop), `w-3 h-3` (mobile) |
+| **ReloadPrompt Toast** | `fixed bottom-24 md:bottom-6 z-[100]` — glassmorphism card with `RefreshCw` icon and lime-400 update button |
 
 ### UnifiedPageHeader
 Consistent page header for all pages:
@@ -260,6 +270,8 @@ All UI icons use the `lucide-react` library. **No emojis are used anywhere in th
 | `Library` | lucide-react | Exercise library |
 | `Trophy` | lucide-react | Personal records, PR badges |
 | `LogOut` | lucide-react | Logout button |
+| `WifiOff` | lucide-react | Offline status indicator (SmartNavbar) |
+| `RefreshCw` | lucide-react | PWA update toast icon, PPL split type |
 | `Home` | lucide-react | Dashboard (legacy header) |
 | `Flame` | lucide-react | Streak badge, fire/intensity |
 | `Rocket` | lucide-react | Footer branding |

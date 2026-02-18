@@ -58,6 +58,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 | Axios | 1.x | HTTP client with interceptors |
 | Recharts | 3.x | Progress visualization charts |
 | lucide-react | latest | Icon library (replaces all emoji usage) |
+| vite-plugin-pwa | 1.x | PWA support (Service Worker, manifest, offline caching) |
 
 ### Backend (Server)
 
@@ -137,9 +138,10 @@ Pump/
 │   │   ├── components/              # Reusable UI Components
 │   │   │   ├── layout/              # Layout & Navigation
 │   │   │   │   ├── index.ts             # Barrel export
-│   │   │   │   ├── SmartNavbar.tsx      # Sticky nav with hide-on-scroll
+│   │   │   │   ├── SmartNavbar.tsx      # Sticky nav with hide-on-scroll + offline indicator
 │   │   │   │   ├── MainLayout.tsx       # Auth wrapper with navbar
 │   │   │   │   └── UnifiedPageHeader.tsx # Consistent page headers
+│   │   │   ├── ReloadPrompt.tsx      # PWA update toast (prompt-based SW reload)
 │   │   │   ├── dashboard/           # Dashboard sub-components
 │   │   │   │   ├── index.ts             # Barrel export
 │   │   │   │   ├── DashboardHeader.tsx  # Legacy header (icons)
@@ -162,7 +164,11 @@ Pump/
 │   │   │   ├── RestTimer.tsx
 │   │   │   └── WorkoutSummaryModal.tsx
 │   │   ├── hooks/                   # Custom React Hooks
-│   │   │   └── useDashboard.ts      # Dashboard data & logic
+│   │   │   ├── useDashboard.ts      # Dashboard data & logic
+│   │   │   ├── useNetworkStatus.ts  # Reactive online/offline tracking
+│   │   │   ├── useOfflineMutation.ts # Offline mutation queue (localStorage FIFO sync)
+│   │   │   ├── useScrollDirection.ts # Scroll direction for navbar hide/show
+│   │   │   └── useWorkoutTimer.ts   # Delta-time workout timer
 │   │   ├── types/                   # TypeScript Type Definitions
 │   │   │   └── dashboard.ts         # Dashboard-related types
 │   │   ├── pages/                   # Route Page Components
@@ -191,7 +197,11 @@ Pump/
 │   │   ├── main.tsx                 # Entry point
 │   │   └── index.css                # Midnight Pro Design System (glassmorphism, utilities)
 │   ├── public/
-│   │   └── logo.png                 # App logo/favicon
+│   │   ├── logo.png                 # App logo (source)
+│   │   ├── favicon.png              # Browser tab favicon
+│   │   ├── pump-logo.png            # Navbar logo
+│   │   ├── pwa-192x192.png          # PWA icon (192×192)
+│   │   └── pwa-512x512.png          # PWA icon (512×512, maskable)
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── vercel.json                  # Vercel SPA routing config
@@ -637,6 +647,56 @@ CREATE POLICY "Users can view own programs"
 ```
 /exercises → click exercise → /exercise/:id/progress → view charts (weight over time, volume, etc.)
 ```
+
+---
+
+## Progressive Web App (PWA)
+
+PUMP is a fully offline-capable PWA powered by `vite-plugin-pwa`.
+
+### Service Worker
+
+| Feature | Strategy | Details |
+|---------|----------|---------|
+| **Registration** | `registerType: 'prompt'` | Users are prompted to update — no auto-refresh during workouts |
+| **Static Assets** (JS, CSS, Fonts) | `CacheFirst` | 30-day expiry, max 60 entries |
+| **API GET Requests** (`/api/`) | `StaleWhileRevalidate` | 24-hour expiry, max 50 entries |
+| **Precaching** | Automatic (Workbox) | All build assets precached on first visit |
+
+### Web Manifest
+
+```json
+{
+  "name": "PUMP - Fitness Tracker",
+  "short_name": "PUMP",
+  "theme_color": "#020617",
+  "background_color": "#020617",
+  "display": "standalone",
+  "icons": ["pwa-192x192.png", "pwa-512x512.png (maskable)"]
+}
+```
+
+### Offline Mutation Queue (`useOfflineMutation`)
+
+When offline, mutation requests (POST/PUT/PATCH/DELETE) are persisted to `localStorage` under `pump_syncQueue` and replayed on reconnect.
+
+```
+Online  → apiClient.request() → immediate execution
+Offline → localStorage queue → replay on `online` event or mount
+```
+
+**Queue Processing Rules (FIFO):**
+- 4xx errors → discard item (client error, won't self-heal), continue queue
+- 5xx / Network errors → stop processing, retain remaining items for next attempt
+- Sync triggers: on mount (if online) AND on `online` window event
+
+### ReloadPrompt Component
+
+A toast notification that appears when a new service worker version is available. Uses Midnight Pro glassmorphism styling and is positioned above the mobile bottom nav. The user can choose to update or dismiss.
+
+### UI Indicator
+
+`SmartNavbar` displays a pulsing `WifiOff` icon (red-400) next to the logo when the device is offline.
 
 ---
 

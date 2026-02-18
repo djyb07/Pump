@@ -157,6 +157,22 @@ Small inline pills shown next to set numbers in `WorkoutDetailsPage` for non-NOR
 | Pro (50–99) | `text-purple-400` |
 | Elite (100+) | `text-amber-400` |
 
+### Muscle Recovery Heatmap (BodyHeatmap)
+Geometric/low-poly SVG visualization of front & back body views with per-muscle recovery coloring.
+
+| Element | Tailwind Classes |
+|---------|-----------------|
+| **SVG Muscle (active)** | `fill-red-500` / `fill-amber-500` / `fill-lime-400` + `stroke-slate-600 cursor-pointer` |
+| **SVG Muscle (dim)** | `fill-red-500/60` / `fill-amber-500/60` / `fill-lime-400/20` |
+| **Detail Panel** | `bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl` |
+| **Status Badge (Recovering)** | `bg-red-500/20 text-red-400 border-red-500/30 rounded-full` |
+| **Status Badge (Resting)** | `bg-amber-500/20 text-amber-400 border-amber-500/30 rounded-full` |
+| **Status Badge (Ready)** | `bg-lime-400/20 text-lime-400 border-lime-400/30 rounded-full` |
+| **Strain Score Bar** | `h-2 bg-slate-800 rounded-full` with colored fill |
+| **Quick Overview Button** | `p-2.5 rounded-xl border bg-slate-900/30 border-white/5 hover:border-white/10` |
+
+**Interaction**: Click/tap to select muscle (no hover tooltips — mobile-first). Click outside to dismiss.
+
 ---
 
 ## 4. Typography Hierarchy
@@ -305,9 +321,10 @@ All UI icons use the `lucide-react` library. **No emojis are used anywhere in th
 | `PlusCircle` | lucide-react | Create new items |
 | `RefreshCw` | lucide-react | PPL split type |
 | `ArrowUpDown` | lucide-react | Upper/Lower split |
-| `Activity` | lucide-react | Full Body split |
+| `Activity` | lucide-react | Full Body split, Muscle Recovery header |
 | `ArrowLeftRight` | lucide-react | Push/Pull split |
 | `Settings` | lucide-react | Custom split |
+| `Clock` | lucide-react | "Last trained" in heatmap tooltip |
 
 ### Alignment Rules
 - **Buttons**: Always use `flex items-center gap-2`

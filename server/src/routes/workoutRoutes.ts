@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticateToken } from '../middleware/auth';
+import { getMuscleRecovery } from '../controllers/analyticsController';
 import {
     startWorkout,
     logSet,
@@ -36,6 +37,7 @@ router.delete('/workouts/:id', deleteWorkout);        // Delete workout
 // Analytics
 router.get('/analytics/progress/:exerciseId', getExerciseProgress);
 router.get('/analytics/personal-records', getPersonalRecords);
+router.get('/analytics/muscle-recovery', getMuscleRecovery);
 
 // Migrations
 router.post('/migrations/recalculate-prs', recalculatePRs);

@@ -10,3 +10,4 @@ export { NextWorkoutCard } from './NextWorkoutCard';
 export { WeekStatsCard } from './WeekStatsCard';
 export { RecentProgressCard } from './RecentProgressCard';
 export { RecentActivityFeed } from './RecentActivityFeed';
+export { BodyHeatmap } from './BodyHeatmap';

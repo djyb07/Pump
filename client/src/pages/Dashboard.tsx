@@ -12,7 +12,8 @@ import {
     ActiveProgramCard,
     WeekStatsCard,
     RecentProgressCard,
-    RecentActivityFeed
+    RecentActivityFeed,
+    BodyHeatmap
 } from '../components/dashboard';
 
 export default function Dashboard() {
@@ -125,6 +126,9 @@ export default function Dashboard() {
                                 />
                             </div>
                         </div>
+
+                        {/* Muscle Recovery Heatmap */}
+                        <BodyHeatmap mounted={mounted} />
 
                         {/* Recent Activity Feed - Replaces QuickActions */}
                         <RecentActivityFeed mounted={mounted} />

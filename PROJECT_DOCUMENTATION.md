@@ -151,7 +151,8 @@ Pump/
 │   │   │   │   ├── WeekStatsCard.tsx        # Weekly statistics
 │   │   │   │   ├── RecentProgressCard.tsx   # Recent PRs display
 │   │   │   │   ├── QuickActions.tsx         # Quick action tiles
-│   │   │   │   └── RecentActivityFeed.tsx   # Last 3 workouts feed
+│   │   │   │   ├── RecentActivityFeed.tsx   # Last 3 workouts feed
+│   │   │   │   └── BodyHeatmap.tsx          # Muscle recovery heatmap (SVG body front/back)
 │   │   │   ├── workout/             # Workout-specific components
 │   │   │   │   ├── WorkoutHeader.tsx
 │   │   │   │   ├── WorkoutControls.tsx
@@ -189,6 +190,7 @@ Pump/
 │   │   │   └── WorkoutHistoryPage.tsx   # Workout history list
 │   │   ├── services/                # API Client Services
 │   │   │   ├── apiClient.ts         # Axios instance with auth interceptor
+│   │   │   ├── analyticsService.ts  # Analytics API calls (muscle recovery)
 │   │   │   ├── auth.ts              # Auth API calls
 │   │   │   ├── exerciseService.ts   # Exercise API calls
 │   │   │   ├── programService.ts    # Program API calls
@@ -209,6 +211,7 @@ Pump/
 ├── server/                          # Express Backend Application
 │   ├── src/
 │   │   ├── controllers/             # Request Handlers
+│   │   │   ├── analyticsController.ts   # Muscle recovery heatmap analytics
 │   │   │   ├── authController.ts        # Auth: register, login, OAuth, reset, getMe
 │   │   │   ├── dayController.ts         # CRUD for workout days
 │   │   │   ├── exerciseController.ts    # Exercise library queries
@@ -534,6 +537,25 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 |--------|----------|-------------|------|
 | GET | `/progress/:exerciseId` | Get exercise progress over time | ✅ |
 | GET | `/personal-records` | Get all user's PRs | ✅ |
+| GET | `/muscle-recovery` | Get per-muscle recovery heatmap data (last 7 days) | ✅ |
+
+**Muscle Recovery Response:**
+```json
+{
+  "muscles": {
+    "Chest": { "totalSets": 15, "strainScore": 75, "status": "Recovering", "color": "red", "daysSinceTraining": 0.5 },
+    "Shoulders": { "totalSets": 0, "strainScore": 0, "status": "Ready", "color": "lime", "daysSinceTraining": null }
+  }
+}
+```
+
+**Display Groups:** The endpoint normalizes 25+ granular muscle names from the Exercise seed into 8 display groups: Chest, Shoulders, Arms, Upper Back, Lower Back, Core, Quads, Glutes & Hams.
+
+**Recovery Status Logic:**
+- `< 24h` since last training → `Recovering` (Red)
+- `24–48h` → `Resting` (Amber/Orange)
+- `> 48h` or never trained → `Ready` (Lime/Green)
+- Strain Score: `min(100, totalSets × 5)` — 20 sets in 7 days = max strain
 
 ---
 

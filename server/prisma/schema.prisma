@@ -25,6 +25,10 @@ model User {
   currentStreak   Int       @default(0)
   lastWorkoutDate DateTime?
 
+  // AI Coach — cached weekly report (persisted to survive server restarts)
+  aiReport     Json?
+  aiReportDate DateTime?
+
   // Workout program relations
   workoutPrograms WorkoutProgram[]
   workoutLogs     WorkoutLog[]

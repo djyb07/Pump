@@ -13,7 +13,8 @@ import {
     WeekStatsCard,
     RecentProgressCard,
     RecentActivityFeed,
-    BodyHeatmap
+    BodyHeatmap,
+    AICoachCard
 } from '../components/dashboard';
 
 export default function Dashboard() {
@@ -129,6 +130,9 @@ export default function Dashboard() {
 
                         {/* Muscle Recovery Heatmap */}
                         <BodyHeatmap mounted={mounted} />
+
+                        {/* AI Coach Analysis */}
+                        <AICoachCard mounted={mounted} />
 
                         {/* Recent Activity Feed - Replaces QuickActions */}
                         <RecentActivityFeed mounted={mounted} />

@@ -32,6 +32,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 - **Monitor progress** through charts and statistics
 - **Track Personal Records (PRs)** for weight, volume, and reps (warmup sets excluded automatically)
 - **Gamification** — workout streaks, level progression (Novice → Regular → Pro → Elite)
+- **AI Coach** — AI-powered weekly training analysis with personalized feedback
 - **Authenticate** via email/password or Google OAuth
 
 **Key differentiators:**
@@ -40,6 +41,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 - Set type classification and RPE tracking for training precision
 - Personal record detection and celebration (warmup sets excluded)
 - Gamified dashboard with streak tracking and level badges
+- AI Coach with weekly analysis (OpenAI integration, mock mode fallback)
 - Mobile-responsive dark theme UI
 
 ---
@@ -74,6 +76,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 | Nodemailer | 7.x | Email service (password reset) |
 | Helmet | latest | Security HTTP headers |
 | express-rate-limit | latest | Rate limiting middleware |
+| OpenAI | latest | AI Coach LLM integration (gpt-4o-mini) |
 
 ### Database
 
@@ -152,7 +155,8 @@ Pump/
 │   │   │   │   ├── RecentProgressCard.tsx   # Recent PRs display
 │   │   │   │   ├── QuickActions.tsx         # Quick action tiles
 │   │   │   │   ├── RecentActivityFeed.tsx   # Last 3 workouts feed
-│   │   │   │   └── BodyHeatmap.tsx          # Muscle recovery heatmap (SVG body front/back)
+│   │   │   │   ├── BodyHeatmap.tsx          # Muscle recovery heatmap (SVG body front/back)
+│   │   │   │   └── AICoachCard.tsx          # AI Coach analysis card (4-state: idle/loading/error/result)
 │   │   │   ├── workout/             # Workout-specific components
 │   │   │   │   ├── WorkoutHeader.tsx
 │   │   │   │   ├── WorkoutControls.tsx
@@ -190,6 +194,7 @@ Pump/
 │   │   │   └── WorkoutHistoryPage.tsx   # Workout history list
 │   │   ├── services/                # API Client Services
 │   │   │   ├── apiClient.ts         # Axios instance with auth interceptor
+│   │   │   ├── aiService.ts         # AI Coach API calls
 │   │   │   ├── analyticsService.ts  # Analytics API calls (muscle recovery)
 │   │   │   ├── auth.ts              # Auth API calls
 │   │   │   ├── exerciseService.ts   # Exercise API calls
@@ -211,6 +216,7 @@ Pump/
 ├── server/                          # Express Backend Application
 │   ├── src/
 │   │   ├── controllers/             # Request Handlers
+│   │   │   ├── aiController.ts          # AI Coach analysis endpoint
 │   │   │   ├── analyticsController.ts   # Muscle recovery heatmap analytics
 │   │   │   ├── authController.ts        # Auth: register, login, OAuth, reset, getMe
 │   │   │   ├── dayController.ts         # CRUD for workout days
@@ -219,6 +225,7 @@ Pump/
 │   │   │   ├── programController.ts     # CRUD for programs
 │   │   │   └── workoutController.ts     # Workout session management
 │   │   ├── routes/                  # API Route Definitions
+│   │   │   ├── aiRoutes.ts              # /api/ai/*
 │   │   │   ├── authRoutes.ts            # /api/auth/*
 │   │   │   ├── dayRoutes.ts             # /api/programs/:id/days/*
 │   │   │   ├── dayExerciseRoutes.ts     # /api/days/:id/exercises/*
@@ -226,6 +233,7 @@ Pump/
 │   │   │   ├── programRoutes.ts         # /api/programs/*
 │   │   │   └── workoutRoutes.ts         # /api/workouts/*
 │   │   ├── services/                # Business Logic Services
+│   │   │   ├── aiService.ts             # AI Coach report generation (OpenAI / mock)
 │   │   │   ├── emailService.ts          # Nodemailer email sending
 │   │   │   ├── PRService.ts             # Personal Record calculation
 │   │   │   └── workoutService.ts        # Workout session logic
@@ -303,6 +311,8 @@ model User {
   totalWorkouts        Int       @default(0)  // Lifetime workout count
   currentStreak        Int       @default(0)  // Consecutive workout weeks (ISO week-based)
   lastWorkoutDate      DateTime? // For streak calculation (client local time)
+  aiReport             Json?     // Cached AI Coach weekly analysis
+  aiReportDate         DateTime? // When AI report was last generated (24h cache)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
@@ -314,6 +324,7 @@ model User {
 - The week calculation uses the **client's local time** (`localEndTime`) to avoid UTC timezone mismatches
 - Level thresholds: 0–9 Novice, 10–49 Regular, 50–99 Pro, 100+ Elite
 - `avatarUrl` can be set via 6 built-in avatar presets (Initials, Gym, Runner, Weights, Yoga, Boxing) or a custom URL
+- `aiReport` stores the latest AI analysis JSON; `aiReportDate` is checked for 24h cache validity
 
 #### 2. Exercise (Reference Data)
 ```prisma
@@ -557,6 +568,33 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 - `> 48h` or never trained → `Ready` (Lime/Green)
 - Strain Score: `min(100, totalSets × 5)` — 20 sets in 7 days = max strain
 
+### AI Coach (`/api/ai`)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/analyze` | Generate AI analysis of last 4 weeks (24h DB-cached) | ✅ |
+
+**AI Analysis Response:**
+```json
+{
+  "report": {
+    "summary": "Overview of training period.",
+    "positive_feedback": ["What you're doing well."],
+    "areas_for_improvement": ["Areas that need attention."],
+    "actionable_tips": ["Concrete recommendations."]
+  },
+  "cached": false,
+  "generatedAt": "2026-02-18T15:00:00.000Z"
+}
+```
+
+**Behavior:**
+- Checks `User.aiReportDate` — if < 24h old, returns cached `User.aiReport` instantly
+- Otherwise fetches last 4 weeks of `WorkoutLog` (completed), minifies data, calls OpenAI (gpt-4o-mini)
+- **Mock mode**: If `OPENAI_API_KEY` is not set, returns a demo report after 2s delay
+- **Data safety**: User notes are sanitized (HTML/script tags stripped) before sending to LLM
+- Returns 400 if no completed workouts exist
+
 ---
 
 ## Frontend Routes
@@ -739,6 +777,7 @@ PORT=5000
 ```env
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-xxx
+OPENAI_API_KEY=sk-...                       # AI Coach (falls back to mock mode if missing)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com

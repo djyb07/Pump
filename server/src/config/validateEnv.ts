@@ -34,6 +34,13 @@ export function validateRequiredEnv(): void {
             'Consider using a longer secret for better security.'
         );
     }
+
+    // Optional: OPENAI_API_KEY — AI Coach will fall back to mock mode without it
+    if (!process.env.OPENAI_API_KEY) {
+        console.warn(
+            'INFO: OPENAI_API_KEY is not set. AI Coach will run in mock/demo mode.'
+        );
+    }
 }
 
 /**

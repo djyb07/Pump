@@ -173,6 +173,30 @@ Geometric/low-poly SVG visualization of front & back body views with per-muscle 
 
 **Interaction**: Click/tap to select muscle (no hover tooltips — mobile-first). Click outside to dismiss.
 
+### AI Coach Card (AICoachCard)
+Dashboard glass-card for AI-powered workout analysis. Four visual states:
+
+| State | Key Elements |
+|-------|--------------|
+| **Idle** | `btn-hero` with `Sparkles` icon — "Generate Weekly Analysis" |
+| **Loading** | Pulsing `Brain` icon (`animate-pulse`), cycling messages every 3s, skeleton bars |
+| **Error** | `AlertCircle` icon (`text-red-400`), error message, "Try Again" `btn-secondary` |
+| **Result** | Formatted report with color-coded sections (see below) |
+
+**Result Section Colors:**
+| Section | Header Color | Icon |
+|---------|-------------|------|
+| Summary | — | Italic text with `border-l-2 border-lime-400/30` left border |
+| Positive Feedback | `text-emerald-400` | `CheckCircle` |
+| Areas for Improvement | `text-amber-400` | `AlertTriangle` |
+| Actionable Tips | `text-sky-400` | `Lightbulb` |
+
+**Loading Messages** (cycle every 3s):
+1. "Crunching your workout numbers..."
+2. "Checking for progressive overload..."
+3. "Identifying weak points..."
+4. "Formulating plan..."
+
 ---
 
 ## 4. Typography Hierarchy
@@ -325,6 +349,9 @@ All UI icons use the `lucide-react` library. **No emojis are used anywhere in th
 | `ArrowLeftRight` | lucide-react | Push/Pull split |
 | `Settings` | lucide-react | Custom split |
 | `Clock` | lucide-react | "Last trained" in heatmap tooltip |
+| `Brain` | lucide-react | AI Coach header, loading animation |
+| `Sparkles` | lucide-react | AI Coach "Generate" CTA button |
+| `Lightbulb` | lucide-react | AI Coach actionable tips section |
 
 ### Alignment Rules
 - **Buttons**: Always use `flex items-center gap-2`

@@ -9,6 +9,7 @@ import programRoutes from './routes/programRoutes';
 import dayRoutes from './routes/dayRoutes';
 import dayExerciseRoutes from './routes/dayExerciseRoutes';
 import workoutRoutes from './routes/workoutRoutes';
+import aiRoutes from './routes/aiRoutes';
 import prisma from './prisma';
 import './config/passport';
 import passport from 'passport';
@@ -57,6 +58,7 @@ app.use('/api/programs', programRoutes);
 app.use('/api', dayRoutes);
 app.use('/api', dayExerciseRoutes);
 app.use('/api', workoutRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/', (req, res) => {
     res.send('PUMP API is running');

@@ -11,3 +11,4 @@ export { WeekStatsCard } from './WeekStatsCard';
 export { RecentProgressCard } from './RecentProgressCard';
 export { RecentActivityFeed } from './RecentActivityFeed';
 export { BodyHeatmap } from './BodyHeatmap';
+export { AICoachCard } from './AICoachCard';

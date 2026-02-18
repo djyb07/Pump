@@ -31,12 +31,16 @@ export interface ExerciseLog {
     dayExercise?: any;
 }
 
+export type SetType = 'NORMAL' | 'WARMUP' | 'DROP' | 'FAILURE';
+
 export interface SetLog {
     setNumber: number;
     weight?: number;
     reps: number;
     completed: boolean;
     timestamp: string;
+    type: SetType;
+    rpe?: number;
 }
 
 export const workoutService = {
@@ -68,11 +72,13 @@ export const workoutService = {
         dayExerciseId: string,
         reps: number,
         weight?: number,
-        completed: boolean = true
+        completed: boolean = true,
+        type: SetType = 'NORMAL',
+        rpe?: number
     ): Promise<ExerciseLog> {
         const response = await apiClient.post(
             `${API_URL}/workouts/${workoutLogId}/sets`,
-            { dayExerciseId, reps, weight, completed }
+            { dayExerciseId, reps, weight, completed, type, rpe }
         );
         return response.data;
     },
@@ -110,11 +116,13 @@ export const workoutService = {
         exerciseLogId: string,
         setIndex: number,
         reps: number,
-        weight?: number
+        weight?: number,
+        type: SetType = 'NORMAL',
+        rpe?: number
     ): Promise<ExerciseLog> {
         const response = await apiClient.patch(
             `${API_URL}/workouts/${workoutLogId}/sets/${exerciseLogId}/${setIndex}`,
-            { reps, weight }
+            { reps, weight, type, rpe }
         );
         return response.data;
     },

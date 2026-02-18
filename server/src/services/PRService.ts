@@ -11,6 +11,8 @@ export interface SetData {
     weight?: number;
     reps?: number;
     completed?: boolean;
+    type?: string;
+    rpe?: number;
 }
 
 export interface PRResult {
@@ -22,28 +24,44 @@ export interface PRResult {
 export interface ExerciseMetrics {
     maxWeight: number;
     totalVolume: number;
+    effectiveVolume: number;
     maxReps: number;
 }
 
 /**
- * Calculate metrics from a set of exercise sets
+ * Calculate metrics from a set of exercise sets.
+ * - totalVolume includes ALL sets (for display / workout summary).
+ * - effectiveVolume, maxWeight, maxReps exclude WARMUP sets (for PR detection).
  */
 export function calculateExerciseMetrics(sets: SetData[]): ExerciseMetrics {
     if (!sets || sets.length === 0) {
-        return { maxWeight: 0, totalVolume: 0, maxReps: 0 };
+        return { maxWeight: 0, totalVolume: 0, effectiveVolume: 0, maxReps: 0 };
     }
 
-    const maxWeight = Math.max(...sets.map(s => s.weight || 0));
+    // Total volume includes every set (warmup included)
     const totalVolume = sets.reduce((sum, s) =>
         sum + (s.weight || 0) * (s.reps || 0), 0
     );
-    const maxReps = Math.max(...sets.map(s => s.reps || 0));
 
-    return { maxWeight, totalVolume, maxReps };
+    // Working sets = everything except WARMUP (for PRs / stats)
+    const workingSets = sets.filter(s => (s.type || 'NORMAL') !== 'WARMUP');
+
+    if (workingSets.length === 0) {
+        return { maxWeight: 0, totalVolume, effectiveVolume: 0, maxReps: 0 };
+    }
+
+    const maxWeight = Math.max(...workingSets.map(s => s.weight || 0));
+    const effectiveVolume = workingSets.reduce((sum, s) =>
+        sum + (s.weight || 0) * (s.reps || 0), 0
+    );
+    const maxReps = Math.max(...workingSets.map(s => s.reps || 0));
+
+    return { maxWeight, totalVolume, effectiveVolume, maxReps };
 }
 
 /**
- * Determine if new metrics beat previous metrics
+ * Determine if new metrics beat previous metrics.
+ * Uses effectiveVolume (excludes warmup) for volume PR comparison.
  */
 export function isPR(
     current: ExerciseMetrics,
@@ -51,7 +69,7 @@ export function isPR(
 ): PRResult {
     return {
         isWeightPR: current.maxWeight > previous.maxWeight && current.maxWeight > 0,
-        isVolumePR: current.totalVolume > previous.totalVolume && current.totalVolume > 0,
+        isVolumePR: current.effectiveVolume > previous.effectiveVolume && current.effectiveVolume > 0,
         isRepsPR: current.maxReps > previous.maxReps && current.maxReps > 0
     };
 }
@@ -106,13 +124,14 @@ export async function calculatePRsForExerciseLogs(
 
         // Get best previous metrics for this exercise
         const previousLogs = previousLogsByExercise.get(exerciseLog.exerciseId) || [];
-        let bestPreviousMetrics: ExerciseMetrics = { maxWeight: 0, totalVolume: 0, maxReps: 0 };
+        let bestPreviousMetrics: ExerciseMetrics = { maxWeight: 0, totalVolume: 0, effectiveVolume: 0, maxReps: 0 };
 
         for (const prevLog of previousLogs) {
             const prevMetrics = calculateExerciseMetrics(prevLog.sets);
             bestPreviousMetrics = {
                 maxWeight: Math.max(bestPreviousMetrics.maxWeight, prevMetrics.maxWeight),
                 totalVolume: Math.max(bestPreviousMetrics.totalVolume, prevMetrics.totalVolume),
+                effectiveVolume: Math.max(bestPreviousMetrics.effectiveVolume, prevMetrics.effectiveVolume),
                 maxReps: Math.max(bestPreviousMetrics.maxReps, prevMetrics.maxReps)
             };
         }
@@ -121,7 +140,7 @@ export async function calculatePRsForExerciseLogs(
         if (previousLogs.length === 0) {
             results.set(exerciseLog.id, {
                 isWeightPR: currentMetrics.maxWeight > 0,
-                isVolumePR: currentMetrics.totalVolume > 0,
+                isVolumePR: currentMetrics.effectiveVolume > 0,
                 isRepsPR: currentMetrics.maxReps > 0
             });
         } else {

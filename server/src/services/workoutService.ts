@@ -11,6 +11,8 @@ export interface LogSetData {
     weight?: number;
     reps: number;
     completed: boolean;
+    type?: string;
+    rpe?: number;
 }
 
 export interface FinishWorkoutData {
@@ -116,6 +118,8 @@ export const workoutService = {
                     weight: setData.weight,
                     reps: setData.reps,
                     completed: setData.completed,
+                    type: setData.type || 'NORMAL',
+                    rpe: setData.rpe,
                     timestamp: new Date().toISOString()
                 }
             ];
@@ -146,6 +150,8 @@ export const workoutService = {
                             weight: setData.weight,
                             reps: setData.reps,
                             completed: setData.completed,
+                            type: setData.type || 'NORMAL',
+                            rpe: setData.rpe,
                             timestamp: new Date().toISOString()
                         }
                     ]

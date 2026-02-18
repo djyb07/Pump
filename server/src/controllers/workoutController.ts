@@ -27,17 +27,27 @@ export const logSet = async (req: Request, res: Response) => {
     try {
         const userId = req.user!.id;
         const { id: workoutLogId } = req.params;
-        const { dayExerciseId, weight, reps, completed } = req.body;
+        const { dayExerciseId, weight, reps, completed, type, rpe } = req.body;
 
         if (!dayExerciseId || reps === undefined) {
             return res.status(400).json({ error: 'dayExerciseId and reps are required' });
+        }
+
+        // Validate RPE if provided
+        if (rpe !== undefined && rpe !== null) {
+            const rpeNum = Number(rpe);
+            if (!Number.isInteger(rpeNum) || rpeNum < 1 || rpeNum > 10) {
+                return res.status(400).json({ error: 'RPE must be an integer between 1 and 10' });
+            }
         }
 
         const exerciseLog = await workoutService.logSet(workoutLogId, userId, {
             dayExerciseId,
             weight,
             reps,
-            completed: completed ?? true
+            completed: completed ?? true,
+            type: type || 'NORMAL',
+            rpe: rpe !== undefined && rpe !== null ? Number(rpe) : undefined
         });
 
         res.json(exerciseLog);
@@ -145,16 +155,17 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
             }
         });
 
-        // Calculate stats including e1RM
+        // Calculate stats including e1RM — exclude WARMUP sets from stats
         const progressData = logs.map(log => {
             const sets = log.sets as any[];
-            const maxWeight = Math.max(...sets.map((s: any) => s.weight || 0));
-            const totalReps = sets.reduce((sum: number, s: any) => sum + (s.reps || 0), 0);
-            const totalVolume = sets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
+            const workingSets = sets.filter((s: any) => (s.type || 'NORMAL') !== 'WARMUP');
+            const maxWeight = workingSets.length > 0 ? Math.max(...workingSets.map((s: any) => s.weight || 0)) : 0;
+            const totalReps = workingSets.reduce((sum: number, s: any) => sum + (s.reps || 0), 0);
+            const totalVolume = workingSets.reduce((sum: number, s: any) => sum + (s.weight || 0) * (s.reps || 0), 0);
 
-            // Calculate e1RM (Epley formula) from best set
+            // Calculate e1RM (Epley formula) from best working set
             let bestE1RM = 0;
-            sets.forEach((s: any) => {
+            workingSets.forEach((s: any) => {
                 if (s.weight && s.reps) {
                     const e1rm = s.weight * (1 + s.reps / 30);
                     if (e1rm > bestE1RM) bestE1RM = e1rm;
@@ -166,7 +177,7 @@ export const getExerciseProgress = async (req: Request, res: Response) => {
                 maxWeight,
                 totalReps,
                 totalVolume,
-                sets: sets.length,
+                sets: workingSets.length,
                 e1RM: Math.round(bestE1RM * 10) / 10 // Round to 1 decimal
             };
         });
@@ -348,10 +359,11 @@ export const deleteWorkout = async (req: Request, res: Response) => {
             let bestReps = 0;
             let bestRepsDate: Date | null = null;
 
-            // Calculate new PRs
+            // Calculate new PRs — exclude WARMUP sets
             logs.forEach(log => {
                 const sets = log.sets as any[];
-                sets.forEach(set => {
+                const workingSets = sets.filter((set: any) => (set.type || 'NORMAL') !== 'WARMUP');
+                workingSets.forEach(set => {
                     if (set.weight && set.reps) {
                         // Weight PR
                         if (set.weight > bestWeight) {
@@ -368,8 +380,8 @@ export const deleteWorkout = async (req: Request, res: Response) => {
                     }
                 });
 
-                // Total volume for this exercise log
-                const totalVolume = sets.reduce((sum, set) => {
+                // Total volume for this exercise log (working sets only)
+                const totalVolume = workingSets.reduce((sum: number, set: any) => {
                     return sum + (set.weight && set.reps ? set.weight * set.reps : 0);
                 }, 0);
 
@@ -425,10 +437,18 @@ export const updateSet = async (req: Request, res: Response) => {
     try {
         const userId = req.user!.id;
         const { workoutLogId, exerciseLogId, setIndex } = req.params;
-        const { weight, reps } = req.body;
+        const { weight, reps, type, rpe } = req.body;
 
         if (reps === undefined) {
             return res.status(400).json({ error: 'reps is required' });
+        }
+
+        // Validate RPE if provided
+        if (rpe !== undefined && rpe !== null) {
+            const rpeNum = Number(rpe);
+            if (!Number.isInteger(rpeNum) || rpeNum < 1 || rpeNum > 10) {
+                return res.status(400).json({ error: 'RPE must be an integer between 1 and 10' });
+            }
         }
 
         const setIdx = parseInt(setIndex);
@@ -470,7 +490,9 @@ export const updateSet = async (req: Request, res: Response) => {
         updatedSets[setIdx] = {
             ...updatedSets[setIdx],
             weight: weight ?? updatedSets[setIdx].weight,
-            reps
+            reps,
+            type: type || updatedSets[setIdx].type || 'NORMAL',
+            rpe: rpe !== undefined && rpe !== null ? Number(rpe) : updatedSets[setIdx].rpe
         };
 
         // Update in database

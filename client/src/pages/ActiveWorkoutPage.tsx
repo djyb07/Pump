@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useWorkoutTimer } from '../hooks/useWorkoutTimer';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { workoutService, type WorkoutLog, type SetLog } from '../services/workoutService';
+import { workoutService, type WorkoutLog, type SetLog, type SetType } from '../services/workoutService';
 import { exerciseService, type Exercise } from '../services/exerciseService';
 import RestTimer from '../components/RestTimer';
 import WorkoutSummaryModal from '../components/WorkoutSummaryModal';
@@ -22,6 +22,8 @@ export default function ActiveWorkoutPage() {
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [reps, setReps] = useState('');
     const [weight, setWeight] = useState('');
+    const [setType, setSetType] = useState<SetType>('NORMAL');
+    const [rpe, setRpe] = useState('');
     const [showSummary, setShowSummary] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
     const [finishedWorkout, setFinishedWorkout] = useState<WorkoutLog | null>(null);
@@ -80,7 +82,10 @@ export default function ActiveWorkoutPage() {
                 workout.id,
                 currentExercise.id,
                 parseInt(reps),
-                weight ? parseFloat(weight) : undefined
+                weight ? parseFloat(weight) : undefined,
+                true,
+                setType,
+                rpe ? parseInt(rpe) : undefined
             );
 
             // Reload workout to get updated data
@@ -90,6 +95,8 @@ export default function ActiveWorkoutPage() {
             // Clear inputs
             setReps('');
             setWeight('');
+            setSetType('NORMAL');
+            setRpe('');
         } catch (err: any) {
             setError(err.response?.data?.error || 'Failed to log set');
         }
@@ -118,6 +125,8 @@ export default function ActiveWorkoutPage() {
         setEditingSet({ exerciseLogId, setIndex });
         setReps(set.reps.toString());
         setWeight(set.weight ? set.weight.toString() : '');
+        setSetType((set.type as SetType) || 'NORMAL');
+        setRpe(set.rpe ? set.rpe.toString() : '');
     };
 
     const confirmEdit = () => {
@@ -130,6 +139,8 @@ export default function ActiveWorkoutPage() {
         setEditingSet(null);
         setReps('');
         setWeight('');
+        setSetType('NORMAL');
+        setRpe('');
     };
 
     // Handle update set (when in edit mode)
@@ -145,7 +156,9 @@ export default function ActiveWorkoutPage() {
                 editingSet.exerciseLogId,
                 editingSet.setIndex,
                 repsNum,
-                weightNum
+                weightNum,
+                setType,
+                rpe ? parseInt(rpe) : undefined
             );
 
             // Reload workout to get updated data
@@ -156,6 +169,8 @@ export default function ActiveWorkoutPage() {
             setEditingSet(null);
             setReps('');
             setWeight('');
+            setSetType('NORMAL');
+            setRpe('');
         } catch (err: any) {
             setError(err.response?.data?.error || 'Failed to update set');
         }
@@ -269,15 +284,21 @@ export default function ActiveWorkoutPage() {
                             editingSetIndex={editingSet?.setIndex ?? null}
                             reps={reps}
                             weight={weight}
+                            setType={setType}
+                            rpe={rpe}
                             exerciseLogId={currentExerciseLog?.id || null}
                             onRepsChange={setReps}
                             onWeightChange={setWeight}
+                            onSetTypeChange={setSetType}
+                            onRpeChange={setRpe}
                             onLogSet={handleLogSet}
                             onUpdateSet={handleUpdateSet}
                             onCancelEdit={() => {
                                 setEditingSet(null);
                                 setReps('');
                                 setWeight('');
+                                setSetType('NORMAL');
+                                setRpe('');
                             }}
                             onEditSet={handleEditSet}
                             onRequestDelete={handleRequestDelete}

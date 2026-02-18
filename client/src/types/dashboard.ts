@@ -41,9 +41,13 @@ export interface ExerciseLogEntry {
     isRepsPR?: boolean;
 }
 
+export type SetType = 'NORMAL' | 'WARMUP' | 'DROP' | 'FAILURE';
+
 export interface SetEntry {
     weight?: number;
     reps?: number;
+    type?: SetType;
+    rpe?: number;
 }
 
 export interface ExercisePR {

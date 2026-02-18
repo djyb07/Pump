@@ -34,6 +34,14 @@
 | **Lime** | `text-lime-400` | Primary text highlight, active icons, checks. |
 | **Glow** | `shadow-lime-400/20` | Subtle glow for active elements and hero buttons. |
 
+### Set Type Accents
+| Type | Border | Text | Badge BG | Icon |
+|------|--------|------|----------|------|
+| **Normal** | `border-lime-400` | `text-lime-400` | — | `Dumbbell` |
+| **Warmup** | `border-amber-400` | `text-amber-400` | `bg-amber-500/10` | `ThermometerSun` |
+| **Dropset** | `border-purple-400` | `text-purple-400` | `bg-purple-500/10` | `Layers` |
+| **Failure** | `border-red-400` | `text-red-400` | `bg-red-500/10` | `AlertCircle` |
+
 ### Text
 | Token | Tailwind Class | Usage |
 |-------|----------------|-------|
@@ -91,6 +99,46 @@ These utility classes are defined in `index.css` and should be used for consiste
 .input-midnight {
     @apply bg-slate-900/30 border border-white/10 rounded-lg text-white placeholder-slate-500 
     focus:outline-none focus:border-lime-400/50 focus:ring-1 focus:ring-lime-400/30 transition-colors backdrop-blur-sm;
+}
+```
+
+### Set Options Menu (Popover)
+A mobile-first popover that opens from the set logger header. Contains a 2×2 grid of set type pills and an RPE number input.
+```css
+/* Popover Container */
+.set-options-popover {
+    /* absolute right-0 top-full mt-2 z-50 */
+    @apply w-72 bg-slate-950 border border-white/10 rounded-xl shadow-2xl p-4;
+}
+
+/* Type Pill - Active */
+.set-type-pill-active {
+    @apply flex items-center justify-center gap-1.5 h-10 rounded-lg text-xs font-semibold
+        border bg-lime-400/10; /* + dynamic border/text color from Set Type Accents */
+}
+
+/* Type Pill - Inactive */
+.set-type-pill-inactive {
+    @apply flex items-center justify-center gap-1.5 h-10 rounded-lg text-xs font-semibold
+        border-transparent bg-slate-800/50 text-slate-400 hover:bg-slate-800;
+}
+```
+
+### Set Type Badges (History View)
+Small inline pills shown next to set numbers in `WorkoutDetailsPage` for non-NORMAL sets.
+```css
+/* Badge pill (10px text, inline-flex) */
+.set-type-badge {
+    @apply inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded
+        uppercase tracking-wider font-medium ml-2;
+    /* Warmup: bg-amber-500/10 text-amber-500 border border-amber-500/20 */
+    /* Drop:   bg-purple-500/10 text-purple-500 border border-purple-500/20 */
+    /* Failure: bg-red-500/10 text-red-500 border border-red-500/20 */
+}
+
+/* RPE indicator (history table) */
+.rpe-indicator {
+    @apply text-xs text-slate-500 font-mono tracking-tighter; /* e.g. "RPE 8" */
 }
 ```
 
@@ -235,6 +283,10 @@ All UI icons use the `lucide-react` library. **No emojis are used anywhere in th
 | `SkipForward` | lucide-react | Timer skip |
 | `Pencil` | lucide-react | Edit set |
 | `Trash2` | lucide-react | Delete set/item |
+| `MoreVertical` | lucide-react | Set options menu trigger |
+| `ThermometerSun` | lucide-react | Warmup set type indicator |
+| `Layers` | lucide-react | Dropset type indicator |
+| `AlertCircle` | lucide-react | Failure set type indicator |
 | `Info` | lucide-react | Exercise info |
 | `Video` | lucide-react | How-to-perform section |
 | `Wrench` | lucide-react | Equipment tags |

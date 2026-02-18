@@ -28,15 +28,17 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 
 - **Create workout programs** with customizable days (Push/Pull/Legs, Upper/Lower, etc.)
 - **Track workouts in real-time** with set/rep/weight logging
+- **Advanced set types** — Normal, Warmup, Dropset, Failure — with per-set RPE (Rate of Perceived Exertion, 1–10)
 - **Monitor progress** through charts and statistics
-- **Track Personal Records (PRs)** for weight, volume, and reps
+- **Track Personal Records (PRs)** for weight, volume, and reps (warmup sets excluded automatically)
 - **Gamification** — workout streaks, level progression (Novice → Regular → Pro → Elite)
 - **Authenticate** via email/password or Google OAuth
 
 **Key differentiators:**
 - Hebrew + English exercise database (100+ exercises)
 - Real-time workout tracking with rest timer
-- Personal record detection and celebration
+- Set type classification and RPE tracking for training precision
+- Personal record detection and celebration (warmup sets excluded)
 - Gamified dashboard with streak tracking and level badges
 - Mobile-responsive dark theme UI
 
@@ -151,7 +153,7 @@ Pump/
 │   │   │   ├── workout/             # Workout-specific components
 │   │   │   │   ├── WorkoutHeader.tsx
 │   │   │   │   ├── WorkoutControls.tsx
-│   │   │   │   └── ExerciseSetList.tsx
+│   │   │   │   └── ExerciseSetList.tsx    # Set logger with type selector popover & RPE input
 │   │   │   ├── AddDayModal.tsx
 │   │   │   ├── ConfirmModal.tsx
 │   │   │   ├── EditExerciseModal.tsx
@@ -378,7 +380,7 @@ model ExerciseLog {
   dayExerciseId String?
   exerciseId    String
   exerciseName  String  // Preserved for history
-  sets          Json    // [{ setNumber, weight, reps, completed, timestamp }]
+  sets          Json    // [{ setNumber, weight, reps, completed, type, rpe?, timestamp }]
   isWeightPR    Boolean @default(false)
   isVolumePR    Boolean @default(false)
   isRepsPR      Boolean @default(false)
@@ -389,10 +391,16 @@ model ExerciseLog {
 **Sets JSON Structure:**
 ```json
 [
-  { "setNumber": 1, "weight": 100, "reps": 10, "completed": true, "timestamp": "..." },
-  { "setNumber": 2, "weight": 100, "reps": 8, "completed": true, "timestamp": "..." }
+  { "setNumber": 1, "weight": 60, "reps": 12, "completed": true, "type": "WARMUP", "timestamp": "..." },
+  { "setNumber": 2, "weight": 100, "reps": 10, "completed": true, "type": "NORMAL", "rpe": 7, "timestamp": "..." },
+  { "setNumber": 3, "weight": 100, "reps": 8, "completed": true, "type": "NORMAL", "rpe": 9, "timestamp": "..." },
+  { "setNumber": 4, "weight": 80, "reps": 10, "completed": true, "type": "DROP", "rpe": 8, "timestamp": "..." }
 ]
 ```
+
+**Set Types:** `NORMAL` (default), `WARMUP`, `DROP`, `FAILURE`
+**RPE:** Optional integer 1–10 (Rate of Perceived Exertion). Validated server-side.
+**Backward Compatibility:** Missing `type` defaults to `NORMAL`. No DB migration needed.
 
 #### 8. ExerciseStats (Cached Statistics)
 ```prisma
@@ -501,8 +509,14 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 
 **Workout Flow:**
 1. `POST /start` with `{ dayId }` → returns `workoutLog` with session ID
-2. `POST /:id/sets` with `{ dayExerciseId, reps, weight }` → logs each set
-3. `PATCH /:id/finish` with `{ notes?, localEndTime }` → calculates PRs, updates streak using client's local time
+2. `POST /:id/sets` with `{ dayExerciseId, reps, weight, type?, rpe? }` → logs each set (type defaults to `NORMAL`, RPE validated 1–10)
+3. `PATCH /:id/sets/:logId/:setIndex` with `{ reps, weight, type?, rpe? }` → update an existing set
+4. `PATCH /:id/finish` with `{ notes?, localEndTime }` → calculates PRs (excluding `WARMUP` sets), updates streak
+
+**PR Calculation Logic:**
+- `WARMUP` sets are excluded from maxWeight, maxReps, effectiveVolume, and e1RM calculations
+- `totalVolume` (used in workout summary) includes all sets; `effectiveVolume` (used for volume PRs) excludes warmup
+- This exclusion applies across `PRService`, `getExerciseProgress`, and `deleteWorkout` PR recalculation
 
 ### Analytics (`/api/analytics`)
 

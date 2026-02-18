@@ -9,8 +9,9 @@
  */
 
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Dumbbell, History, Library, Trophy, LogOut, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, History, Library, Trophy, LogOut, WifiOff, type LucideIcon } from 'lucide-react';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
+import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 
 interface SmartNavbarProps {
     onLogout: () => void;
@@ -34,6 +35,7 @@ export function SmartNavbar({ onLogout }: SmartNavbarProps) {
     const location = useLocation();
     const navigate = useNavigate();
     const isVisible = useScrollDirection();
+    const { isOnline } = useNetworkStatus();
 
     const isActive = (path: string) => {
         if (path === '/dashboard') {
@@ -55,12 +57,20 @@ export function SmartNavbar({ onLogout }: SmartNavbarProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
-                        <button
-                            onClick={() => navigate('/dashboard')}
-                            className="flex items-center hover:opacity-80 transition-opacity"
-                        >
-                            <img src="/pump-logo.png" alt="PUMP" className="h-14 w-auto" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                className="flex items-center hover:opacity-80 transition-opacity"
+                            >
+                                <img src="/pump-logo.png" alt="PUMP" className="h-14 w-auto" />
+                            </button>
+                            {!isOnline && (
+                                <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-500/10 border border-red-500/20" title="You are offline">
+                                    <WifiOff className="w-3.5 h-3.5 text-red-400 animate-pulse" />
+                                    <span className="text-[10px] font-medium text-red-400 hidden lg:inline">Offline</span>
+                                </span>
+                            )}
+                        </div>
 
                         {/* Navigation Links */}
                         <nav className="flex items-center space-x-1">
@@ -103,12 +113,19 @@ export function SmartNavbar({ onLogout }: SmartNavbarProps) {
                     md:hidden`}
             >
                 <div className="flex items-center justify-between px-4 h-14">
-                    <button
-                        onClick={() => navigate('/dashboard')}
-                        className="flex items-center"
-                    >
-                        <img src="/pump-logo.png" alt="PUMP" className="h-10 w-auto" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => navigate('/dashboard')}
+                            className="flex items-center"
+                        >
+                            <img src="/pump-logo.png" alt="PUMP" className="h-10 w-auto" />
+                        </button>
+                        {!isOnline && (
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/20" title="You are offline">
+                                <WifiOff className="w-3 h-3 text-red-400 animate-pulse" />
+                            </span>
+                        )}
+                    </div>
                     <button
                         onClick={onLogout}
                         className="flex items-center justify-center p-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/60 border border-white/5 text-slate-300"

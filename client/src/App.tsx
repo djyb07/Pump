@@ -16,6 +16,7 @@ import ExerciseProgressPage from './pages/ExerciseProgressPage';
 import PersonalRecordsPage from './pages/PersonalRecordsPage';
 import ProfilePage from './pages/ProfilePage';
 import { MainLayout } from './components/layout';
+import { ReloadPrompt } from './components/ReloadPrompt';
 
 // Check if JWT is expired (client-side, no API call)
 const isTokenExpired = (token: string): boolean => {
@@ -89,6 +90,7 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <Router>
+      <ReloadPrompt />
       <AppLayout>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

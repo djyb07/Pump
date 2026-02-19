@@ -35,10 +35,10 @@ export function validateRequiredEnv(): void {
         );
     }
 
-    // Optional: GEMINI_API_KEY — AI Coach will fall back to mock mode without it
-    if (!process.env.GEMINI_API_KEY) {
+    // Optional: GROQ_API_KEY — AI Coach will fall back to mock mode without it
+    if (!process.env.GROQ_API_KEY) {
         console.warn(
-            'INFO: GEMINI_API_KEY is not set. AI Coach will run in mock/demo mode.'
+            'INFO: GROQ_API_KEY is not set. AI Coach will run in mock/demo mode.'
         );
     }
 }

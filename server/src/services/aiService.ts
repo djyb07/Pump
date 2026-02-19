@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import prisma from '../prisma';
 
 // ===== Types =====
@@ -59,29 +59,35 @@ function minifyWorkoutData(workoutLogs: any[]): string {
     }).join('\n');
 }
 
-// ===== Mock Response =====
+// ===== Mock Fallback =====
 
-const MOCK_REPORT: AIReport = {
-    summary: "You've been training consistently over the past few weeks with a solid push/pull/legs structure. Your volume is trending upward and RPE management shows good autoregulation awareness.",
-    positive_feedback: [
-        "Great consistency — you trained 4 times per week on average.",
-        "Your bench press shows clear progressive overload: weight increased by ~5kg over 4 weeks.",
-        "Smart use of RPE — most working sets stayed in the 7-9 range, leaving appropriate reps in reserve."
-    ],
-    areas_for_improvement: [
-        "Lower body volume is significantly lower than upper body — potential muscle imbalance developing.",
-        "No dedicated core or posterior chain work detected in recent sessions.",
-        "RPE on leg exercises tends to stay at 6-7, suggesting you could push intensity higher."
-    ],
-    actionable_tips: [
-        "Add one extra leg session per week, or include 2-3 leg accessory exercises on upper body days.",
-        "Incorporate planks, hanging leg raises, or ab wheel rollouts for 2-3 sets at the end of each session.",
-        "Try adding 2.5kg to your squat each week and aim for RPE 8 on your top sets.",
-        "Consider a deload week every 4-5 weeks to manage accumulated fatigue."
-    ]
-};
+/**
+ * Returns a hardcoded mock report for demo/fallback purposes.
+ * Used when GROQ_API_KEY is missing or the API call fails.
+ */
+function getMockReport(): AIReport {
+    return {
+        summary: "You've been training consistently over the past few weeks with a solid push/pull/legs structure. Your volume is trending upward and RPE management shows good autoregulation awareness.",
+        positive_feedback: [
+            "Great consistency — you trained 4 times per week on average.",
+            "Your bench press shows clear progressive overload: weight increased by ~5kg over 4 weeks.",
+            "Smart use of RPE — most working sets stayed in the 7-9 range, leaving appropriate reps in reserve."
+        ],
+        areas_for_improvement: [
+            "Lower body volume is significantly lower than upper body — potential muscle imbalance developing.",
+            "No dedicated core or posterior chain work detected in recent sessions.",
+            "RPE on leg exercises tends to stay at 6-7, suggesting you could push intensity higher."
+        ],
+        actionable_tips: [
+            "Add one extra leg session per week, or include 2-3 leg accessory exercises on upper body days.",
+            "Incorporate planks, hanging leg raises, or ab wheel rollouts for 2-3 sets at the end of each session.",
+            "Try adding 2.5kg to your squat each week and aim for RPE 8 on your top sets.",
+            "Consider a deload week every 4-5 weeks to manage accumulated fatigue."
+        ]
+    };
+}
 
-// ===== Prompt =====
+// ===== System Prompt =====
 
 const SYSTEM_PROMPT = `You are an elite strength and conditioning coach. Analyze the user's workout logs from the past 4 weeks. Look for:
 - Progressive overload stalls (plateaus in weight or reps)
@@ -96,27 +102,16 @@ Output strictly valid JSON with exactly these keys:
   "positive_feedback": ["Array of 2-4 specific positive observations."],
   "areas_for_improvement": ["Array of 2-4 specific areas that need attention."],
   "actionable_tips": ["Array of 3-5 concrete, actionable recommendations."]
-}`;
-
-// ===== Helpers =====
-
-/**
- * Strip markdown code fences if the model wraps the JSON response in them.
- * Handles ```json ... ``` and ``` ... ``` variants.
- */
-function stripCodeFences(text: string): string {
-    return text
-        .replace(/^```(?:json)?\s*\n?/i, '')
-        .replace(/\n?```\s*$/i, '')
-        .trim();
 }
+
+Do NOT include any text outside the JSON object. Do NOT use markdown code fences.`;
 
 // ===== Main Service =====
 
 /**
  * Generates a weekly AI analysis report for the given user.
- * Fetches 4 weeks of workout logs, minifies the data, and calls Google Gemini.
- * Falls back to a mock response if GEMINI_API_KEY is not configured.
+ * Fetches 4 weeks of workout logs, minifies the data, and calls Groq.
+ * Falls back to a mock response if GROQ_API_KEY is missing or the API fails.
  */
 export async function generateWeeklyReport(userId: string): Promise<AIReport> {
     // Fetch last 4 weeks of completed workouts
@@ -142,46 +137,48 @@ export async function generateWeeklyReport(userId: string): Promise<AIReport> {
     const summary = minifyWorkoutData(workoutLogs);
 
     // ------ Mock Mode: no API key ------
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-        console.warn('[AI Coach] GEMINI_API_KEY not set — returning mock report after 2s delay');
+        console.warn('[AI Coach] GROQ_API_KEY not set — returning mock report after 2s delay');
         await new Promise(resolve => setTimeout(resolve, 2000));
-        return MOCK_REPORT;
+        return getMockReport();
     }
 
-    // ------ Live Mode: call Google Gemini ------
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-pro',
-        generationConfig: {
-            responseMimeType: 'application/json',
+    // ------ Live Mode: call Groq ------
+    try {
+        const groq = new Groq({ apiKey });
+
+        const completion = await groq.chat.completions.create({
+            model: 'llama-3.3-70b-versatile',
             temperature: 0.7,
-            maxOutputTokens: 1024,
-        },
-    });
+            max_tokens: 1024,
+            response_format: { type: 'json_object' },
+            messages: [
+                { role: 'system', content: SYSTEM_PROMPT },
+                { role: 'user', content: `Here are my workout logs from the past 4 weeks:\n\n${summary}` },
+            ],
+        });
 
-    const prompt = `${SYSTEM_PROMPT}\n\nHere are my workout logs from the past 4 weeks:\n\n${summary}`;
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+        const content = completion.choices[0]?.message?.content;
+        if (!content) {
+            throw new Error('LLM_EMPTY_RESPONSE');
+        }
 
-    if (!text) {
-        throw new Error('LLM_EMPTY_RESPONSE');
+        const parsed: AIReport = JSON.parse(content);
+
+        // Validate shape
+        if (
+            typeof parsed.summary !== 'string' ||
+            !Array.isArray(parsed.positive_feedback) ||
+            !Array.isArray(parsed.areas_for_improvement) ||
+            !Array.isArray(parsed.actionable_tips)
+        ) {
+            throw new Error('LLM_INVALID_FORMAT');
+        }
+
+        return parsed;
+    } catch (error: any) {
+        console.warn('[AI Coach] Groq API failed, falling back to mock data:', error.message);
+        return getMockReport();
     }
-
-    // Parse — strip code fences if present, then parse JSON
-    const cleaned = stripCodeFences(text);
-    const parsed: AIReport = JSON.parse(cleaned);
-
-    // Validate shape
-    if (
-        typeof parsed.summary !== 'string' ||
-        !Array.isArray(parsed.positive_feedback) ||
-        !Array.isArray(parsed.areas_for_improvement) ||
-        !Array.isArray(parsed.actionable_tips)
-    ) {
-        throw new Error('LLM_INVALID_FORMAT');
-    }
-
-    return parsed;
 }

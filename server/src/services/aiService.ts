@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import prisma from '../prisma';
 
 // ===== Types =====
@@ -81,7 +81,7 @@ const MOCK_REPORT: AIReport = {
     ]
 };
 
-// ===== System Prompt =====
+// ===== Prompt =====
 
 const SYSTEM_PROMPT = `You are an elite strength and conditioning coach. Analyze the user's workout logs from the past 4 weeks. Look for:
 - Progressive overload stalls (plateaus in weight or reps)
@@ -96,16 +96,27 @@ Output strictly valid JSON with exactly these keys:
   "positive_feedback": ["Array of 2-4 specific positive observations."],
   "areas_for_improvement": ["Array of 2-4 specific areas that need attention."],
   "actionable_tips": ["Array of 3-5 concrete, actionable recommendations."]
-}
+}`;
 
-Do NOT include any text outside the JSON object. Do NOT use markdown code fences.`;
+// ===== Helpers =====
+
+/**
+ * Strip markdown code fences if the model wraps the JSON response in them.
+ * Handles ```json ... ``` and ``` ... ``` variants.
+ */
+function stripCodeFences(text: string): string {
+    return text
+        .replace(/^```(?:json)?\s*\n?/i, '')
+        .replace(/\n?```\s*$/i, '')
+        .trim();
+}
 
 // ===== Main Service =====
 
 /**
  * Generates a weekly AI analysis report for the given user.
- * Fetches 4 weeks of workout logs, minifies the data, and calls OpenAI.
- * Falls back to a mock response if OPENAI_API_KEY is not configured.
+ * Fetches 4 weeks of workout logs, minifies the data, and calls Google Gemini.
+ * Falls back to a mock response if GEMINI_API_KEY is not configured.
  */
 export async function generateWeeklyReport(userId: string): Promise<AIReport> {
     // Fetch last 4 weeks of completed workouts
@@ -131,33 +142,36 @@ export async function generateWeeklyReport(userId: string): Promise<AIReport> {
     const summary = minifyWorkoutData(workoutLogs);
 
     // ------ Mock Mode: no API key ------
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-        console.warn('[AI Coach] OPENAI_API_KEY not set — returning mock report after 2s delay');
+        console.warn('[AI Coach] GEMINI_API_KEY not set — returning mock report after 2s delay');
         await new Promise(resolve => setTimeout(resolve, 2000));
         return MOCK_REPORT;
     }
 
-    // ------ Live Mode: call OpenAI ------
-    const openai = new OpenAI({ apiKey });
-
-    const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        temperature: 0.7,
-        max_tokens: 1024,
-        messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: `Here are my workout logs from the past 4 weeks:\n\n${summary}` },
-        ],
-        response_format: { type: 'json_object' },
+    // ------ Live Mode: call Google Gemini ------
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+        model: 'gemini-1.5-pro',
+        generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.7,
+            maxOutputTokens: 1024,
+        },
     });
 
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
+    const prompt = `${SYSTEM_PROMPT}\n\nHere are my workout logs from the past 4 weeks:\n\n${summary}`;
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const text = response.text();
+
+    if (!text) {
         throw new Error('LLM_EMPTY_RESPONSE');
     }
 
-    const parsed: AIReport = JSON.parse(content);
+    // Parse — strip code fences if present, then parse JSON
+    const cleaned = stripCodeFences(text);
+    const parsed: AIReport = JSON.parse(cleaned);
 
     // Validate shape
     if (

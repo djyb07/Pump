@@ -41,7 +41,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 - Set type classification and RPE tracking for training precision
 - Personal record detection and celebration (warmup sets excluded)
 - Gamified dashboard with streak tracking and level badges
-- AI Coach with weekly analysis (OpenAI integration, mock mode fallback)
+- AI Coach with weekly analysis (Google Gemini integration, mock mode fallback)
 - Mobile-responsive dark theme UI
 
 ---
@@ -76,7 +76,7 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 | Nodemailer | 7.x | Email service (password reset) |
 | Helmet | latest | Security HTTP headers |
 | express-rate-limit | latest | Rate limiting middleware |
-| OpenAI | latest | AI Coach LLM integration (gpt-4o-mini) |
+| @google/generative-ai | latest | AI Coach LLM integration (gemini-1.5-pro) |
 
 ### Database
 
@@ -590,8 +590,8 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 
 **Behavior:**
 - Checks `User.aiReportDate` — if < 24h old, returns cached `User.aiReport` instantly
-- Otherwise fetches last 4 weeks of `WorkoutLog` (completed), minifies data, calls OpenAI (gpt-4o-mini)
-- **Mock mode**: If `OPENAI_API_KEY` is not set, returns a demo report after 2s delay
+- Otherwise fetches last 4 weeks of `WorkoutLog` (completed), minifies data, calls Google Gemini (gemini-1.5-pro)
+- **Mock mode**: If `GEMINI_API_KEY` is not set, returns a demo report after 2s delay
 - **Data safety**: User notes are sanitized (HTML/script tags stripped) before sending to LLM
 - Returns 400 if no completed workouts exist
 
@@ -777,7 +777,7 @@ PORT=5000
 ```env
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-xxx
-OPENAI_API_KEY=sk-...                       # AI Coach (falls back to mock mode if missing)
+GEMINI_API_KEY=AIza...                      # AI Coach (falls back to mock mode if missing)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com

@@ -15,31 +15,38 @@ import {
     deleteSet
 } from '../controllers/workoutController';
 import { recalculatePRs } from '../controllers/migrationController';
+import { validate } from '../middleware/validate';
+import {
+    startWorkoutSchema,
+    logSetSchema,
+    updateSetSchema,
+    finishWorkoutSchema,
+} from '../validation/workoutSchemas';
 
 const router = Router();
 
 // All routes require authentication
 router.use(authenticateToken);
 
-// Active workout management
-router.post('/workouts/start', startWorkout);         // Start new workout
-router.get('/workouts/active', getActiveWorkout);     // Get current active workout
-router.post('/workouts/:id/sets', logSet);            // Log a set
-router.patch('/workouts/:workoutLogId/sets/:exerciseLogId/:setIndex', updateSet);  // Update a set
-router.delete('/workouts/:workoutLogId/sets/:exerciseLogId/:setIndex', deleteSet); // Delete a set
-router.patch('/workouts/:id/finish', finishWorkout);  // Finish workout
+// ─── Active Workout Management (Zod-validated mutations) ─────────────────────
+router.post('/workouts/start', validate(startWorkoutSchema), startWorkout);
+router.get('/workouts/active', getActiveWorkout);
+router.post('/workouts/:id/sets', validate(logSetSchema), logSet);
+router.patch('/workouts/:workoutLogId/sets/:exerciseLogId/:setIndex', validate(updateSetSchema), updateSet);
+router.delete('/workouts/:workoutLogId/sets/:exerciseLogId/:setIndex', deleteSet);
+router.patch('/workouts/:id/finish', validate(finishWorkoutSchema), finishWorkout);
 
-// Workout history
-router.get('/workouts', getWorkoutHistory);           // Get workout history
-router.get('/workouts/:id', getWorkoutById);          // Get specific workout
-router.delete('/workouts/:id', deleteWorkout);        // Delete workout
+// ─── Workout History ─────────────────────────────────────────────────────────
+router.get('/workouts', getWorkoutHistory);
+router.get('/workouts/:id', getWorkoutById);
+router.delete('/workouts/:id', deleteWorkout);
 
-// Analytics
+// ─── Analytics ───────────────────────────────────────────────────────────────
 router.get('/analytics/progress/:exerciseId', getExerciseProgress);
 router.get('/analytics/personal-records', getPersonalRecords);
 router.get('/analytics/muscle-recovery', getMuscleRecovery);
 
-// Migrations
+// ─── Migrations ──────────────────────────────────────────────────────────────
 router.post('/migrations/recalculate-prs', recalculatePRs);
 
 export default router;

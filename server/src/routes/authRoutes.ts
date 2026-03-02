@@ -3,20 +3,28 @@ import { register, login, forgotPassword, resetPassword, googleCallback, getMe, 
 import passport from 'passport';
 import { authLimiter } from '../middleware/rateLimiter';
 import { authenticateToken } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import {
+    registerSchema,
+    loginSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema,
+    updateProfileSchema,
+} from '../validation/authSchemas';
 
 const router = Router();
 
-// Apply rate limiting to auth routes to prevent brute force attacks
-router.post('/register', authLimiter, register);
-router.post('/login', authLimiter, login);
-router.post('/forgot-password', authLimiter, forgotPassword);
-router.post('/reset-password', resetPassword);
+// ─── Public Auth Routes (rate-limited + Zod-validated) ───────────────────────
+router.post('/register', authLimiter, validate(registerSchema), register);
+router.post('/login', authLimiter, validate(loginSchema), login);
+router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), forgotPassword);
+router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 
-// Authenticated user profile (live stats)
+// ─── Authenticated User Profile ─────────────────────────────────────────────
 router.get('/me', authenticateToken, getMe);
-router.put('/profile', authenticateToken, updateProfile);
+router.put('/profile', authenticateToken, validate(updateProfileSchema), updateProfile);
 
-// Google OAuth
+// ─── Google OAuth ────────────────────────────────────────────────────────────
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get(
     '/google/callback',
@@ -25,4 +33,3 @@ router.get(
 );
 
 export default router;
-

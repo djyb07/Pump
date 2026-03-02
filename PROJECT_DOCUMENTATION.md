@@ -74,8 +74,9 @@ PUMP is a **full-stack fitness tracking web application** that allows users to:
 | JWT (jsonwebtoken) | 9.x | Token-based authentication |
 | bcrypt | 6.x | Password hashing |
 | Nodemailer | 7.x | Email service (password reset) |
-| Helmet | latest | Security HTTP headers |
-| express-rate-limit | latest | Rate limiting middleware |
+| Helmet | 8.x | Security HTTP headers (CSP, HSTS, noSniff, referrer) |
+| express-rate-limit | 8.x | Rate limiting middleware (auth + global API) |
+| Zod | 4.x | Runtime request validation schemas |
 | groq-sdk | latest | AI Coach LLM integration (llama-3.3-70b-versatile via Groq) |
 
 ### Database
@@ -239,7 +240,12 @@ Pump/
 │   │   │   └── workoutService.ts        # Workout session logic
 │   │   ├── middleware/              # Express Middleware
 │   │   │   ├── auth.ts                  # JWT verification middleware
-│   │   │   └── rateLimiter.ts           # Rate limiting for auth routes
+│   │   │   ├── rateLimiter.ts           # Rate limiting (auth 5/15min + global 100/min)
+│   │   │   ├── validate.ts              # Generic Zod validation middleware factory
+│   │   │   └── errorHandler.ts          # Global error handler (sanitized 500 responses)
+│   │   ├── validation/              # Zod Request Schemas
+│   │   │   ├── authSchemas.ts           # Login, register, forgot/reset-password, profile
+│   │   │   └── workoutSchemas.ts        # Start workout, log/update set, finish workout
 │   │   ├── config/                  # Configuration
 │   │   │   ├── passport.ts              # Google OAuth strategy
 │   │   │   └── validateEnv.ts           # Environment validation
@@ -672,15 +678,38 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 
 ## Security Features
 
+### Input Validation (Zod v4)
+
+All mutation endpoints enforce strict runtime validation via Zod schemas applied as Express middleware. Invalid payloads are rejected with a sanitized `400 Bad Request` containing field-level error messages — no stack traces.
+
+| Endpoint | Schema | Key Validations |
+|----------|--------|----------------|
+| `POST /register` | `registerSchema` | email (valid, lowercased), password (min 8), names (1–50 chars, trimmed) |
+| `POST /login` | `loginSchema` | email (valid), password (non-empty) |
+| `POST /forgot-password` | `forgotPasswordSchema` | email (valid) |
+| `POST /reset-password` | `resetPasswordSchema` | token (non-empty), newPassword (min 8) |
+| `PUT /profile` | `updateProfileSchema` | names (optional, 1–50), avatarUrl (optional string/null) |
+| `POST /workouts/start` | `startWorkoutSchema` | dayId (required), programId (optional) |
+| `POST /workouts/:id/sets` | `logSetSchema` | exerciseId (required), dayExerciseId (optional/nullable), reps (int ≥ 0), RPE (int 1–10), type (enum: NORMAL/WARMUP/DROP/FAILURE) |
+| `PATCH /workouts/.../sets/...` | `updateSetSchema` | reps (int ≥ 0), weight (≥ 0), RPE (int 1–10), type (enum) |
+| `PATCH /workouts/:id/finish` | `finishWorkoutSchema` | notes (max 500), localEndTime (optional) |
+
 ### Server-Side Security
 
 | Feature | Implementation | File |
 |---------|----------------|------|
-| **JWT Validation** | Mandatory JWT_SECRET, no fallback | `validateEnv.ts` |
-| **Password Hashing** | bcrypt with 10 salt rounds | `authController.ts` |
-| **Rate Limiting** | 5 requests/15min on auth routes | `rateLimiter.ts` |
-| **Security Headers** | Helmet middleware | `app.ts` |
-| **CORS** | Whitelist CLIENT_URL only | `app.ts` |
+| **JWT Validation** | Mandatory `JWT_SECRET` (≥32 chars, fatal error on startup if missing) | `validateEnv.ts` |
+| **Password Hashing** | bcrypt with exactly 10 salt rounds (`BCRYPT_SALT_ROUNDS` constant) | `authController.ts` |
+| **Rate Limiting (Auth)** | 5 requests / 15 min per IP on auth routes | `rateLimiter.ts` |
+| **Rate Limiting (Global)** | 100 requests / 1 min per IP on all `/api` routes | `rateLimiter.ts`, `app.ts` |
+| **Security Headers** | Helmet with explicit CSP, HSTS (1 year, includeSubDomains), noSniff, strict referrer | `app.ts` |
+| **CORS** | Strictly matches `CLIENT_URL` env var; no wildcards; no-origin requests blocked in production | `app.ts` |
+| **Body Size Limit** | `express.json({ limit: '1mb' })` prevents oversized payloads | `app.ts` |
+| **Global Error Handler** | Catches all unhandled errors, logs internally, returns generic `500 Internal Server Error` — never exposes stack traces | `errorHandler.ts` |
+| **Safe User Responses** | Centralised `SAFE_USER_SELECT` whitelist — password hashes and DB-internal fields are never returned | `authController.ts` |
+| **Health Endpoint** | Returns only `{ status: 'ok' }` in production — no DB version, table names, or user counts | `app.ts` |
+
+**Rate Limiter Scaling Note:** Both limiters use the default in-memory store, suitable for single-instance deployments. For horizontal scaling, replace with `rate-limit-redis` or similar shared store.
 
 ### Database Security (Supabase RLS)
 

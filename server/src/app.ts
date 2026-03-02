@@ -14,6 +14,8 @@ import prisma from './prisma';
 import './config/passport';
 import passport from 'passport';
 import { validateRequiredEnv } from './config/validateEnv';
+import { globalErrorHandler } from './middleware/errorHandler';
+import { apiLimiter } from './middleware/rateLimiter';
 
 // Load .env only in development (Render uses Environment settings)
 if (process.env.NODE_ENV !== 'production') {
@@ -25,19 +27,54 @@ validateRequiredEnv();
 
 const app = express();
 
-// Security: Set secure HTTP headers
-app.use(helmet());
+// ─── Security: Hardened HTTP Headers ─────────────────────────────────────────
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'"],
+        },
+    },
+    // HSTS: 1 year, includeSubDomains — tells browsers to always use HTTPS
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+    },
+    // Prevent MIME-type sniffing
+    noSniff: true,
+    // Strict referrer policy
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+}));
 
-// CORS Configuration
-const allowedOrigins = [
-    process.env.CLIENT_URL || 'http://localhost:5173',
-    'http://localhost:5173', // Always allow localhost for development
-];
+// ─── CORS Configuration (strict) ────────────────────────────────────────────
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Build allowed origins list — no wildcards ever
+const allowedOrigins: string[] = [];
+if (process.env.CLIENT_URL) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+}
+// Allow localhost only in development
+if (!isProduction) {
+    allowedOrigins.push('http://localhost:5173');
+}
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+        // In production, reject requests with no origin header
+        // (e.g. curl, non-browser clients). In development, allow them
+        // for local testing convenience.
+        if (!origin) {
+            if (isProduction) {
+                callback(new Error('CORS: origin header is required'));
+            } else {
+                callback(null, true);
+            }
+            return;
+        }
 
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
@@ -48,10 +85,14 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json());
+// ─── Body Parsing (with size limit to prevent oversized payloads) ────────────
+app.use(express.json({ limit: '1mb' }));
 app.use(passport.initialize());
 
-// Mount routes
+// ─── Global API Rate Limiting ────────────────────────────────────────────────
+app.use('/api', apiLimiter);
+
+// ─── Mount Routes ────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/programs', programRoutes);
@@ -64,54 +105,52 @@ app.get('/', (req, res) => {
     res.send('PUMP API is running');
 });
 
-// Health check endpoint for database connection
+// ─── Health Check Endpoint ───────────────────────────────────────────────────
+// In production, return minimal info only. In development, expose details.
 app.get('/api/health/db', async (req, res) => {
     try {
-        // Try to connect
         await prisma.$connect();
+        await prisma.$queryRaw`SELECT 1`;
 
-        // Run a simple query
-        const result = await prisma.$queryRaw`SELECT 1 as test, NOW() as current_time, version() as db_version`;
+        if (isProduction) {
+            // Production: minimal health response — no internal details
+            res.json({ status: 'ok', database: { connected: true } });
+        } else {
+            // Development: full diagnostic info
+            const result = await prisma.$queryRaw`SELECT 1 as test, NOW() as current_time, version() as db_version`;
+            const userCount = await prisma.user.count();
+            const tables: any = await prisma.$queryRaw`
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public'
+                ORDER BY table_name
+            `;
 
-        // Count users
-        const userCount = await prisma.user.count();
-
-        // Get table info
-        const tables: any = await prisma.$queryRaw`
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public'
-            ORDER BY table_name
-        `;
-
-        res.json({
-            status: 'success',
-            message: 'החיבור למסד הנתונים עובד!',
-            database: {
-                connected: true,
-                version: (result as any)[0]?.db_version,
-                currentTime: (result as any)[0]?.current_time,
-                userCount: userCount,
-                tables: tables.map((t: any) => t.table_name)
-            }
-        });
-
+            res.json({
+                status: 'ok',
+                database: {
+                    connected: true,
+                    version: (result as any)[0]?.db_version,
+                    currentTime: (result as any)[0]?.current_time,
+                    userCount,
+                    tables: tables.map((t: any) => t.table_name),
+                },
+            });
+        }
     } catch (error: any) {
         console.error('Database connection error:', error);
+        // Never expose raw error details to client
         res.status(500).json({
             status: 'error',
-            message: 'שגיאה בחיבור למסד הנתונים',
-            error: {
-                name: error.name,
-                message: error.message,
-                code: error.code,
-                meta: error.meta
-            }
+            message: 'Database health check failed',
         });
     } finally {
         await prisma.$disconnect();
     }
 });
+
+// ─── Global Error Handler (MUST be last middleware) ──────────────────────────
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 5000;
 

@@ -588,11 +588,23 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 }
 ```
 
+**Data Pipeline:**
+- Fetches last 4 weeks of completed `WorkoutLog` with `exerciseLogs`
+- Joins `Exercise` table via `exerciseId` to resolve `muscleGroups[]` per exercise (e.g., `[Chest, Triceps, Shoulders]`)
+- Outputs per-set granularity: weight, reps, set type (`WARMUP`/`NORMAL`/`DROPSET`/`FAILURE`), and RPE
+- User notes are sanitized (HTML/script tags stripped, capped at 200 chars)
+
+**Analysis Prompt** (hard-science, second-person tone):
+1. **Volume Trends** — effective weekly volume per muscle group (warmups excluded), week-over-week comparison
+2. **Intensity Evaluation** — RPE assessment: flags undertraining (<7) and overreaching (=10)
+3. **Muscle Group Coverage** — cross-references 8 major groups, flags <6 effective sets/week
+4. **Progressive Overload** — compares best working sets week 1 vs week 4 by exercise
+5. **Recovery & Frequency** — flags <48h rest or 1×/week frequency when 2× is optimal
+
 **Behavior:**
 - Checks `User.aiReportDate` — if < 24h old, returns cached `User.aiReport` instantly
-- Otherwise fetches last 4 weeks of `WorkoutLog` (completed), minifies data, calls Groq (llama-3.3-70b-versatile)
-- **Mock mode**: If `GROQ_API_KEY` is not set or API call fails, returns a demo report automatically
-- **Data safety**: User notes are sanitized (HTML/script tags stripped) before sending to LLM
+- Otherwise calls Groq `llama-3.3-70b-versatile` with `response_format: json_object`
+- **Mock mode**: If `GROQ_API_KEY` is missing or API call fails, returns demo report automatically (never crashes)
 - Returns 400 if no completed workouts exist
 
 ---

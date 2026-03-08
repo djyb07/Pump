@@ -904,11 +904,18 @@ python run_all_tests.py
 |-----------|-------------|
 | `test_register.py` | User registration flow |
 | `test_login.py` | Login with credentials |
-| `test_create_program.py` | Create program and add exercises |
-| `test_workout_flow.py` | Start, log sets, finish workout |
+| `test_create_program.py` | Create program, add a day, and add an exercise to it (9 steps) |
+| `test_workout_flow.py` | Navigate to program, start workout, log sets, finish workout (resilient selectors) |
 | `test_view_progress.py` | View exercise progress charts |
 
 **Test Configuration:**
 - Tests run against deployed URLs (Vercel + Render)
 - 60-second timeout for Render cold starts
 - Unique email generation per test run
+
+**Resilient Selector Patterns:**
+- XPath uses `contains(., 'text')` (element string-value) instead of `contains(text(), 'text')` to handle mixed-content nodes (e.g., buttons with SVG icon children)
+- Selectors are scoped to `//button | //a` to avoid matching parent containers like `<body>`
+- `test_workout_flow.py` gracefully handles disabled "Start Workout" buttons (no exercises) and empty programs (no days) — both return `True`
+- DOM diagnostics (body text snapshot) are printed on unexpected failures for debugging
+

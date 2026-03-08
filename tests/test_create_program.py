@@ -2,7 +2,7 @@
 E2E Test: Create Program Flow
 =============================
 This test logs in, navigates to /programs, creates a new program,
-and verifies the program appears in the list.
+adds a day and an exercise to it, and verifies the program appears in the list.
 
 Tested Flow:
 1. Login with valid credentials
@@ -10,7 +10,10 @@ Tested Flow:
 3. Click "Create New Program" button
 4. Fill the form (Name: "Test PPL", Split: "PPL")
 5. Submit the form
-6. Verify the program appears in the programs list
+6. (Redirected to program details page)
+7. Add a Day to the program
+8. Add an Exercise to that day
+9. Verify the program appears in the programs list
 
 Requirements:
 - Chrome browser (or chromedriver in PATH)
@@ -233,18 +236,98 @@ def test_create_program():
         
         print(f"✓ Form submitted. Current URL: {driver.current_url}")
         
-        # Step 7: Verify the program appears in the list
-        print("\n[STEP 7] Verifying program was created...")
+        # Step 7: Add a Day to the program
+        print("\n[STEP 7] Adding a day to the program...")
         
-        # Navigate back to programs list if we're on a different page
-        if "/programs/new" in driver.current_url or "/programs/" in driver.current_url:
-            # If redirected to program details, that's also a success indicator
-            if "/programs/" in driver.current_url and "/programs/new" not in driver.current_url:
-                print("✓ Redirected to program details page (creation successful)")
-                
-                # Navigate to programs list to verify
-                driver.get(PROGRAMS_URL)
-                time.sleep(2)
+        # Ensure we're on the program details page after creation
+        current_url = driver.current_url
+        if "/programs/" not in current_url or "/programs/new" in current_url:
+            print("✗ Not on program details page after creation")
+            return False
+        
+        print("✓ On program details page — ready to add a day")
+        
+        try:
+            # Click the "+ Add Day" button in the page header
+            add_day_button = wait.until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[contains(., 'Add Day')]"
+                ))
+            )
+            add_day_button.click()
+            time.sleep(1)
+            
+            # Fill the day name in the AddDayModal
+            day_name_input = wait.until(
+                EC.presence_of_element_located((
+                    By.CSS_SELECTOR,
+                    "input[placeholder*='Push Day'], input[placeholder*='Monday'], input[type='text']"
+                ))
+            )
+            day_name_input.clear()
+            day_name_input.send_keys("Push Day")
+            print("  - Entered day name: 'Push Day'")
+            
+            # Click the modal's "Add Day" submit button
+            modal_submit = driver.find_element(
+                By.XPATH,
+                "//button[@type='submit' and contains(., 'Add Day')]"
+            )
+            modal_submit.click()
+            time.sleep(2)
+            
+            print("✓ Day added successfully")
+            
+        except (TimeoutException, NoSuchElementException) as e:
+            print(f"✗ Failed to add day: {e}")
+            return False
+        
+        # Step 8: Add an Exercise to the day
+        print("\n[STEP 8] Adding an exercise to 'Push Day'...")
+        
+        try:
+            # Click the "+ Add Exercise" button next to the day
+            add_exercise_button = wait.until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[contains(., 'Add Exercise')]"
+                ))
+            )
+            add_exercise_button.click()
+            time.sleep(2)
+            
+            # Wait for the exercise selection modal to appear
+            wait.until(
+                EC.presence_of_element_located((
+                    By.XPATH,
+                    "//h2[contains(text(), 'Select Exercise')]"
+                ))
+            )
+            print("  - Exercise selection modal opened")
+            
+            # Click on the first exercise card (the clickable div with cursor-pointer)
+            exercise_card = wait.until(
+                EC.element_to_be_clickable((
+                    By.CSS_SELECTOR,
+                    "div.cursor-pointer"
+                ))
+            )
+            exercise_name = exercise_card.find_element(By.CSS_SELECTOR, "h3").text
+            exercise_card.click()
+            time.sleep(2)
+            
+            print(f"✓ Exercise '{exercise_name}' added to Push Day")
+            
+        except (TimeoutException, NoSuchElementException) as e:
+            print(f"✗ Failed to add exercise: {e}")
+            return False
+        
+        # Step 9: Verify the program appears in the programs list
+        print("\n[STEP 9] Verifying program was created...")
+        
+        driver.get(PROGRAMS_URL)
+        time.sleep(2)
         
         # Look for the program name in the programs list
         try:

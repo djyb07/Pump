@@ -700,10 +700,11 @@ All mutation endpoints enforce strict runtime validation via Zod schemas applied
 |---------|----------------|------|
 | **JWT Validation** | Mandatory `JWT_SECRET` (≥32 chars, fatal error on startup if missing) | `validateEnv.ts` |
 | **Password Hashing** | bcrypt with exactly 10 salt rounds (`BCRYPT_SALT_ROUNDS` constant) | `authController.ts` |
-| **Rate Limiting (Auth)** | 5 requests / 15 min per IP on auth routes | `rateLimiter.ts` |
-| **Rate Limiting (Global)** | 100 requests / 1 min per IP on all `/api` routes | `rateLimiter.ts`, `app.ts` |
+| **Trust Proxy** | `app.set('trust proxy', 1)` — tells Express to parse `X-Forwarded-For` so rate limiters resolve real client IPs behind Render's reverse proxy | `app.ts` |
+| **Rate Limiting (Auth)** | 5 requests / 15 min per real client IP on auth routes (requires trust proxy) | `rateLimiter.ts` |
+| **Rate Limiting (Global)** | 100 requests / 1 min per real client IP on all `/api` routes (requires trust proxy) | `rateLimiter.ts`, `app.ts` |
 | **Security Headers** | Helmet with explicit CSP, HSTS (1 year, includeSubDomains), noSniff, strict referrer | `app.ts` |
-| **CORS** | Strictly matches `CLIENT_URL` env var; no wildcards; no-origin requests blocked in production | `app.ts` |
+| **CORS** | Origin callback: allows requests matching `CLIENT_URL` or with no `Origin` header (OAuth redirects, same-origin navigations); all other origins rejected; credentials enabled; no wildcards | `app.ts` |
 | **Body Size Limit** | `express.json({ limit: '1mb' })` prevents oversized payloads | `app.ts` |
 | **Global Error Handler** | Catches all unhandled errors, logs internally, returns generic `500 Internal Server Error` — never exposes stack traces | `errorHandler.ts` |
 | **Safe User Responses** | Centralised `SAFE_USER_SELECT` whitelist — password hashes and DB-internal fields are never returned | `authController.ts` |

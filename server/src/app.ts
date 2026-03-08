@@ -27,6 +27,11 @@ validateRequiredEnv();
 
 const app = express();
 
+// ─── Trust Proxy (required behind Render / any reverse proxy) ────────────────
+// Ensures Express reads the real client IP from X-Forwarded-For so that
+// rate-limiters track individual users instead of the single proxy IP.
+app.set('trust proxy', 1);
+
 // ─── Security: Hardened HTTP Headers ─────────────────────────────────────────
 app.use(helmet({
     contentSecurityPolicy: {
@@ -50,33 +55,11 @@ app.use(helmet({
 }));
 
 // ─── CORS Configuration (strict) ────────────────────────────────────────────
-const isProduction = process.env.NODE_ENV === 'production';
-
-// Build allowed origins list — no wildcards ever
-const allowedOrigins: string[] = [];
-if (process.env.CLIENT_URL) {
-    allowedOrigins.push(process.env.CLIENT_URL);
-}
-// Allow localhost only in development
-if (!isProduction) {
-    allowedOrigins.push('http://localhost:5173');
-}
-
 app.use(cors({
-    origin: (origin, callback) => {
-        // In production, reject requests with no origin header
-        // (e.g. curl, non-browser clients). In development, allow them
-        // for local testing convenience.
-        if (!origin) {
-            if (isProduction) {
-                callback(new Error('CORS: origin header is required'));
-            } else {
-                callback(null, true);
-            }
-            return;
-        }
-
-        if (allowedOrigins.includes(origin)) {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Allow requests with no Origin header (e.g. OAuth redirects,
+        // server-to-server calls, same-origin navigations).
+        if (!origin || origin === process.env.CLIENT_URL) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -107,6 +90,7 @@ app.get('/', (req, res) => {
 
 // ─── Health Check Endpoint ───────────────────────────────────────────────────
 // In production, return minimal info only. In development, expose details.
+const isProduction = process.env.NODE_ENV === 'production';
 app.get('/api/health/db', async (req, res) => {
     try {
         await prisma.$connect();

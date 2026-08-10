@@ -15,6 +15,17 @@ Optional:
 """
 
 import os
+import sys
+
+# These tests print check/cross marks. On a cp1252 console (the Windows
+# default) that raises UnicodeEncodeError, which - combined with `return` in a
+# `finally` block - used to swallow the real error and report a bare
+# "TEST FAILED" with no diagnostics. Force UTF-8 so output never masks a fault.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):  # not a reconfigurable stream
+        pass
 
 DEFAULT_BASE_URL = "http://localhost:5173"
 

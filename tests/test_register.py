@@ -214,8 +214,10 @@ def test_register():
         else:
             print("TEST FAILED")
         print("=" * 60)
-        
-        return test_passed
+    # NOTE: outside the finally block on purpose. A `return` inside
+    # `finally` discards any exception still propagating, which is how a
+    # UnicodeEncodeError became a silent, undiagnosable "TEST FAILED".
+    return test_passed
 
 
 if __name__ == "__main__":

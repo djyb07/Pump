@@ -23,7 +23,7 @@ A full-stack workout tracking application with real-time exercise logging, perso
 |-------|-------------|
 | **Frontend** | React 19, TypeScript, Vite, TailwindCSS 4, lucide-react |
 | **Backend** | Node.js, Express 5, Prisma 7 |
-| **Database** | PostgreSQL (Supabase) with RLS |
+| **Database** | PostgreSQL (Supabase) |
 | **Auth** | JWT, Passport.js, bcrypt |
 | **Hosting** | Vercel (client), Render (server) |
 
@@ -57,6 +57,10 @@ See [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) for comprehensive doc
 - Authentication flows
 - Security implementation
 - E2E testing guide
+
+> **Authorization note:** user data is isolated by the Express API layer only.
+> The Supabase RLS policies in the repository are inert and provide no
+> protection — see the Security Features section of the documentation.
 
 ## License
 

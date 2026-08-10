@@ -32,24 +32,37 @@ export const startWorkout = async (req: Request, res: Response) => {
 // Log a set (add to existing workout)
 export const logSet = async (req: Request, res: Response) => {
     // Body already validated by Zod middleware (logSetSchema)
-    // - exerciseId: required string
-    // - dayExerciseId: optional (nullable for freestyle workouts)
+    // - dayExerciseId / exerciseId: at least one present; ownership checked below
     // - rpe: validated as integer 1-10 (or null/undefined)
     // - type: validated as enum NORMAL | WARMUP | DROP | FAILURE
     const userId = req.user!.id;
     const { id: workoutLogId } = req.params;
     const { dayExerciseId, exerciseId, weight, reps, completed, type, rpe } = req.body;
 
-    const exerciseLog = await workoutService.logSet(workoutLogId, userId, {
-        dayExerciseId: dayExerciseId || exerciseId,
-        weight,
-        reps,
-        completed: completed ?? true,
-        type: type || 'NORMAL',
-        rpe: rpe !== undefined && rpe !== null ? Number(rpe) : undefined
-    });
+    try {
+        // Passed through separately. These were previously collapsed with
+        // `dayExerciseId || exerciseId`, which fed an Exercise id into a
+        // DayExercise lookup and produced placeholder rows on the miss.
+        const exerciseLog = await workoutService.logSet(workoutLogId, userId, {
+            dayExerciseId: dayExerciseId ?? null,
+            exerciseId: exerciseId ?? null,
+            weight,
+            reps,
+            completed: completed ?? true,
+            type: type || 'NORMAL',
+            rpe: rpe !== undefined && rpe !== null ? Number(rpe) : undefined
+        });
 
-    res.json(exerciseLog);
+        res.status(201).json(exerciseLog);
+    } catch (error: any) {
+        // Map this endpoint's domain errors to real status codes. The wider
+        // "service throws Error -> global handler returns 500" problem is
+        // finding H4 and is out of scope here.
+        if (typeof error?.status === 'number') {
+            return res.status(error.status).json({ error: error.message });
+        }
+        throw error;
+    }
 };
 
 // Finish current workout

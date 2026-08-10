@@ -9,6 +9,10 @@ declare global {
             email: string;
             firstName: string;
             lastName: string;
+            /** Unix seconds of the original sign-in (see tokenService). */
+            authTime?: number;
+            /** Unix seconds the presented token was issued. */
+            issuedAt?: number;
         }
     }
 }
@@ -32,7 +36,9 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
             id: decoded.userId,  // Fix: JWT has userId, not id
             email: decoded.email,
             firstName: decoded.firstName || '',
-            lastName: decoded.lastName || ''
+            lastName: decoded.lastName || '',
+            authTime: decoded.authTime,
+            issuedAt: decoded.iat
         };
         next();
     } catch (error) {

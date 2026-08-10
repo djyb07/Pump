@@ -18,6 +18,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../prisma';
 import { sendPasswordResetEmail } from '../services/emailService';
 import { issueOAuthCode, redeemOAuthCode } from '../services/oauthCodeService';
+import { issueAccessToken, isWithinMaxSessionAge } from '../services/tokenService';
 import { getJwtSecret } from '../config/validateEnv';
 
 /** Exact bcrypt salt rounds — do not change without security review */
@@ -98,12 +99,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    // Generate JWT — payload contains only userId (minimal claims)
-    const token = jwt.sign(
-        { userId: user.id },
-        getJwtSecret(),
-        { expiresIn: '24h' }
-    );
+    // Generate JWT — minimal claims (userId + authTime), see tokenService
+    const token = issueAccessToken(user.id);
 
     // Response: token + safe user fields only (no password hash)
     res.status(200).json({
@@ -233,11 +230,44 @@ export const exchangeOAuthCode = async (req: Request, res: Response): Promise<vo
     }
 
     // Minimal claims, same shape as the email/password login token
-    const token = jwt.sign(
-        { userId: user.id },
-        getJwtSecret(),
-        { expiresIn: '24h' }
-    );
+    const token = issueAccessToken(user.id);
+
+    res.status(200).json({ token, user });
+};
+
+// ─── Refresh Session ─────────────────────────────────────────────────────────
+
+/**
+ * POST /api/auth/refresh
+ *
+ * Exchanges a still-valid access token for a fresh one, so a session in
+ * active use is never interrupted mid-workout (finding M10). Requires
+ * authenticateToken, i.e. the presented token must not yet have expired —
+ * the client renews long before that point.
+ *
+ * `authTime` is carried forward unchanged, so refreshing extends the token
+ * but not the underlying sign-in beyond MAX_SESSION_AGE_MS.
+ */
+export const refreshSession = async (req: Request, res: Response): Promise<void> => {
+    const { id: userId, authTime, issuedAt } = req.user!;
+
+    if (!isWithinMaxSessionAge(authTime, issuedAt)) {
+        res.status(401).json({ message: 'Session expired, please sign in again' });
+        return;
+    }
+
+    // Confirm the account still exists before extending its session
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: SAFE_USER_SELECT,
+    });
+
+    if (!user) {
+        res.status(401).json({ message: 'Session expired, please sign in again' });
+        return;
+    }
+
+    const token = issueAccessToken(userId, authTime ?? issuedAt);
 
     res.status(200).json({ token, user });
 };

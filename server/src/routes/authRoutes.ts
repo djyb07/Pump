@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { register, login, forgotPassword, resetPassword, googleCallback, exchangeOAuthCode, getMe, updateProfile } from '../controllers/authController';
+import { register, login, forgotPassword, resetPassword, googleCallback, exchangeOAuthCode, refreshSession, getMe, updateProfile } from '../controllers/authController';
 import passport from 'passport';
 import { isGoogleOAuthConfigured } from '../config/passport';
 import { authLimiter } from '../middleware/rateLimiter';
@@ -21,6 +21,11 @@ router.post('/register', authLimiter, validate(registerSchema), register);
 router.post('/login', authLimiter, validate(loginSchema), login);
 router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), forgotPassword);
 router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
+
+// ─── Session Renewal ─────────────────────────────────────────────────────────
+// Not behind authLimiter — the client renews on a timer and on window focus,
+// which would burn through 5/15min. The global apiLimiter still applies.
+router.post('/refresh', authenticateToken, refreshSession);
 
 // ─── Authenticated User Profile ─────────────────────────────────────────────
 router.get('/me', authenticateToken, getMe);

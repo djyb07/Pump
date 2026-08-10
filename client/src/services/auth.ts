@@ -39,6 +39,30 @@ export const loginUser = async (credentials: { email: string; password: string }
 };
 
 /**
+ * Exchange the current (still valid) token for a fresh one.
+ * Called proactively by useSessionRefresh so an active session never expires.
+ */
+export const refreshSession = async () => {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`${AUTH_API_URL}/refresh`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to refresh session');
+    }
+
+    return data as { token: string; user?: Record<string, unknown> };
+};
+
+/**
  * Trade the one-time code from the Google OAuth redirect for a JWT.
  * The code is single-use and expires in 60 seconds; the token comes back
  * in the POST response body so it never appears in a URL.

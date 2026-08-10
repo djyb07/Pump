@@ -449,14 +449,17 @@ export const updateSet = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'Set index out of range' });
     }
 
-    // Update the set with validated data
+    // Patch semantics: only fields actually present in the body are changed.
+    // `reps` was previously written unconditionally, so a weight-only edit
+    // would have overwritten reps with undefined.
+    const current = sets[setIdx];
     const updatedSets = [...sets];
     updatedSets[setIdx] = {
-        ...updatedSets[setIdx],
-        weight: weight ?? updatedSets[setIdx].weight,
-        reps,
-        type: type || updatedSets[setIdx].type || 'NORMAL',
-        rpe: rpe !== undefined && rpe !== null ? Number(rpe) : updatedSets[setIdx].rpe
+        ...current,
+        weight: weight !== undefined ? weight : current.weight,
+        reps: reps !== undefined ? reps : current.reps,
+        type: type || current.type || 'NORMAL',
+        rpe: rpe !== undefined && rpe !== null ? Number(rpe) : current.rpe
     };
 
     // Update in database

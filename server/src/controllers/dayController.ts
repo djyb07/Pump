@@ -85,9 +85,12 @@ export const updateDayExercise = async (req: Request, res: Response) => {
         const dayExercise = await prisma.dayExercise.update({
             where: { id },
             data: {
-                ...(targetSets && { targetSets }),
-                ...(targetReps && { targetReps }),
-                ...(typeof targetWeight === 'number' && { targetWeight }),
+                // `typeof === 'number'`, not truthiness: a falsy guard silently
+                // discarded 0 as if the field had not been sent.
+                ...(typeof targetSets === 'number' && { targetSets }),
+                ...(typeof targetReps === 'number' && { targetReps }),
+                // null clears the target weight; undefined leaves it unchanged.
+                ...(targetWeight !== undefined && { targetWeight: targetWeight ?? null }),
                 ...(notes !== undefined && { notes }),
                 ...(typeof orderIndex === 'number' && { orderIndex })
             },

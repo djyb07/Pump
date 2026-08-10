@@ -124,7 +124,11 @@ export const programService = {
     },
 
     // Update day exercise
-    async updateDayExercise(id: string, data: Partial<DayExercise>) {
+    // targetWeight: null clears it; omitted leaves it unchanged.
+    async updateDayExercise(
+        id: string,
+        data: Partial<Omit<DayExercise, 'targetWeight'>> & { targetWeight?: number | null }
+    ) {
         const response = await axios.patch<DayExercise>(`${API_URL}/day-exercises/${id}`, data, {
             headers: getAuthHeader()
         });

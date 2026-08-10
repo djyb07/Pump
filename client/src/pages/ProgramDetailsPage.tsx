@@ -129,7 +129,7 @@ export default function ProgramDetailsPage() {
         setEditingExercise(dayEx);
     };
 
-    const handleSaveExercise = async (data: { targetSets: number; targetReps: number; targetWeight?: number }) => {
+    const handleSaveExercise = async (data: { targetSets: number; targetReps: number; targetWeight: number | null }) => {
         if (!editingExercise) return;
         try {
             await programService.updateDayExercise(editingExercise.id, data);

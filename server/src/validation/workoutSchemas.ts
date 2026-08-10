@@ -75,15 +75,29 @@ export type LogSetInput = z.infer<typeof logSetSchema>;
 
 // ─── Update Set ──────────────────────────────────────────────────────────────
 
+/**
+ * Update Set — a PATCH, so every field is optional.
+ *
+ * `reps` used to be mandatory, which made a weight-only edit impossible by
+ * construction. `weight` is nullable as well as optional: a blank numeric
+ * input serialises to `null`, and rejecting that with a 400 was surprising.
+ * Omitted fields keep their existing value (see updateSet in the controller).
+ */
 export const updateSetSchema = z.object({
-    weight: z.number().min(0, 'Weight cannot be negative').optional(),
+    weight: z.number().min(0, 'Weight cannot be negative').optional().nullable(),
     reps: z
-        .number({ error: 'Reps is required' })
+        .number()
         .int('Reps must be an integer')
-        .min(0, 'Reps cannot be negative'),
+        .min(0, 'Reps cannot be negative')
+        .optional()
+        .nullable(),
     type: SetTypeEnum.optional(),
     rpe: rpeField,
-});
+}).refine(
+    (data) => data.weight !== undefined || data.reps !== undefined
+        || data.type !== undefined || data.rpe !== undefined,
+    { message: 'At least one field must be provided' }
+);
 
 export type UpdateSetInput = z.infer<typeof updateSetSchema>;
 

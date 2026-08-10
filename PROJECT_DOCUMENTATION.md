@@ -816,6 +816,11 @@ PORT=5000
 
 ### Server (Render) - Optional
 
+All of the following may be omitted. In particular, if `GOOGLE_CLIENT_ID` and
+`GOOGLE_CLIENT_SECRET` are unset the server starts normally, logs a warning,
+and disables Google sign-in — `GET /api/auth/google` returns `503`.
+Email/password authentication is unaffected.
+
 ```env
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-xxx

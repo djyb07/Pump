@@ -1,6 +1,7 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { register, login, forgotPassword, resetPassword, googleCallback, getMe, updateProfile } from '../controllers/authController';
 import passport from 'passport';
+import { isGoogleOAuthConfigured } from '../config/passport';
 import { authLimiter } from '../middleware/rateLimiter';
 import { authenticateToken } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -24,12 +25,22 @@ router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 router.get('/me', authenticateToken, getMe);
 router.put('/profile', authenticateToken, validate(updateProfileSchema), updateProfile);
 
-// ─── Google OAuth ────────────────────────────────────────────────────────────
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get(
-    '/google/callback',
-    passport.authenticate('google', { session: false, failureRedirect: '/login' }),
-    googleCallback
-);
+// ─── Google OAuth (only mounted when credentials are configured) ─────────────
+// passport.authenticate('google') throws "Unknown authentication strategy" if
+// the strategy was never registered, so serve an explicit 503 instead.
+if (isGoogleOAuthConfigured) {
+    router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+    router.get(
+        '/google/callback',
+        passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+        googleCallback
+    );
+} else {
+    const notConfigured = (_req: Request, res: Response) => {
+        res.status(503).json({ message: 'Google sign-in is not configured on this server' });
+    };
+    router.get('/google', notConfigured);
+    router.get('/google/callback', notConfigured);
+}
 
 export default router;

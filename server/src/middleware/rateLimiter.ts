@@ -33,6 +33,25 @@
  */
 
 import rateLimit from 'express-rate-limit';
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Integration tests register several users per run, which the 5-per-15-minutes
+ * auth limiter would block. `DISABLE_RATE_LIMIT=true` turns the limiters into
+ * pass-throughs.
+ *
+ * Hard-gated on NODE_ENV !== 'production' so the variable cannot disable
+ * brute-force protection on a production deployment even if it leaks into the
+ * environment there.
+ */
+const rateLimitDisabled =
+    process.env.NODE_ENV !== 'production' && process.env.DISABLE_RATE_LIMIT === 'true';
+
+if (rateLimitDisabled) {
+    console.warn('WARNING: rate limiting is DISABLED (DISABLE_RATE_LIMIT=true, non-production).');
+}
+
+const passThrough = (_req: Request, _res: Response, next: NextFunction) => next();
 
 /**
  * Rate limiter for authentication routes (login, register, forgot-password)
@@ -41,7 +60,7 @@ import rateLimit from 'express-rate-limit';
  * This is intentionally strict to mitigate brute-force and credential
  * stuffing attacks on the most sensitive endpoints.
  */
-export const authLimiter = rateLimit({
+export const authLimiter = rateLimitDisabled ? passThrough : rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // Maximum 5 requests per window per IP
     message: {
@@ -58,7 +77,7 @@ export const authLimiter = rateLimit({
  * Applied globally on /api to prevent abuse of any endpoint.
  * Individual routes (e.g. auth) may apply stricter limits on top of this.
  */
-export const apiLimiter = rateLimit({
+export const apiLimiter = rateLimitDisabled ? passThrough : rateLimit({
     windowMs: 60 * 1000, // 1 minute
     max: 100, // Maximum 100 requests per minute
     message: {

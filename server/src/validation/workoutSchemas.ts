@@ -40,13 +40,24 @@ export type StartWorkoutInput = z.infer<typeof startWorkoutSchema>;
 
 // ─── Log Set ─────────────────────────────────────────────────────────────────
 
+/**
+ * Log Set
+ *
+ * Identifies the exercise by EITHER `dayExerciseId` (a slot in the user's own
+ * program) OR `exerciseId` (freestyle). At least one is required; neither is
+ * required on its own.
+ *
+ * `exerciseId` was previously mandatory, but the client only ever sends
+ * `dayExerciseId` — so every real request was rejected with a 400 and set
+ * logging was broken outright. The server already loads the DayExercise to
+ * check ownership, so it can derive `exerciseId` itself; demanding the client
+ * restate a value the server must look up anyway bought nothing.
+ */
 export const logSetSchema = z.object({
-    /** Required: identifies the exercise being logged */
-    exerciseId: z
-        .string({ error: 'Exercise ID is required' })
-        .min(1, 'Exercise ID is required'),
-    /** Optional: nullable for ad-hoc/freestyle workouts */
-    dayExerciseId: z.string().optional().nullable(),
+    /** A slot in one of the caller's own program days. Ownership is verified. */
+    dayExerciseId: z.string().min(1, 'Day exercise ID cannot be empty').optional().nullable(),
+    /** Freestyle: the Exercise itself. Required only when dayExerciseId is absent. */
+    exerciseId: z.string().min(1, 'Exercise ID cannot be empty').optional().nullable(),
     weight: z.number().min(0, 'Weight cannot be negative').optional(),
     reps: z
         .number({ error: 'Reps is required' })
@@ -55,7 +66,10 @@ export const logSetSchema = z.object({
     completed: z.boolean().optional().default(true),
     type: SetTypeEnum.optional().default('NORMAL'),
     rpe: rpeField,
-});
+}).refine(
+    (data) => Boolean(data.dayExerciseId) || Boolean(data.exerciseId),
+    { message: 'Either dayExerciseId or exerciseId is required', path: ['dayExerciseId'] }
+);
 
 export type LogSetInput = z.infer<typeof logSetSchema>;
 

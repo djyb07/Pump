@@ -4,11 +4,27 @@ import prisma from '../prisma';
 
 const callbackURL = `${process.env.SERVER_URL || 'http://localhost:5000'}/api/auth/google/callback`;
 
-passport.use(
-    new GoogleStrategy(
+/**
+ * Whether Google sign-in is available on this deployment.
+ *
+ * passport-oauth2 throws at construction time on an empty clientID, so the
+ * strategy must not be registered at all when the credentials are absent —
+ * otherwise the whole server fails to boot. Google OAuth is documented as
+ * optional and is now genuinely optional.
+ *
+ * Note: `dotenv` has already run by this point via the `prisma` import above,
+ * so a .env-provided value is visible here.
+ */
+export const isGoogleOAuthConfigured = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+);
+
+if (isGoogleOAuthConfigured) {
+    passport.use(
+        new GoogleStrategy(
         {
-            clientID: process.env.GOOGLE_CLIENT_ID || '',
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+            clientID: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             callbackURL: callbackURL,
         },
         async (accessToken, refreshToken, profile, done) => {
@@ -49,7 +65,13 @@ passport.use(
                 return done(error as any, false);
             }
         }
-    )
-);
+        )
+    );
+} else {
+    console.warn(
+        'INFO: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set. ' +
+        'Google sign-in is disabled; email/password login is unaffected.'
+    );
+}
 
 export default passport;

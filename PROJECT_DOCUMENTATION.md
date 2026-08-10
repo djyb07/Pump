@@ -470,6 +470,8 @@ model ExerciseStats {
 | POST | `/login` | Login with email/password | ❌ | 5/15min |
 | POST | `/forgot-password` | Request password reset email | ❌ | 5/15min |
 | POST | `/reset-password` | Reset password with token | ❌ | - |
+| POST | `/oauth/exchange` | Trade a one-time Google OAuth code for a token | ❌ | - |
+| POST | `/refresh` | Renew a still-valid token (see Session Renewal) | ✅ | - |
 | GET | `/me` | Get current user profile (live stats) | ✅ | - |
 | GET | `/google` | Initiate Google OAuth flow | ❌ | - |
 | GET | `/google/callback` | Google OAuth callback | ❌ | - |
@@ -652,16 +654,41 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 
 ### Google OAuth Flow
 
+Only available when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set;
+otherwise `/api/auth/google` returns `503` and the server runs normally.
+
 ```
 1. User clicks "Sign in with Google"
 2. Frontend redirects to: GET /api/auth/google
 3. Server redirects to Google with OAuth2 credentials
 4. User authenticates with Google
 5. Google redirects to: GET /api/auth/google/callback
-6. Server creates/updates user, generates JWT
-7. Server redirects to: CLIENT_URL/login?token=<jwt>
-8. Frontend extracts token from URL, stores in localStorage
+6. Server creates/updates user, then issues a ONE-TIME CODE
+   (opaque, 256-bit, single-use, 60s TTL — held in server memory)
+7. Server redirects to: CLIENT_URL/login?code=<code>
+8. Frontend POSTs the code to /api/auth/oauth/exchange
+9. Server redeems the code and returns { token, user } in the response body
+10. Frontend stores the token and strips the code from history
 ```
+
+**Why a code and not the token:** the JWT must never appear in a URL — URLs
+are retained in browser history, `Referer` headers and proxy/CDN access logs,
+and there is no token revocation. The code is inert once used or expired.
+
+### Session Renewal
+
+```
+1. Every token carries `authTime` — unix seconds of the original sign-in
+2. Client renews via POST /api/auth/refresh when < 12h of the 24h life remains
+   (triggered on mount, every 15 min, and on window focus / visibilitychange)
+3. Server requires the presented token to still be valid; it will NOT renew an
+   expired token
+4. `authTime` is carried forward unchanged, so one sign-in cannot be extended
+   beyond MAX_SESSION_AGE_MS (30 days) — after that a full sign-in is required
+```
+
+An in-use session therefore never expires mid-workout. A session that expires
+while the app is closed requires a normal sign-in.
 
 ### Password Reset Flow
 
@@ -678,9 +705,52 @@ Response: { user: { id, firstName, lastName, email, avatarUrl, totalWorkouts, cu
 
 ## Security Features
 
+> ### ⚠️ Where authorization is actually enforced
+>
+> **The Express controllers and services are the only layer enforcing
+> authorization.** Every protection against one user reading or modifying
+> another's data is a hand-written `where: { userId }` clause or an
+> `if (record.userId !== userId)` check in TypeScript.
+>
+> **The Supabase RLS policies in `prisma/migrations/rls_enable_policies.sql`
+> are inert and provide no protection.** Two independent reasons:
+>
+> 1. Every policy is keyed on `auth.uid()`, which reads the `sub` claim of a
+>    **Supabase Auth (GoTrue)** JWT. This application does not use Supabase
+>    Auth — it has its own `User` table with bcrypt hashes and signs its own
+>    tokens. Prisma connects through a plain `pg` pool (`src/prisma.ts`) that
+>    never sets `request.jwt.claims` or `SET ROLE`, so `auth.uid()` is `NULL`
+>    for every query the application makes.
+> 2. The migration issues `ENABLE ROW LEVEL SECURITY` but never
+>    `FORCE ROW LEVEL SECURITY`, and `DATABASE_URL` connects as the role that
+>    owns the tables. **Postgres skips RLS entirely for a table's owner unless
+>    FORCE is set.**
+>
+> The application works in production, which is itself proof that RLS is being
+> bypassed — under enforced policies `auth.uid() = NULL` would match no rows
+> and every query would return empty.
+>
+> **Consequence:** there is no database-level backstop. A missing `where`
+> clause in a single future change is a cross-tenant data leak with nothing
+> behind it to catch the mistake. Treat every user-scoped query as
+> security-critical code and cover it with the authorization test suite.
+>
+> Making RLS real is a separate project (dedicated non-owner role, `FORCE ROW
+> LEVEL SECURITY`, policies rewritten against a per-request GUC, and a Prisma
+> client extension to set it). It has deliberately **not** been attempted.
+
 ### Input Validation (Zod v4)
 
-All mutation endpoints enforce strict runtime validation via Zod schemas applied as Express middleware. Invalid payloads are rejected with a sanitized `400 Bad Request` containing field-level error messages — no stack traces.
+Zod schemas are applied as Express middleware on the endpoints listed below.
+Invalid payloads are rejected with a sanitized `400 Bad Request` containing
+field-level error messages — no stack traces.
+
+> **Not all mutations are validated.** The following endpoints have **no Zod
+> schema** and rely only on ad-hoc truthiness checks in their controllers
+> (finding H2, not yet fixed): `POST /programs`, `PATCH /programs/:id`,
+> `POST /programs/:programId/days`, `PATCH /days/:id`,
+> `POST /days/:dayId/exercises`, `PATCH /day-exercises/:id`. String fields on
+> these routes are unbounded and `splitType` is unconstrained.
 
 | Endpoint | Schema | Key Validations |
 |----------|--------|----------------|
@@ -693,37 +763,57 @@ All mutation endpoints enforce strict runtime validation via Zod schemas applied
 | `POST /workouts/:id/sets` | `logSetSchema` | exerciseId (required), dayExerciseId (optional/nullable), reps (int ≥ 0), RPE (int 1–10), type (enum: NORMAL/WARMUP/DROP/FAILURE) |
 | `PATCH /workouts/.../sets/...` | `updateSetSchema` | reps (int ≥ 0), weight (≥ 0), RPE (int 1–10), type (enum) |
 | `PATCH /workouts/:id/finish` | `finishWorkoutSchema` | notes (max 500), localEndTime (optional) |
+| `POST /oauth/exchange` | `exchangeOAuthCodeSchema` | code (non-empty, max 200) |
 
 ### Server-Side Security
 
 | Feature | Implementation | File |
 |---------|----------------|------|
-| **JWT Validation** | Mandatory `JWT_SECRET` (≥32 chars, fatal error on startup if missing) | `validateEnv.ts` |
+| **JWT Validation** | `JWT_SECRET` is mandatory — fatal error on startup if missing. **A secret shorter than 32 characters only logs a warning; the length is not enforced** (finding M5, not yet fixed) | `validateEnv.ts` |
 | **Password Hashing** | bcrypt with exactly 10 salt rounds (`BCRYPT_SALT_ROUNDS` constant) | `authController.ts` |
-| **Trust Proxy** | `app.set('trust proxy', 1)` — tells Express to parse `X-Forwarded-For` so rate limiters resolve real client IPs behind Render's reverse proxy | `app.ts` |
-| **Rate Limiting (Auth)** | 5 requests / 15 min per real client IP on auth routes (requires trust proxy) | `rateLimiter.ts` |
-| **Rate Limiting (Global)** | 100 requests / 1 min per real client IP on all `/api` routes (requires trust proxy) | `rateLimiter.ts`, `app.ts` |
+| **Trust Proxy** | `app.set('trust proxy', 1)`. Correct **only** for a topology with exactly one appending reverse proxy (Render's). Exposed directly, or behind a second hop, a client can spoof `X-Forwarded-For` and reset its own rate-limit bucket (finding M1) | `app.ts` |
+| **Rate Limiting (Auth)** | 5 requests / 15 min per client IP on `/register`, `/login`, `/forgot-password`. **Not applied** to `/reset-password`, `/refresh` or `/oauth/exchange` | `rateLimiter.ts` |
+| **Rate Limiting (Global)** | 100 requests / 1 min per client IP on all `/api` routes | `rateLimiter.ts`, `app.ts` |
 | **Security Headers** | Helmet with explicit CSP, HSTS (1 year, includeSubDomains), noSniff, strict referrer | `app.ts` |
-| **CORS** | Origin callback: allows requests matching `CLIENT_URL` or with no `Origin` header (OAuth redirects, same-origin navigations); all other origins rejected; credentials enabled; no wildcards | `app.ts` |
+| **CORS** | Origin callback: allows `CLIENT_URL` or requests with no `Origin` header; all other origins rejected. **Rejection currently surfaces as a `500` with a logged stack trace rather than a clean status** (finding M3) | `app.ts` |
 | **Body Size Limit** | `express.json({ limit: '1mb' })` prevents oversized payloads | `app.ts` |
 | **Global Error Handler** | Catches all unhandled errors, logs internally, returns generic `500 Internal Server Error` — never exposes stack traces | `errorHandler.ts` |
-| **Safe User Responses** | Centralised `SAFE_USER_SELECT` whitelist — password hashes and DB-internal fields are never returned | `authController.ts` |
-| **Health Endpoint** | Returns only `{ status: 'ok' }` in production — no DB version, table names, or user counts | `app.ts` |
+| **Safe User Responses** | `SAFE_USER_SELECT` whitelist used by `register`, `getMe`, `updateProfile`, `refresh` and `oauth/exchange`. **`login` does not use it** — it loads the full row (including the password hash) and hand-builds the response field list. The response is safe, but the guarantee is not centralised | `authController.ts` |
+| **OAuth Code Exchange** | Google callback returns a single-use 256-bit code (60s TTL) instead of the JWT; the token is delivered in a POST response body so it never enters a URL | `oauthCodeService.ts` |
+| **Session Renewal** | `POST /api/auth/refresh` renews a still-valid token. `authTime` bounds one sign-in to 30 days. **Individual sessions cannot be revoked** — a stolen token is valid until it expires (finding M6) | `tokenService.ts` |
+| **Health Endpoint** | Returns `{ status, database: { connected } }` only, in every environment. Does not disconnect the shared Prisma pool | `app.ts` |
 
-**Rate Limiter Scaling Note:** Both limiters use the default in-memory store, suitable for single-instance deployments. For horizontal scaling, replace with `rate-limit-redis` or similar shared store.
+**Rate Limiter Scaling Note:** Both limiters, and the OAuth code store, use in-process memory — correct for the current single-instance deployment. For horizontal scaling, move all three to a shared store (`rate-limit-redis` or similar).
 
-### Database Security (Supabase RLS)
+### Database Security (Supabase RLS) — NOT ENFORCED
 
-All tables have Row Level Security enabled with policies ensuring:
-- Users can only read/write their own data
-- Exercise table is read-only for all authenticated users
-- Cascading deletes properly scoped
+**The RLS policies in `prisma/migrations/rls_enable_policies.sql` do not
+protect anything.** See the boxed note at the top of this section for the full
+explanation. In summary:
 
-**RLS Policy Example:**
+| Claim previously made here | Reality |
+|---|---|
+| "All tables have RLS enabled" | `ENABLE` is set, `FORCE` is not — the owning role that `DATABASE_URL` uses bypasses all policies |
+| "Users can only read/write their own data" | Enforced by Express controllers, not by the database |
+| "Exercise table is read-only for authenticated users" | Not enforced at the DB level; the API exposes no write endpoints for `Exercise` |
+
+The policies are keyed on `auth.uid()`, a Supabase Auth function this
+application never populates:
+
 ```sql
+-- INERT: auth.uid() is NULL for every query this application makes,
+-- and the owning role skips RLS regardless.
 CREATE POLICY "Users can view own programs"
     ON "WorkoutProgram" FOR SELECT
     USING ("userId" = (select auth.uid())::text);
+```
+
+The file is retained for reference only. Do not cite it as a security control.
+
+**To confirm for yourself:**
+
+```bash
+psql "$DATABASE_URL" -c "select relname, relrowsecurity, relforcerowsecurity, pg_get_userbyid(relowner) as owner, current_user from pg_class where relname = 'WorkoutProgram';"
 ```
 
 ---
@@ -815,6 +905,11 @@ PORT=5000
 ```
 
 ### Server (Render) - Optional
+
+All of the following may be omitted. In particular, if `GOOGLE_CLIENT_ID` and
+`GOOGLE_CLIENT_SECRET` are unset the server starts normally, logs a warning,
+and disables Google sign-in — `GET /api/auth/google` returns `503`.
+Email/password authentication is unaffected.
 
 ```env
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com

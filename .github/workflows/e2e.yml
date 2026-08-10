@@ -1,0 +1,51 @@
+name: E2E (Selenium)
+
+# Not part of CI: these drive a real browser against a deployed target and
+# need real account credentials, so they cannot gate a push. Run them manually
+# against staging, or on a schedule.
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Target base URL (must NOT be production)'
+        required: true
+        default: 'http://localhost:5173'
+  schedule:
+    # Weekly smoke run, Mondays 04:00 UTC
+    - cron: '0 4 * * 1'
+
+jobs:
+  e2e:
+    name: Selenium smoke tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check required secrets are configured
+        env:
+          PUMP_TEST_EMAIL: ${{ secrets.PUMP_TEST_EMAIL }}
+          PUMP_TEST_PASSWORD: ${{ secrets.PUMP_TEST_PASSWORD }}
+        run: |
+          if [ -z "$PUMP_TEST_EMAIL" ] || [ -z "$PUMP_TEST_PASSWORD" ]; then
+            echo "::error::Set the PUMP_TEST_EMAIL and PUMP_TEST_PASSWORD repository secrets."
+            echo "They must belong to a throwaway account on a non-production target."
+            exit 1
+          fi
+
+      - name: Run suite
+        env:
+          PUMP_TEST_EMAIL: ${{ secrets.PUMP_TEST_EMAIL }}
+          PUMP_TEST_PASSWORD: ${{ secrets.PUMP_TEST_PASSWORD }}
+          PUMP_BASE_URL: ${{ inputs.base_url || vars.PUMP_BASE_URL }}
+          PYTHONIOENCODING: utf-8
+        run: python run_all_tests.py

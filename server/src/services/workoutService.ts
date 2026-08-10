@@ -7,12 +7,23 @@ export interface StartWorkoutData {
 }
 
 export interface LogSetData {
-    dayExerciseId: string;
+    /** A DayExercise in one of the caller's own programs. Ownership is verified. */
+    dayExerciseId?: string | null;
+    /** The Exercise itself, for freestyle sets with no program slot. */
+    exerciseId?: string | null;
     weight?: number;
     reps: number;
     completed: boolean;
     type?: string;
     rpe?: number;
+}
+
+/** Error carrying an HTTP status so the controller can map it faithfully. */
+class LogSetError extends Error {
+    constructor(message: string, public readonly status: number) {
+        super(message);
+        this.name = 'LogSetError';
+    }
 }
 
 export interface FinishWorkoutData {
@@ -103,58 +114,86 @@ export const workoutService = {
             throw new Error('Workout is not in progress');
         }
 
-        // Find or create exercise log
-        let exerciseLog = workoutLog.exerciseLogs.find(
-            log => log.dayExerciseId === setData.dayExerciseId
+        // ── Resolve which exercise this set belongs to ───────────────────────
+        // Always resolved against the database before anything is written, so
+        // an ExerciseLog can never be created with a placeholder exerciseId.
+        // Rows with exerciseId '' are invisible to PR calculation, progress
+        // charts and the muscle heatmap, so writing one silently loses data.
+        let resolvedExerciseId: string;
+        let resolvedExerciseName: string;
+
+        if (setData.dayExerciseId) {
+            // Scoped by owner: a DayExercise belonging to someone else's
+            // program must not be attachable to this user's workout.
+            const dayExercise = await prisma.dayExercise.findFirst({
+                where: {
+                    id: setData.dayExerciseId,
+                    day: { program: { userId } }
+                },
+                include: { exercise: true }
+            });
+
+            if (!dayExercise) {
+                // Same response whether it is missing or owned by another user
+                throw new LogSetError('Day exercise not found', 404);
+            }
+
+            resolvedExerciseId = dayExercise.exerciseId;
+            resolvedExerciseName = dayExercise.exercise.nameEn;
+        } else if (setData.exerciseId) {
+            // Freestyle: must reference a real Exercise, or fail loudly.
+            const exercise = await prisma.exercise.findUnique({
+                where: { id: setData.exerciseId }
+            });
+
+            if (!exercise) {
+                throw new LogSetError('Exercise not found', 404);
+            }
+
+            resolvedExerciseId = exercise.id;
+            resolvedExerciseName = exercise.nameEn;
+        } else {
+            // Guarded by logSetSchema; belt and braces for non-HTTP callers.
+            throw new LogSetError('Either dayExerciseId or exerciseId is required', 400);
+        }
+
+        const newSet = {
+            weight: setData.weight,
+            reps: setData.reps,
+            completed: setData.completed,
+            type: setData.type || 'NORMAL',
+            rpe: setData.rpe,
+            timestamp: new Date().toISOString()
+        };
+
+        // Find the log for this exercise within the current workout. Freestyle
+        // sets have no dayExerciseId, so they group by exerciseId instead —
+        // matching on a null dayExerciseId alone would merge unrelated exercises.
+        let exerciseLog = workoutLog.exerciseLogs.find(log =>
+            setData.dayExerciseId
+                ? log.dayExerciseId === setData.dayExerciseId
+                : log.dayExerciseId === null && log.exerciseId === resolvedExerciseId
         );
 
         if (exerciseLog) {
-            // Add set to existing exercise log
             const currentSets = exerciseLog.sets as any[];
             const updatedSets = [
                 ...currentSets,
-                {
-                    setNumber: currentSets.length + 1,
-                    weight: setData.weight,
-                    reps: setData.reps,
-                    completed: setData.completed,
-                    type: setData.type || 'NORMAL',
-                    rpe: setData.rpe,
-                    timestamp: new Date().toISOString()
-                }
+                { setNumber: currentSets.length + 1, ...newSet }
             ];
 
             exerciseLog = await prisma.exerciseLog.update({
                 where: { id: exerciseLog.id },
-                data: {
-                    sets: updatedSets
-                }
+                data: { sets: updatedSets }
             });
         } else {
-            // Get exercise name for history preservation
-            const dayExercise = await prisma.dayExercise.findUnique({
-                where: { id: setData.dayExerciseId },
-                include: { exercise: true }
-            });
-
-            // Create new exercise log
             exerciseLog = await prisma.exerciseLog.create({
                 data: {
                     workoutLogId,
-                    dayExerciseId: setData.dayExerciseId,
-                    exerciseId: dayExercise?.exerciseId || '',
-                    exerciseName: dayExercise?.exercise?.nameEn || 'Unknown Exercise',
-                    sets: [
-                        {
-                            setNumber: 1,
-                            weight: setData.weight,
-                            reps: setData.reps,
-                            completed: setData.completed,
-                            type: setData.type || 'NORMAL',
-                            rpe: setData.rpe,
-                            timestamp: new Date().toISOString()
-                        }
-                    ]
+                    dayExerciseId: setData.dayExerciseId ?? null,
+                    exerciseId: resolvedExerciseId,
+                    exerciseName: resolvedExerciseName,
+                    sets: [{ setNumber: 1, ...newSet }]
                 }
             });
         }

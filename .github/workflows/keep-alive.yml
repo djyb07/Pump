@@ -1,18 +1,30 @@
-name: Keep Azure Server Alive
+name: Keep Render Server Alive
 
 on:
   schedule:
-    # Run every 10 minutes
+    # Render's free tier sleeps after ~15 minutes idle
     - cron: '*/10 * * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Ping Azure Backend
+      - name: Ping Render backend
+        # Was pointed at a decommissioned Azure host and swallowed every error
+        # with `|| true`, so it reported success indefinitely while doing
+        # nothing (finding H7).
+        #
+        # Pings `/` rather than `/api/health/db`: the health route sits behind
+        # the blanket authenticateToken applied by the routers mounted at /api,
+        # so an unauthenticated ping only ever gets a 401. `/` is public and
+        # warms the instance just as well.
         run: |
-          echo "Pinging Azure App Service to keep it alive..."
-          curl -s -o /dev/null -w "Status: %{http_code}\n" https://pump-server-ghhkhhggb7dfaegx.israelcentral-01.azurewebsites.net/api/health/db || true
-          echo "Ping completed at $(date)"
+          status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 \
+            https://pump-api.onrender.com/)
+          echo "Status: $status"
+          if [ "$status" != "200" ]; then
+            echo "::error::Keep-alive ping returned $status (expected 200)"
+            exit 1
+          fi

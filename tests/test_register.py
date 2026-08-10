@@ -14,7 +14,7 @@ Tested Flow:
 Requirements:
 - Chrome browser (or chromedriver in PATH)
 - selenium package: pip install selenium
-- Application running at https://pump-client.vercel.app
+- Application running at PUMP_BASE_URL (default http://localhost:5173)
 """
 
 import time
@@ -27,17 +27,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+from config import BASE_URL, require_password
+
 # ================== CONFIGURATION ==================
-BASE_URL = "https://pump-client.vercel.app"
 REGISTER_URL = f"{BASE_URL}/register"
 LOGIN_URL = f"{BASE_URL}/login"
 
-# Test user data - use unique email to avoid conflicts
+# Test user data - unique email per run; password from PUMP_TEST_PASSWORD
 TEST_USER = {
     "first_name": "Test",
     "last_name": "User",
     "email": f"testuser{int(time.time())}@example.com",  # Unique email using timestamp
-    "password": "TestPassword123!"
+    "password": require_password()
 }
 
 TIMEOUT = 10  # seconds to wait for elements
@@ -213,8 +214,10 @@ def test_register():
         else:
             print("TEST FAILED")
         print("=" * 60)
-        
-        return test_passed
+    # NOTE: outside the finally block on purpose. A `return` inside
+    # `finally` discards any exception still propagating, which is how a
+    # UnicodeEncodeError became a silent, undiagnosable "TEST FAILED".
+    return test_passed
 
 
 if __name__ == "__main__":

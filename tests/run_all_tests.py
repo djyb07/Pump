@@ -3,9 +3,19 @@ Test Runner: Execute All E2E Tests
 """
 import sys
 import importlib.util
+import traceback
 from pathlib import Path
 
-TEST_MODULES = ["test_register", "test_login", "test_create_program", "test_workout_flow", "test_view_progress"]
+# Ensure sibling modules (config.py, test_*.py) are importable regardless of cwd
+sys.path.insert(0, str(Path(__file__).parent))
+
+import config
+
+# test_workout_flow and test_view_progress were removed: they asserted
+# conditions that were true whether or not the flow under test happened
+# (e.g. "/workout/" matching /workout/active, the page they never left), so
+# they reported success through a total breakage. See finding H5.
+TEST_MODULES = ["test_register", "test_login", "test_create_program"]
 
 def load_and_run_test(test_name):
     try:
@@ -16,14 +26,37 @@ def load_and_run_test(test_name):
         test_func = getattr(module, test_name)
         return (test_name, test_func(), None)
     except Exception as e:
-        return (test_name, False, str(e))
+        # Return the traceback, not just str(e) - an empty message used to
+        # make a failing test indistinguishable from a passing one.
+        return (test_name, False, traceback.format_exc())
 
 def main():
+    # Fail fast and loudly if credentials are missing, rather than letting
+    # every test die at import with a swallowed error.
+    try:
+        config.require_credentials()
+    except config.MissingCredentialsError as e:
+        print(f"CONFIGURATION ERROR\n\n{e}")
+        sys.exit(2)
+
     print("=" * 60)
-    print("PUMP E2E TEST SUITE - Running all 5 tests")
+    print(f"PUMP E2E TEST SUITE - Running all {len(TEST_MODULES)} tests")
+    print(f"Target: {config.BASE_URL}")
     print("=" * 60)
     results = [load_and_run_test(t) for t in TEST_MODULES]
     passed = sum(1 for _, s, _ in results if s)
+
+    # Surface every failure. These used to be collected and silently dropped,
+    # so a crashing test looked identical to a failing assertion.
+    failures = [(name, err) for name, ok, err in results if not ok]
+    if failures:
+        print("\n" + "=" * 60)
+        print("FAILURES")
+        print("=" * 60)
+        for name, err in failures:
+            print(f"\n--- {name} ---")
+            print(err if err else "(test returned False; see its output above)")
+
     print(f"\nSUMMARY: {passed}/{len(results)} passed")
     sys.exit(0 if passed == len(results) else 1)
 

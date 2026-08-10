@@ -89,38 +89,17 @@ app.get('/', (req, res) => {
 });
 
 // ─── Health Check Endpoint ───────────────────────────────────────────────────
-// In production, return minimal info only. In development, expose details.
-const isProduction = process.env.NODE_ENV === 'production';
+// Liveness only. This endpoint is public and is polled on a schedule, so it
+// reports connectivity and nothing else — no DB version, user count or table
+// names, in any environment.
+//
+// Note: it must NOT call prisma.$disconnect(). `prisma` is the process-wide
+// singleton, so disconnecting here tears down the pool that every concurrent
+// request is using.
 app.get('/api/health/db', async (req, res) => {
     try {
-        await prisma.$connect();
         await prisma.$queryRaw`SELECT 1`;
-
-        if (isProduction) {
-            // Production: minimal health response — no internal details
-            res.json({ status: 'ok', database: { connected: true } });
-        } else {
-            // Development: full diagnostic info
-            const result = await prisma.$queryRaw`SELECT 1 as test, NOW() as current_time, version() as db_version`;
-            const userCount = await prisma.user.count();
-            const tables: any = await prisma.$queryRaw`
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_schema = 'public'
-                ORDER BY table_name
-            `;
-
-            res.json({
-                status: 'ok',
-                database: {
-                    connected: true,
-                    version: (result as any)[0]?.db_version,
-                    currentTime: (result as any)[0]?.current_time,
-                    userCount,
-                    tables: tables.map((t: any) => t.table_name),
-                },
-            });
-        }
+        res.json({ status: 'ok', database: { connected: true } });
     } catch (error: any) {
         console.error('Database connection error:', error);
         // Never expose raw error details to client
@@ -128,8 +107,6 @@ app.get('/api/health/db', async (req, res) => {
             status: 'error',
             message: 'Database health check failed',
         });
-    } finally {
-        await prisma.$disconnect();
     }
 });
 

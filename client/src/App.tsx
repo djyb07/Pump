@@ -17,6 +17,7 @@ import PersonalRecordsPage from './pages/PersonalRecordsPage';
 import ProfilePage from './pages/ProfilePage';
 import { MainLayout } from './components/layout';
 import { ReloadPrompt } from './components/ReloadPrompt';
+import { useSessionRefresh } from './hooks/useSessionRefresh';
 
 // Check if JWT is expired (client-side, no API call)
 const isTokenExpired = (token: string): boolean => {
@@ -77,7 +78,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 // Authenticated Layout - includes SmartNavbar
+// Renews the access token in the background so a session in active use is
+// never dropped mid-workout (M10). No-ops when there is no token.
 const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
+  useSessionRefresh();
+
   return (
     <ProtectedRoute>
       <MainLayout>

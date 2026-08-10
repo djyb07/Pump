@@ -1,7 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const API_URL = `${BASE_URL}/api`;
+import apiClient from './apiClient';
 
 export interface Exercise {
     id: string;
@@ -31,19 +28,19 @@ export const exerciseService = {
         if (filters?.difficulty) params.append('difficulty', filters.difficulty);
         if (filters?.search) params.append('search', filters.search);
 
-        const response = await axios.get(`${API_URL}/exercises?${params}`);
+        const response = await apiClient.get(`/api/exercises?${params}`);
         return response.data;
     },
 
     // Search exercises
     async search(query: string): Promise<Exercise[]> {
-        const response = await axios.get(`${API_URL}/exercises/search?q=${query}`);
+        const response = await apiClient.get(`/api/exercises/search?q=${query}`);
         return response.data;
     },
 
     // Get single exercise
     async getById(id: string): Promise<Exercise> {
-        const response = await axios.get(`${API_URL}/exercises/${id}`);
+        const response = await apiClient.get(`/api/exercises/${id}`);
         return response.data;
     },
 };

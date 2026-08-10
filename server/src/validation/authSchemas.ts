@@ -98,3 +98,14 @@ export const updateProfileSchema = z.object({
 );
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+// ─── Exchange One-Time OAuth Code ────────────────────────────────────────────
+
+export const exchangeOAuthCodeSchema = z.object({
+    code: z
+        .string({ error: 'Code is required' })
+        .min(1, 'Code is required')
+        .max(200, 'Invalid code'),
+});
+
+export type ExchangeOAuthCodeInput = z.infer<typeof exchangeOAuthCodeSchema>;

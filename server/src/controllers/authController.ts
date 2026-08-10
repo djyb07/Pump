@@ -17,6 +17,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../prisma';
 import { sendPasswordResetEmail } from '../services/emailService';
+import { issueOAuthCode, redeemOAuthCode } from '../services/oauthCodeService';
 import { getJwtSecret } from '../config/validateEnv';
 
 /** Exact bcrypt salt rounds — do not change without security review */
@@ -200,21 +201,45 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
         return;
     }
 
-    // Generate JWT with minimal claims
+    // Hand the browser a single-use, 60-second code instead of the JWT itself.
+    // The JWT never appears in a URL, so it cannot leak via browser history,
+    // Referer headers or proxy/CDN access logs.
+    const code = issueOAuthCode(user.id);
+
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    res.redirect(`${clientUrl}/login?code=${code}`);
+};
+
+// ─── Exchange One-Time OAuth Code for a Token ────────────────────────────────
+
+export const exchangeOAuthCode = async (req: Request, res: Response): Promise<void> => {
+    // Body already validated by Zod middleware (exchangeOAuthCodeSchema)
+    const { code } = req.body;
+
+    const userId = redeemOAuthCode(code);
+    if (!userId) {
+        res.status(400).json({ message: 'Invalid or expired code' });
+        return;
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: SAFE_USER_SELECT,
+    });
+
+    if (!user) {
+        res.status(400).json({ message: 'Invalid or expired code' });
+        return;
+    }
+
+    // Minimal claims, same shape as the email/password login token
     const token = jwt.sign(
-        {
-            userId: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName
-        },
+        { userId: user.id },
         getJwtSecret(),
         { expiresIn: '24h' }
     );
 
-    // Redirect to client with token
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-    res.redirect(`${clientUrl}/login?token=${token}`);
+    res.status(200).json({ token, user });
 };
 
 // ─── Get Current User Profile ────────────────────────────────────────────────

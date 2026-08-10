@@ -38,6 +38,29 @@ export const loginUser = async (credentials: { email: string; password: string }
     return data;
 };
 
+/**
+ * Trade the one-time code from the Google OAuth redirect for a JWT.
+ * The code is single-use and expires in 60 seconds; the token comes back
+ * in the POST response body so it never appears in a URL.
+ */
+export const exchangeOAuthCode = async (code: string) => {
+    const response = await fetch(`${AUTH_API_URL}/oauth/exchange`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Google sign-in failed');
+    }
+
+    return data as { token: string; user: Record<string, unknown> };
+};
+
 export const forgotPassword = async (email: string) => {
     const response = await fetch(`${AUTH_API_URL}/forgot-password`, {
         method: 'POST',

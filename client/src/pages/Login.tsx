@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { loginUser } from '../services/auth';
+import { loginUser, exchangeOAuthCode } from '../services/auth';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -12,43 +12,46 @@ const Login: React.FC = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Handle Google OAuth callback token
+    // Handle the Google OAuth redirect: trade the one-time code for a token.
+    // The code is single-use and short-lived, so it is safe in the URL where
+    // the JWT itself was not — but strip it from history regardless.
     useEffect(() => {
-        const token = searchParams.get('token');
+        const code = searchParams.get('code');
         const authError = searchParams.get('error');
 
-        if (token) {
-            // Store token from Google OAuth
-            localStorage.setItem('token', token);
-
-            // Decode token to get user info (with UTF-8 support for Hebrew)
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(
-                    atob(base64)
-                        .split('')
-                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                        .join('')
-                );
-                const payload = JSON.parse(jsonPayload);
-
-                // Create user object from token payload
-                const user = {
-                    id: payload.userId,
-                    email: payload.email || '',
-                    firstName: payload.firstName || '',
-                    lastName: payload.lastName || ''
-                };
-                localStorage.setItem('user', JSON.stringify(user));
-            } catch (err) {
-                console.error('Failed to decode token:', err);
-            }
-
-            navigate('/dashboard');
-        } else if (authError) {
+        if (authError) {
             setError('Google authentication failed. Please try again.');
+            return;
         }
+
+        if (!code) {
+            return;
+        }
+
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const { token, user } = await exchangeOAuthCode(code);
+                if (cancelled) return;
+
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(user));
+
+                // Remove the code from the address bar and from history
+                window.history.replaceState({}, '', '/login');
+
+                navigate('/dashboard');
+            } catch (err: any) {
+                if (cancelled) return;
+                window.history.replaceState({}, '', '/login');
+                setError(err.message || 'Google authentication failed. Please try again.');
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
     }, [searchParams, navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

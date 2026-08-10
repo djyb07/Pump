@@ -5,6 +5,11 @@ import sys
 import importlib.util
 from pathlib import Path
 
+# Ensure sibling modules (config.py, test_*.py) are importable regardless of cwd
+sys.path.insert(0, str(Path(__file__).parent))
+
+import config
+
 TEST_MODULES = ["test_register", "test_login", "test_create_program", "test_workout_flow", "test_view_progress"]
 
 def load_and_run_test(test_name):
@@ -19,8 +24,17 @@ def load_and_run_test(test_name):
         return (test_name, False, str(e))
 
 def main():
+    # Fail fast and loudly if credentials are missing, rather than letting
+    # every test die at import with a swallowed error.
+    try:
+        config.require_credentials()
+    except config.MissingCredentialsError as e:
+        print(f"CONFIGURATION ERROR\n\n{e}")
+        sys.exit(2)
+
     print("=" * 60)
-    print("PUMP E2E TEST SUITE - Running all 5 tests")
+    print(f"PUMP E2E TEST SUITE - Running all {len(TEST_MODULES)} tests")
+    print(f"Target: {config.BASE_URL}")
     print("=" * 60)
     results = [load_and_run_test(t) for t in TEST_MODULES]
     passed = sum(1 for _, s, _ in results if s)

@@ -16,7 +16,8 @@ Requirements:
 - Application running at http://localhost:5173
 - A valid registered user (ideally with some workout history for chart data)
 
-IMPORTANT: Update TEST_USER credentials with a valid user before running!
+Credentials come from PUMP_TEST_EMAIL / PUMP_TEST_PASSWORD (no default).
+Target host comes from PUMP_BASE_URL (default http://localhost:5173).
 """
 
 import time
@@ -29,16 +30,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+from config import BASE_URL, require_credentials
+
 # ================== CONFIGURATION ==================
-BASE_URL = "https://pump-client.vercel.app"
 LOGIN_URL = f"{BASE_URL}/login"
 EXERCISES_URL = f"{BASE_URL}/exercises"
 
-# Test user credentials - UPDATE THESE with valid credentials!
-TEST_USER = {
-    "email": "test@example.com",      # Replace with valid email
-    "password": "TestPassword123!"    # Replace with valid password
-}
+# Credentials come from PUMP_TEST_EMAIL / PUMP_TEST_PASSWORD - see config.py
+TEST_USER = require_credentials()
 
 TIMEOUT = 60  # seconds to wait for elements (increased for Render cold start)
 

@@ -443,13 +443,14 @@ def test_unauthenticated_access_is_rejected(method, path):
 
 # ─── Status-code quality (documents finding H4) ──────────────────────────────
 
-@pytest.mark.xfail(
-    reason="H4: workout services throw a plain Error, so the global handler "
-           "returns 500 instead of 403/404. Fails closed, so the security "
-           "property holds. This turns green when H4 is fixed.",
-    strict=False,
-)
 def test_denials_use_a_proper_status_code(attacker, victim, victim_data):
+    """
+    Was an xfail while H4 was open: these four endpoints answered a cross-user
+    attempt with 500 because their services threw plain Errors. Now asserted.
+
+    404 rather than 403 throughout — a 403 confirms the id exists and belongs
+    to someone, which is an existence oracle.
+    """
     attempts = {
         "start workout on victim's day": attacker.post(
             "/api/workouts/start", json={"dayId": victim_data["day"]["id"]}
@@ -471,4 +472,19 @@ def test_denials_use_a_proper_status_code(attacker, victim, victim_data):
         for name, response in attempts.items()
         if response.status_code >= 500
     }
-    assert not server_errors, f"denials returned 5xx instead of 403/404: {server_errors}"
+    assert not server_errors, f"denials returned 5xx instead of 404: {server_errors}"
+
+    wrong_code = {
+        name: response.status_code
+        for name, response in attempts.items()
+        if response.status_code != 404
+    }
+    assert not wrong_code, f"cross-user denials must be 404, got: {wrong_code}"
+
+
+def test_deleting_another_users_workout_is_404_not_403(attacker, victim, victim_data):
+    """deleteWorkout answered 403, which is an existence oracle."""
+    response = attacker.delete(f"/api/workouts/{victim_data['finished_workout']['id']}")
+    assert response.status_code == 404, (
+        f"expected 404, got {response.status_code} {response.text[:200]}"
+    )

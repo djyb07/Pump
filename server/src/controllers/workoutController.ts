@@ -17,6 +17,22 @@ import { Request, Response } from 'express';
 import prisma from '../prisma';
 import { workoutService } from '../services/workoutService';
 
+/**
+ * Map a WorkoutServiceError onto its HTTP status. Returns true if handled.
+ *
+ * Service errors used to be plain Errors that reached the global handler as
+ * `500 Internal Server Error`, so a cross-user attempt looked identical to a
+ * genuine fault (finding H4). Anything without a status is a real fault and
+ * is re-thrown to the global handler unchanged.
+ */
+const respondToServiceError = (error: any, res: Response): boolean => {
+    if (typeof error?.status === 'number') {
+        res.status(error.status).json({ error: error.message });
+        return true;
+    }
+    return false;
+};
+
 // ===== NEW WORKFLOW =====
 
 // Start a new workout session
@@ -25,8 +41,12 @@ export const startWorkout = async (req: Request, res: Response) => {
     const userId = req.user!.id;
     const { dayId, programId } = req.body;
 
-    const workout = await workoutService.startWorkout(userId, { dayId, programId });
-    res.json(workout);
+    try {
+        const workout = await workoutService.startWorkout(userId, { dayId, programId });
+        res.json(workout);
+    } catch (error: any) {
+        if (!respondToServiceError(error, res)) throw error;
+    }
 };
 
 // Log a set (add to existing workout)
@@ -55,13 +75,7 @@ export const logSet = async (req: Request, res: Response) => {
 
         res.status(201).json(exerciseLog);
     } catch (error: any) {
-        // Map this endpoint's domain errors to real status codes. The wider
-        // "service throws Error -> global handler returns 500" problem is
-        // finding H4 and is out of scope here.
-        if (typeof error?.status === 'number') {
-            return res.status(error.status).json({ error: error.message });
-        }
-        throw error;
+        if (!respondToServiceError(error, res)) throw error;
     }
 };
 
@@ -72,8 +86,12 @@ export const finishWorkout = async (req: Request, res: Response) => {
     const { id: workoutLogId } = req.params;
     const { notes, localEndTime } = req.body;
 
-    const workout = await workoutService.finishWorkout(workoutLogId, userId, { notes, localEndTime });
-    res.json(workout);
+    try {
+        const workout = await workoutService.finishWorkout(workoutLogId, userId, { notes, localEndTime });
+        res.json(workout);
+    } catch (error: any) {
+        if (!respondToServiceError(error, res)) throw error;
+    }
 };
 
 // Get active (in-progress) workout
@@ -108,8 +126,12 @@ export const getWorkoutById = async (req: Request, res: Response) => {
     const userId = req.user!.id;
     const { id: workoutLogId } = req.params;
 
-    const workout = await workoutService.getWorkoutById(workoutLogId, userId);
-    res.json(workout);
+    try {
+        const workout = await workoutService.getWorkoutById(workoutLogId, userId);
+        res.json(workout);
+    } catch (error: any) {
+        if (!respondToServiceError(error, res)) throw error;
+    }
 };
 
 // Get progress for a specific exercise
@@ -300,9 +322,11 @@ export const deleteWorkout = async (req: Request, res: Response) => {
         return res.status(404).json({ error: 'Workout not found' });
     }
 
-    // 2. Verify ownership
+    // 2. Verify ownership. 404, not 403 — a 403 would confirm the id exists
+    //    and belongs to somebody, making this an existence oracle. It also
+    //    tripped the client's interceptor, which logs the user out on a 403.
     if (workout.userId !== userId) {
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(404).json({ error: 'Workout not found' });
     }
 
     // 3. Get unique exercise IDs from this workout

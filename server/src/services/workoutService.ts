@@ -18,11 +18,22 @@ export interface LogSetData {
     rpe?: number;
 }
 
-/** Error carrying an HTTP status so the controller can map it faithfully. */
-class LogSetError extends Error {
+/**
+ * Error carrying an HTTP status so the controller can map it faithfully.
+ *
+ * Without this the service threw plain Errors, which reached the global
+ * handler and became `500 Internal Server Error` — so a cross-user attempt
+ * was indistinguishable from a genuine server fault in the logs, and the
+ * client could not react to it (finding H4).
+ *
+ * CONVENTION: a resource that exists but belongs to somebody else returns
+ * 404, exactly like one that does not exist. 403 would confirm the id is
+ * real and turn the endpoint into an existence oracle.
+ */
+export class WorkoutServiceError extends Error {
     constructor(message: string, public readonly status: number) {
         super(message);
-        this.name = 'LogSetError';
+        this.name = 'WorkoutServiceError';
     }
 }
 
@@ -51,12 +62,12 @@ export const workoutService = {
         });
 
         if (!day) {
-            throw new Error('Workout day not found');
+            throw new WorkoutServiceError('Workout day not found', 404);
         }
 
         // Verify user owns this program
         if (day.program.userId !== userId) {
-            throw new Error('Unauthorized');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         // Create workout log
@@ -103,15 +114,15 @@ export const workoutService = {
         });
 
         if (!workoutLog) {
-            throw new Error('Workout not found');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         if (workoutLog.userId !== userId) {
-            throw new Error('Unauthorized');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         if (workoutLog.status !== 'in_progress') {
-            throw new Error('Workout is not in progress');
+            throw new WorkoutServiceError('Workout is not in progress', 409);
         }
 
         // ── Resolve which exercise this set belongs to ───────────────────────
@@ -135,7 +146,7 @@ export const workoutService = {
 
             if (!dayExercise) {
                 // Same response whether it is missing or owned by another user
-                throw new LogSetError('Day exercise not found', 404);
+                throw new WorkoutServiceError('Day exercise not found', 404);
             }
 
             resolvedExerciseId = dayExercise.exerciseId;
@@ -147,14 +158,14 @@ export const workoutService = {
             });
 
             if (!exercise) {
-                throw new LogSetError('Exercise not found', 404);
+                throw new WorkoutServiceError('Exercise not found', 404);
             }
 
             resolvedExerciseId = exercise.id;
             resolvedExerciseName = exercise.nameEn;
         } else {
             // Guarded by logSetSchema; belt and braces for non-HTTP callers.
-            throw new LogSetError('Either dayExerciseId or exerciseId is required', 400);
+            throw new WorkoutServiceError('Either dayExerciseId or exerciseId is required', 400);
         }
 
         const newSet = {
@@ -209,15 +220,15 @@ export const workoutService = {
         });
 
         if (!workoutLog) {
-            throw new Error('Workout not found');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         if (workoutLog.userId !== userId) {
-            throw new Error('Unauthorized');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         if (workoutLog.status !== 'in_progress') {
-            throw new Error('Workout is not in progress');
+            throw new WorkoutServiceError('Workout is not in progress', 409);
         }
 
         // Calculate duration — use client's local time if provided (avoids UTC timezone mismatch)
@@ -387,11 +398,11 @@ export const workoutService = {
         });
 
         if (!workout) {
-            throw new Error('Workout not found');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         if (workout.userId !== userId) {
-            throw new Error('Unauthorized');
+            throw new WorkoutServiceError('Workout not found', 404);
         }
 
         return workout;

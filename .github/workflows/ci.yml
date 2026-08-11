@@ -185,8 +185,10 @@ jobs:
 
       - name: Run API integration tests
         working-directory: tests/api
-        # conftest.wait_for_server polls / until the API answers, so there is
-        # no sleep to tune here.
+        # Includes test_cross_user_authorization.py, the suite that stands in
+        # for the absent database-level isolation (RLS is inert - see AUDIT.md
+        # C1). conftest.wait_for_server polls / until the API answers, so there
+        # is no sleep to tune here.
         run: python -m pytest -v
 
       - name: Server log on failure
@@ -196,7 +198,3 @@ jobs:
 # NOTE: the browser-driven Selenium tests are not run here. They need a
 # deployed target plus real account credentials, so they live in e2e.yml
 # (manual / scheduled, gated on repository secrets).
-#
-# The Phase 3 cross-user authorization suite will be added to the api-tests
-# job above — the harness in tests/api/conftest.py already creates isolated
-# users on demand, which is exactly what it needs.

@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { authenticateToken } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { createProgramSchema, updateProgramSchema } from '../validation/programSchemas';
 import {
     getPrograms,
     getProgramById,
@@ -16,8 +18,8 @@ router.use(authenticateToken);
 // Program routes
 router.get('/', getPrograms);
 router.get('/:id', getProgramById);
-router.post('/', createProgram);
-router.patch('/:id', updateProgram);
+router.post('/', validate(createProgramSchema), createProgram);
+router.patch('/:id', validate(updateProgramSchema), updateProgram);
 router.delete('/:id', deleteProgram);
 
 export default router;

@@ -165,8 +165,32 @@ jobs:
         working-directory: server
         run: npm ci
 
+      - name: Build server
+        working-directory: server
+        # `npm run build` is `prisma generate && tsc`. The generate is the
+        # important part: `npm ci` installs @prisma/client WITHOUT generated
+        # output, and `prisma db push` does NOT generate it either. Without
+        # this step the server died instantly on
+        #   src/prisma.ts(1,10): error TS2305: Module '"@prisma/client"' has
+        #   no exported member 'PrismaClient'
+        # which surfaced only as 60s of connection-refused in the test step.
+        #
+        # Running the compiled dist/ output also means CI exercises the same
+        # artifact production runs (`npm start` -> node dist/app.js), and boots
+        # in ~3s instead of paying ts-node's type-check on every start.
+        run: npm run build
+
+      - name: Show database version
+        # Recorded so a Postgres-version question can be answered from the log
+        # rather than guessed at. The service is postgres:16-alpine; local
+        # verification used 18.
+        run: |
+          PGPASSWORD=pump psql -h localhost -U pump -d pump_test -c 'SELECT version();' \
+            || echo "psql unavailable on the runner - continuing (non-fatal)"
+
       - name: Apply schema
         working-directory: server
+        # Note: db push does NOT regenerate the Prisma client. See "Build server".
         run: npx prisma db push --accept-data-loss
 
       - name: Seed exercise library
@@ -177,26 +201,54 @@ jobs:
         working-directory: tests
         run: pip install -r requirements.txt
 
-      - name: Start API server
+      - name: Start API server and wait for readiness
         working-directory: server
+        # Fails in seconds if the process dies, instead of letting the test
+        # step wait out a 60s timeout and report a bare connection error.
         run: |
-          node -r ts-node/register src/app.ts > "$RUNNER_TEMP/server.log" 2>&1 &
-          echo $! > "$RUNNER_TEMP/server.pid"
+          node dist/app.js > "$RUNNER_TEMP/server.log" 2>&1 &
+          SERVER_PID=$!
+          echo "$SERVER_PID" > "$RUNNER_TEMP/server.pid"
+          echo "server pid: $SERVER_PID"
+
+          for i in $(seq 1 60); do
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "::error::server process exited after ${i}s - see the server log step below"
+              exit 1
+            fi
+            if curl -fsS -m 2 http://localhost:5000/ >/dev/null 2>&1; then
+              echo "server ready after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "::error::server did not answer on http://localhost:5000/ within 60s"
+          exit 1
 
       - name: Run API integration tests
         working-directory: tests/api
-        # conftest.wait_for_server polls / until the API answers, so there is
-        # no sleep to tune here.
-        run: python -m pytest -v
+        # Includes test_cross_user_authorization.py, the suite that stands in
+        # for the absent database-level isolation (RLS is inert - see AUDIT.md
+        # C1).
+        run: |
+          # Liveness re-check: turns "the server died between steps" into an
+          # immediate, named failure rather than 60s of connection refused.
+          if ! curl -fsS -m 5 http://localhost:5000/ >/dev/null; then
+            echo "::error::server is no longer reachable at the start of the test step"
+            exit 1
+          fi
+          python -m pytest -v
 
-      - name: Server log on failure
-        if: failure()
-        run: cat "$RUNNER_TEMP/server.log"
+      - name: Server log
+        # Always, not just on failure: a passing run's log is what you compare
+        # against when a later run breaks.
+        if: always()
+        run: |
+          echo "----- server stdout/stderr -----"
+          cat "$RUNNER_TEMP/server.log" 2>/dev/null || echo "(no server log was produced)"
+          echo "----- end of server log -----"
 
 # NOTE: the browser-driven Selenium tests are not run here. They need a
 # deployed target plus real account credentials, so they live in e2e.yml
 # (manual / scheduled, gated on repository secrets).
-#
-# The Phase 3 cross-user authorization suite will be added to the api-tests
-# job above — the harness in tests/api/conftest.py already creates isolated
-# users on demand, which is exactly what it needs.

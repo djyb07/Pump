@@ -83,7 +83,10 @@ export default function ProfilePage() {
             const data = await updateProfile({
                 firstName: form.firstName.trim(),
                 lastName: form.lastName.trim(),
-                avatarUrl: form.avatarUrl.trim() || undefined,
+                // Explicit null when cleared. `undefined` is dropped by
+                // JSON.stringify, so the server never saw the field and the
+                // avatar could not be removed.
+                avatarUrl: form.avatarUrl.trim() || null,
             });
 
             // Update localStorage so the dashboard reflects changes immediately

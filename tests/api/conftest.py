@@ -66,6 +66,11 @@ class ApiUser:
             f"{API_URL}{path}", headers=self.headers, json=json, timeout=TIMEOUT, **kwargs
         )
 
+    def put(self, path: str, json=None, **kwargs):
+        return requests.put(
+            f"{API_URL}{path}", headers=self.headers, json=json, timeout=TIMEOUT, **kwargs
+        )
+
     def patch(self, path: str, json=None, **kwargs):
         return requests.patch(
             f"{API_URL}{path}", headers=self.headers, json=json, timeout=TIMEOUT, **kwargs

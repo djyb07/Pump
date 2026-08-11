@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { programService } from '../services/programService';
 import { UnifiedPageHeader } from '../components/layout';
 import { PlusCircle, RefreshCw, ArrowUpDown, Activity, ArrowLeftRight, Calendar, Settings, Check, type LucideIcon } from 'lucide-react';
+import { getApiErrorMessage } from '../services/apiError';
 
 interface SplitType {
     value: string;
@@ -49,7 +50,7 @@ export default function CreateProgramPage() {
             });
             navigate(`/programs/${program.id}`);
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to create program');
+            setError(getApiErrorMessage(err, 'Failed to create program'));
         } finally {
             setLoading(false);
         }

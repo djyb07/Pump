@@ -307,7 +307,9 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         updateData.lastName = lastName;
     }
     if (avatarUrl !== undefined) {
-        updateData.avatarUrl = avatarUrl ?? '';
+        // null (or an empty string) clears it. Stored as NULL rather than ''
+        // to match the nullable column.
+        updateData.avatarUrl = avatarUrl || null;
     }
 
     if (Object.keys(updateData).length === 0) {

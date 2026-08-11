@@ -47,32 +47,6 @@ export interface DayExercise {
     };
 }
 
-export interface WorkoutLog {
-    id: string;
-    userId: string;
-    dayId: string;
-    date: string;
-    duration?: number;
-    notes?: string;
-    completed: boolean;
-    createdAt: string;
-    day?: WorkoutDay;
-    exerciseLogs?: ExerciseLog[];
-}
-
-export interface ExerciseLog {
-    id: string;
-    workoutLogId: string;
-    dayExerciseId: string;
-    sets: Array<{
-        weight: number;
-        reps: number;
-        completed: boolean;
-    }>;
-    notes?: string;
-    createdAt: string;
-}
-
 const getAuthHeader = () => {
     const token = localStorage.getItem('token');
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -98,14 +72,6 @@ export const programService = {
     // Create new program
     async createProgram(data: { name: string; splitType: string }) {
         const response = await axios.post<WorkoutProgram>(`${API_URL}/programs`, data, {
-            headers: getAuthHeader()
-        });
-        return response.data;
-    },
-
-    // Update program
-    async updateProgram(id: string, data: Partial<WorkoutProgram>) {
-        const response = await axios.patch<WorkoutProgram>(`${API_URL}/programs/${id}`, data, {
             headers: getAuthHeader()
         });
         return response.data;
@@ -158,7 +124,11 @@ export const programService = {
     },
 
     // Update day exercise
-    async updateDayExercise(id: string, data: Partial<DayExercise>) {
+    // targetWeight: null clears it; omitted leaves it unchanged.
+    async updateDayExercise(
+        id: string,
+        data: Partial<Omit<DayExercise, 'targetWeight'>> & { targetWeight?: number | null }
+    ) {
         const response = await axios.patch<DayExercise>(`${API_URL}/day-exercises/${id}`, data, {
             headers: getAuthHeader()
         });
@@ -168,36 +138,6 @@ export const programService = {
     // Remove exercise from day
     async removeDayExercise(id: string) {
         const response = await axios.delete(`${API_URL}/day-exercises/${id}`, {
-            headers: getAuthHeader()
-        });
-        return response.data;
-    },
-
-    // Log workout
-    async logWorkout(data: {
-        dayId: string;
-        exerciseLogs: Array<{
-            dayExerciseId: string;
-            sets: Array<{ weight: number; reps: number; completed: boolean }>;
-            notes?: string;
-        }>;
-        duration?: number;
-        notes?: string;
-    }) {
-        const response = await axios.post<WorkoutLog>(`${API_URL}/workouts`, data, {
-            headers: getAuthHeader()
-        });
-        return response.data;
-    },
-
-    // Get workout history
-    async getWorkoutHistory(limit = 20, offset = 0) {
-        const response = await axios.get<{
-            workouts: WorkoutLog[];
-            total: number;
-            limit: number;
-            offset: number;
-        }>(`${API_URL}/workouts?limit=${limit}&offset=${offset}`, {
             headers: getAuthHeader()
         });
         return response.data;

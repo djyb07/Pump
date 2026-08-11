@@ -3,7 +3,8 @@ import { type DayExercise } from '../services/programService';
 
 interface EditExerciseModalProps {
     dayExercise: DayExercise;
-    onSave: (data: { targetSets: number; targetReps: number; targetWeight?: number }) => void;
+    /** targetWeight: null clears it; a number sets it. */
+    onSave: (data: { targetSets: number; targetReps: number; targetWeight: number | null }) => void;
     onClose: () => void;
 }
 
@@ -17,7 +18,9 @@ export default function EditExerciseModal({ dayExercise, onSave, onClose }: Edit
         onSave({
             targetSets: sets,
             targetReps: reps,
-            targetWeight: weight > 0 ? weight : undefined
+            // Explicit null when the field is emptied. `undefined` is dropped
+            // by JSON.stringify, so the weight could be set but never cleared.
+            targetWeight: weight > 0 ? weight : null
         });
     };
 

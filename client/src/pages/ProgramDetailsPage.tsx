@@ -8,6 +8,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import ExerciseModal from '../components/ExerciseModal';
 import { UnifiedPageHeader } from '../components/layout';
 import { Dumbbell, CheckCircle, Play, Pause, Trash2, Info, BarChart3, Pencil } from 'lucide-react';
+import { getApiErrorMessage } from '../services/apiError';
 
 export default function ProgramDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -40,7 +41,7 @@ export default function ProgramDetailsPage() {
             const data = await programService.getProgramById(id!);
             setProgram(data);
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to load program');
+            setError(getApiErrorMessage(err, 'Failed to load program'));
         } finally {
             setLoading(false);
         }
@@ -67,7 +68,7 @@ export default function ProgramDetailsPage() {
             setShowExerciseModal(false);
             await loadProgram();
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to add exercise');
+            setError(getApiErrorMessage(err, 'Failed to add exercise'));
         }
     };
 
@@ -80,7 +81,7 @@ export default function ProgramDetailsPage() {
                     await programService.removeDayExercise(exerciseId);
                     await loadProgram();
                 } catch (err: any) {
-                    setError(err.response?.data?.error || 'Failed to remove exercise');
+                    setError(getApiErrorMessage(err, 'Failed to remove exercise'));
                 }
             }
         });
@@ -95,7 +96,7 @@ export default function ProgramDetailsPage() {
                     await programService.deleteProgram(id!);
                     navigate('/programs');
                 } catch (err: any) {
-                    setError(err.response?.data?.error || 'Failed to delete program');
+                    setError(getApiErrorMessage(err, 'Failed to delete program'));
                 }
             }
         });
@@ -106,7 +107,7 @@ export default function ProgramDetailsPage() {
             await programService.addDay(id!, { name: dayName });
             await loadProgram();
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to add day');
+            setError(getApiErrorMessage(err, 'Failed to add day'));
         }
     };
 
@@ -119,7 +120,7 @@ export default function ProgramDetailsPage() {
                     await programService.deleteDay(dayId);
                     await loadProgram();
                 } catch (err: any) {
-                    setError(err.response?.data?.error || 'Failed to delete day');
+                    setError(getApiErrorMessage(err, 'Failed to delete day'));
                 }
             }
         });
@@ -129,14 +130,14 @@ export default function ProgramDetailsPage() {
         setEditingExercise(dayEx);
     };
 
-    const handleSaveExercise = async (data: { targetSets: number; targetReps: number; targetWeight?: number }) => {
+    const handleSaveExercise = async (data: { targetSets: number; targetReps: number; targetWeight: number | null }) => {
         if (!editingExercise) return;
         try {
             await programService.updateDayExercise(editingExercise.id, data);
             setEditingExercise(null);
             await loadProgram();
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to update exercise');
+            setError(getApiErrorMessage(err, 'Failed to update exercise'));
         }
     };
 

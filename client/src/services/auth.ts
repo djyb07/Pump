@@ -131,7 +131,8 @@ export const resetPassword = async (token: string, newPassword: string) => {
 export const updateProfile = async (profileData: {
     firstName?: string;
     lastName?: string;
-    avatarUrl?: string;
+    /** null clears the avatar; undefined leaves it unchanged. */
+    avatarUrl?: string | null;
 }) => {
     const token = localStorage.getItem('token');
 

@@ -732,8 +732,15 @@ while the app is closed requires a normal sign-in.
 >
 > **Consequence:** there is no database-level backstop. A missing `where`
 > clause in a single future change is a cross-tenant data leak with nothing
-> behind it to catch the mistake. Treat every user-scoped query as
-> security-critical code and cover it with the authorization test suite.
+> behind it to catch the mistake.
+>
+> **What stands in for it:** `tests/api/test_cross_user_authorization.py`,
+> which runs on every push. It creates two users and has user A attempt to
+> read and modify every user-scoped resource belonging to user B — programs,
+> days, day-exercises, workouts, sets, analytics and profile — asserting both
+> that each attempt fails and that B's data is unchanged afterwards. Any new
+> user-scoped endpoint must be added to it. This suite is a required control,
+> not a nicety: it is the only thing enforcing tenant isolation in CI.
 >
 > Making RLS real is a separate project (dedicated non-owner role, `FORCE ROW
 > LEVEL SECURITY`, policies rewritten against a per-request GUC, and a Prisma

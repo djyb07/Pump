@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { authenticateToken } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { addDaySchema, updateDaySchema } from '../validation/programSchemas';
 import {
     addDayToProgram,
     updateDay,
@@ -12,8 +14,8 @@ const router = Router();
 router.use(authenticateToken);
 
 // Day routes
-router.post('/programs/:programId/days', addDayToProgram);
-router.patch('/days/:id', updateDay);
+router.post('/programs/:programId/days', validate(addDaySchema), addDayToProgram);
+router.patch('/days/:id', validate(updateDaySchema), updateDay);
 router.delete('/days/:id', deleteDay);
 
 export default router;

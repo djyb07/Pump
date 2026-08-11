@@ -488,3 +488,77 @@ def test_deleting_another_users_workout_is_404_not_403(attacker, victim, victim_
     assert response.status_code == 404, (
         f"expected 404, got {response.status_code} {response.text[:200]}"
     )
+
+
+# ─── Ownership must be decided before state or shape (H4 / H2 follow-ups) ────
+
+def test_finished_workout_state_is_not_leaked_by_409(attacker, victim, victim_data):
+    """
+    H4 introduced a 409 for "workout is not in progress". Ownership is checked
+    BEFORE state, so another user's finished workout must still answer 404 —
+    a 409 would confirm the id exists and reveal its status.
+    """
+    finished_id = victim_data["finished_workout"]["id"]
+
+    logged = attacker.post(
+        f"/api/workouts/{finished_id}/sets",
+        json={"dayExerciseId": victim_data["day_exercise"]["id"], "reps": 5},
+    )
+    assert logged.status_code == 404, (
+        f"log-set on another user's finished workout leaked its state: "
+        f"{logged.status_code} {logged.text[:200]}"
+    )
+
+    finish = attacker.patch(f"/api/workouts/{finished_id}/finish", json={})
+    assert finish.status_code == 404, (
+        f"finish on another user's finished workout leaked its state: "
+        f"{finish.status_code} {finish.text[:200]}"
+    )
+
+
+def test_cannot_clear_another_users_target_weight(attacker, victim, victim_data):
+    """
+    targetWeight became nullable in H2. The clearing path must be
+    ownership-checked like any other write.
+    """
+    victim.patch(
+        f"/api/day-exercises/{victim_data['day_exercise']['id']}",
+        json={"targetWeight": 75},
+    )
+
+    response = attacker.patch(
+        f"/api/day-exercises/{victim_data['day_exercise']['id']}",
+        json={"targetWeight": None},
+    )
+    assert_denied(response, "PATCH /api/day-exercises/:id with targetWeight: null")
+
+    after = victim_program_snapshot(victim, victim_data["program"]["id"])
+    day = next(d for d in after["days"] if d["id"] == victim_data["day"]["id"])
+    assert day["exercises"][0]["targetWeight"] == 75, "victim's target weight was cleared"
+
+
+def test_invalid_body_on_another_users_resource_changes_nothing(attacker, victim, victim_data):
+    """
+    H2 put validation in front of these controllers, so a malformed cross-user
+    request is now rejected on shape (400) rather than ownership (404). Either
+    is a denial — what must never happen is a mutation.
+    """
+    attempts = [
+        (attacker.patch(f"/api/programs/{victim_data['program']['id']}",
+                        json={"splitType": "GARBAGE"}), "program splitType"),
+        (attacker.patch(f"/api/days/{victim_data['day']['id']}",
+                        json={"name": ""}), "day name"),
+        (attacker.post(f"/api/programs/{victim_data['program']['id']}/days",
+                       json={"name": "x" * 5000}), "oversized day name"),
+        (attacker.patch(f"/api/day-exercises/{victim_data['day_exercise']['id']}",
+                        json={"targetSets": -1}), "negative targetSets"),
+    ]
+    for response, what in attempts:
+        assert response.status_code in (400, 404), (
+            f"{what}: expected 400 or 404, got {response.status_code} {response.text[:200]}"
+        )
+
+    after = victim_program_snapshot(victim, victim_data["program"]["id"])
+    assert after["name"] == "Victim Program"
+    assert after["splitType"] == "PPL"
+    assert len(after["days"]) == len(victim_data["program"]["days"])
